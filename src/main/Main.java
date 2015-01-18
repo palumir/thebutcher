@@ -6,6 +6,7 @@ import java.awt.geom.GeneralPath;
 import javax.swing.JFrame;
 
 import player.Player;
+import terrain.Forest;
 import units.Unit;
 import drawables.Canvas;
 import drawables.Node;
@@ -31,7 +32,8 @@ public class Main {
 		// Create a character for testing.
 		Unit character = new Unit();
 		Player.setSelectedUnit(character);
-		Player.getSelectedUnit().instantlyMove(0,250);
+		Player.getSelectedUnit().instantlyMove(300,250);
+		Forest forest = new Forest();
 		
 		// Create the actual game frame on the computer screen.
 		JFrame frame = new JFrame("The Butcher");

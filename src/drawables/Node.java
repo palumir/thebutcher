@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
@@ -28,7 +29,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	// Create a node. But where?
 	public Node(Shape s, Color color) {
 		this.id = "id";
-		this.shape = s;
+		this.setShape(s);
 		this.color = color;
 		Canvas.getGameCanvas().addNode(this);
 	}
@@ -64,7 +65,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	public boolean containsPoint(Point2D p) {
 		AffineTransform inverseTransform = this.getFullInverseTransform();
 		Point2D pPrime = inverseTransform.transform(p, null);
-		return this.shape.contains(pPrime);
+		return this.getShape().contains(pPrime);
 	}
 
 	// Gets the node hit at p. Prefers children.
@@ -92,7 +93,7 @@ public class Node implements MouseMotionListener, MouseListener {
 		AffineTransform t = g2.getTransform();
 		g2.transform(this.getFullTransform());
 		g2.setColor(this.color);
-		g2.fill(this.shape);
+		g2.fill(this.getShape());
 		
 		// Restore the transform.
 		g2.setTransform(t);
@@ -106,6 +107,13 @@ public class Node implements MouseMotionListener, MouseListener {
 		g2.setTransform(t);
 	}
 
+	
+	// Test intersection of two shapes
+	public static boolean testShapeIntersection(Shape shapeA, Shape shapeB) {
+		   Area areaA = new Area(shapeA);
+		   areaA.intersect(new Area(shapeB));
+		   return !areaA.isEmpty();
+	}
 
 	// Copies the node's transform. That's all.
 	public AffineTransform getLocalTransform() {
@@ -183,6 +191,14 @@ public class Node implements MouseMotionListener, MouseListener {
 	// Node movement basics
 	public void instantlyMove(int x, int y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
+	}
+
+	public Shape getShape() {
+		return shape;
+	}
+
+	public void setShape(Shape shape) {
+		this.shape = shape;
 	}
 
 }

@@ -17,6 +17,8 @@ import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
 
 import player.Player;
+import terrain.TerrainChunk;
+import units.Unit;
 
 // The actual canvas the game is drawn on.
 public class Canvas extends JComponent  {
@@ -36,6 +38,7 @@ public class Canvas extends JComponent  {
 	 ActionListener taskPerformer = new ActionListener() {
 	      public void actionPerformed(ActionEvent evt) {
 	         updateNodes();
+	         Unit.updateUnits();
 	         repaint();
 	      }
 	  };
@@ -47,7 +50,19 @@ public class Canvas extends JComponent  {
 			n.update();
 		}
 	}
-
+	
+	// Move all nodes except for...
+	public void moveAllBut(Node notMove, int x, int y) {
+		if(!TerrainChunk.standingOnTerrain(notMove)) {
+			for(int i = 0; i < nodes.size(); i++) {
+				Node n = nodes.get(i);
+				if(n!=notMove) {
+					n.instantlyMove(x,y);
+				}
+			}
+		}
+	}
+	
 	// Constructor. Pretty basic.
 	public Canvas() {
 		
@@ -77,7 +92,7 @@ public class Canvas extends JComponent  {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	// Move left.
-	            	Player.getSelectedUnit().instantlyMove(-3,0);
+	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),3, 0);
 	            }
 	    });
 		this.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "right");
@@ -85,7 +100,7 @@ public class Canvas extends JComponent  {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	// Move right.
-	            	Player.getSelectedUnit().instantlyMove(3,0);
+	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),-3, 0);
 	            }
 	    });
 	}
