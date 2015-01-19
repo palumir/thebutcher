@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.JFrame;
@@ -15,6 +16,10 @@ import drawables.Node;
  * The main class to run the program.
  */
 public class Main {
+	
+	private static int width = 600;
+	private static int height = 600;
+	
 	// Fucking remove this shit
 	public static final GeneralPath heart = Main.makeHeart();
 	
@@ -38,7 +43,7 @@ public class Main {
 		// Create the actual game frame on the computer screen.
 		JFrame frame = new JFrame("The Butcher");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(600, 600);
+		frame.setSize(width, height);
 		frame.setContentPane(Canvas.getGameCanvas());
 		frame.setVisible(true);
 	}
@@ -56,6 +61,21 @@ public class Main {
 		heart.curveTo(-20, -5, -15, -10, -10, -10);
 		heart.curveTo(-5, -10, 0, -5, 0, 0);
 		return heart;
+	}
+	
+	public static long getGameTime() {
+		
+		return System.currentTimeMillis(); // To-do: Return game time instead of system time.
+	}
+	
+	public static int getScreenWidth() {
+		
+		return width;
+	}
+	
+	public static int getScreenHeight() {
+		
+		return height;
 	}
 }
 

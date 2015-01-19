@@ -3,6 +3,8 @@ package drawables;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +18,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
 
+import main.Main;
 import player.Player;
 import terrain.TerrainChunk;
 import units.Unit;
@@ -28,6 +31,7 @@ public class Canvas extends JComponent  {
 	private static int FPS = 20;	// How often we update the animation.
 	private Timer timer;			// The timer to actually cause the animation updates.
 	private static long gameTime = 0; // The clock for the current canvas. In milliseconds.
+	private boolean lMouseDown = false;
 	
 	// Initialize the game canvas.
 	public static void initCanvas() {
@@ -166,10 +170,17 @@ public class Canvas extends JComponent  {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+		    if (e.getButton() == MouseEvent.BUTTON1) {
+		        lMouseDown = true;
+		        swingRecognize();
+		    }
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+		    if (e.getButton() == MouseEvent.BUTTON1) {
+		        lMouseDown = false;
+		    }
 		}
 
 		@Override
@@ -187,6 +198,61 @@ public class Canvas extends JComponent  {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 		}
-
+		
+		public void swingRecognize() {
+			
+			long initTime = Main.getGameTime();
+			int swingTime = 500; //Ms
+			Point pos1 = MouseInfo.getPointerInfo().getLocation();
+			int thrustXThreshold = 20;
+			int chopXThreshold = 15;
+			int chopYThreshold = -15;
+			int slashXThreshold = 15;
+			int slashYThreshold = 15;
+			
+			while (lMouseDown) {
+				
+				long curTime = Main.getGameTime();
+				
+				if (curTime - initTime >= swingTime) {
+				
+					Point pos2 = MouseInfo.getPointerInfo().getLocation();
+				
+					int absXChange = pos2.x - pos1.x;
+					int absYChange = pos2.y - pos1.x;
+				
+					int percentXChange = absXChange / Main.getScreenWidth();
+					int percentYChange = absYChange / Main.getScreenHeight();
+				
+					if (percentXChange >= thrustXThreshold && percentYChange > chopYThreshold && percentYChange < slashYThreshold) {
+				
+						// thrust
+						System.out.println("Thrust");
+						initTime = Main.getGameTime();
+					}
+				
+					else if (percentXChange >= chopXThreshold && percentYChange <= chopYThreshold) {
+					
+						// chop
+						System.out.println("Chop");
+						initTime = Main.getGameTime();
+					}
+				
+					else if (percentXChange >= slashXThreshold && percentYChange >= slashYThreshold) {
+					
+						// slash
+						System.out.println("Slash");
+						initTime = Main.getGameTime();
+					}
+					
+					else {
+						
+						// no action
+						System.out.println("Fail");
+						initTime = Main.getGameTime();
+					}
+				}
+			}
+		}
 	}
 }
