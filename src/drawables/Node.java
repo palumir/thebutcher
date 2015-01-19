@@ -1,19 +1,14 @@
 package drawables;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 // One drawable object.
@@ -106,13 +101,22 @@ public class Node implements MouseMotionListener, MouseListener {
 		// Restore the transform.
 		g2.setTransform(t);
 	}
-
 	
-	// Test intersection of two shapes
-	public static boolean testShapeIntersection(Shape shapeA, Shape shapeB) {
-		   Area areaA = new Area(shapeA);
-		   areaA.intersect(new Area(shapeB));
-		   return !areaA.isEmpty();
+	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
+	public boolean touching(Node n, String direction) {
+		double x1 = this.trans.getTranslateX();
+		double y1 = this.trans.getTranslateY();
+		double x2 = n.trans.getTranslateX();
+		double y2 = n.trans.getTranslateY();
+		boolean isTouching = false;
+		if(direction.equals("Up")) isTouching = false;
+		if(direction.equals("Down")) isTouching = (y2 - (y1 + ((Rectangle2D)this.getShape()).getHeight()/2) <= 0) // Shape is below top of y2
+												&& !(y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2 + ((Rectangle2D)n.getShape()).getHeight()) // Shape is NOT below the bottom of y2
+												&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 >= x2) // To the right of X2
+												&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 <= x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
+		if(direction.equals("Left")) isTouching = false;
+		if(direction.equals("Right")) isTouching = false;
+		return isTouching;
 	}
 
 	// Copies the node's transform. That's all.

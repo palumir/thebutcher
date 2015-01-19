@@ -32,7 +32,7 @@ public class Main {
 		// Create a character for testing.
 		Unit character = new Unit();
 		Player.setSelectedUnit(character);
-		Player.getSelectedUnit().instantlyMove(300,250);
+		Player.getSelectedUnit().instantlyMove(300,300);
 		Forest forest = new Forest();
 		
 		// Create the actual game frame on the computer screen.

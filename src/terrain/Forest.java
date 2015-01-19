@@ -22,8 +22,19 @@ public class Forest extends ArrayList<TerrainChunk> {
 	// Create the shitty forest.
 	public Forest() {
 		super();
-		this.add(new TerrainChunk(new Rectangle2D.Double(250, 300, 200, 200),forestGreen));
-		this.add(new TerrainChunk(new Rectangle2D.Double(250, 310, 200, 200),forestBrown));
+		TerrainChunk chunk;
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestGreen);
+		chunk.instantlyMove(250, 500);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestBrown);
+		chunk.instantlyMove(250, 510);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestGreen);
+		chunk.instantlyMove(400, 610);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestBrown);
+		chunk.instantlyMove(400, 620);
+		this.add(chunk);
 	}
 	
 }

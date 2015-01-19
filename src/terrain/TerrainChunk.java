@@ -19,8 +19,8 @@ public class TerrainChunk extends Node {
 	}
 	
 	// Is the current node "standing" on a terrain chunk?
-	public static boolean standingOnTerrain(Node n) {
-		for(int i = 0; i < terrain.size(); i++) if(Node.testShapeIntersection(terrain.get(i).getShape(),n.getShape())) return true;
+	public static boolean touchingTerrain(Node n, String direction) {
+		for(int i = 0; i < terrain.size(); i++) if(n.touching(terrain.get(i), direction)) return true;
 		return false;
 	}
 }

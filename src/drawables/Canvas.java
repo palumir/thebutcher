@@ -53,12 +53,11 @@ public class Canvas extends JComponent  {
 	
 	// Move all nodes except for...
 	public void moveAllBut(Node notMove, int x, int y) {
-		if(!TerrainChunk.standingOnTerrain(notMove)) {
-			for(int i = 0; i < nodes.size(); i++) {
-				Node n = nodes.get(i);
-				if(n!=notMove) {
-					n.instantlyMove(x,y);
-				}
+		if(TerrainChunk.touchingTerrain(notMove, "Down")) if(y<0) y = 0;
+		for(int i = 0; i < nodes.size(); i++) {
+			Node n = nodes.get(i);
+			if(n!=notMove) {
+				n.instantlyMove(x,y);
 			}
 		}
 	}
