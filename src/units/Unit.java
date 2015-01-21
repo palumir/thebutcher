@@ -1,5 +1,6 @@
 package units;
 import java.awt.Color;
+import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
@@ -7,7 +8,7 @@ import player.Player;
 import drawables.Canvas;
 import drawables.Node;
 
-public class Unit extends Node {
+public class Unit extends Node implements MouseListener{
 	
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
 	
