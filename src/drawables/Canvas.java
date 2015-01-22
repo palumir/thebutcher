@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.lang.Math;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -34,7 +35,8 @@ public class Canvas extends JComponent {
 	private Timer timer; // The timer to actually cause the animation updates.
 	private static long gameTime = 0; // The clock for the current canvas. In
 										// milliseconds.
-	private boolean swingStarted = false;
+	private boolean mouseDown = false;
+	private boolean swinging = false;
 
 	// Initialize the game canvas.
 	public static void initCanvas() {
@@ -122,11 +124,17 @@ public class Canvas extends JComponent {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// if (e.getButton() == MouseEvent.BUTTON1) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					mouseDown = true;
+					initThread();
+				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					mouseDown = false;
+				}
 			}
 
 			@Override
@@ -143,8 +151,9 @@ public class Canvas extends JComponent {
 
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
-				swingRecognize();
-				boolean swingStarted = true;
+				// swingRecognize();
+				// boolean swingStarted = true;
+
 				// System.out.println("Dragging");
 				// TODO Auto-generated method stub
 
@@ -157,6 +166,48 @@ public class Canvas extends JComponent {
 			}
 
 		});
+	}
+
+	private synchronized boolean checkAndMark() {
+		if (swinging)
+			return false;
+		swinging = true;
+		return true;
+	}
+
+	private void initThread() {
+		if (checkAndMark()) {
+			new Thread() {
+				public void run() {
+					do {
+
+						Point mousePosition = MouseInfo.getPointerInfo()
+								.getLocation();
+
+						int i = 0;
+
+						long curTime = Main.getGameTime();
+
+						while (i < 100 && mouseDown) {
+
+							long nextTime = Main.getGameTime();
+
+							if (nextTime - curTime > 500) {
+
+								System.out.println((1 / 2.0)
+										* Math.sin(i - (Math.PI / 2.0))
+										+ (1 / 2.0));
+								i++;
+								// System.out.println(mousePosition);
+								swingRecognize(mousePosition.x, mousePosition.y);
+								curTime = Main.getGameTime();
+							}
+						}
+					} while (mouseDown);
+					swinging = false;
+				}
+			}.start();
+		}
 	}
 
 	// Paint each node. Easy.
@@ -211,66 +262,59 @@ public class Canvas extends JComponent {
 		Canvas.gameCanvas = gameCanvas;
 	}
 
-	public void swingRecognize() {
+	public void swingRecognize(int initialXPos, int initialYPos) {
 
-		long initTime = Main.getGameTime();
-		int swingTime = 500; // Ms
-		Point pos1 = MouseInfo.getPointerInfo().getLocation();
-		int thrustXThreshold = 20;
+		Point pos1 = new Point(initialXPos, initialYPos);
+		int thrustXThreshold = 15;
 		int chopXThreshold = 15;
-		int chopYThreshold = -15;
+		int chopYThreshold = 30;
 		int slashXThreshold = 15;
-		int slashYThreshold = 15;
+		int slashYThreshold = -30;
 
-		long curTime = Main.getGameTime();
+		Point pos2 = MouseInfo.getPointerInfo().getLocation();
 
-		System.out.println(swingStarted);
-		
-		if (swingStarted = false) {
-		System.out.println("teeee");
-		
-			if (curTime - initTime >= swingTime) {
+		// System.out.println(pos2);
 
-				Point pos2 = MouseInfo.getPointerInfo().getLocation();
+		int absXChange = pos2.x - pos1.x;
+		int absYChange = pos2.y - pos1.x;
 
-				int absXChange = pos2.x - pos1.x;
-				int absYChange = pos2.y - pos1.x;
+		int percentXChange = (int) ((absXChange * 1.0)
+				/ (Main.getScreenWidth() * 1.0) * 100.0);
+		int percentYChange = (int) (((absYChange * 1.0)
+				/ (Main.getScreenHeight() * 1.0) * 100.0) * -1.0);
 
-				int percentXChange = absXChange / Main.getScreenWidth();
-				int percentYChange = absYChange / Main.getScreenHeight();
+		// System.out.println(percentXChange);
+		// System.out.println(percentYChange);
 
-				if (percentXChange >= thrustXThreshold
-						&& percentYChange > chopYThreshold
-						&& percentYChange < slashYThreshold) {
+		if (percentXChange >= thrustXThreshold
+				&& percentYChange < chopYThreshold
+				&& percentYChange > slashYThreshold) {
 
-					// thrust
-					System.out.println("Thrust");
-					initTime = Main.getGameTime();
-				}
+			// thrust
+			System.out.println("Thrust");
+			mouseDown = false;
+		}
 
-				else if (percentXChange >= chopXThreshold
-						&& percentYChange <= chopYThreshold) {
+		else if (percentXChange >= chopXThreshold
+				&& percentYChange >= chopYThreshold) {
 
-					// chop
-					System.out.println("Chop");
-					initTime = Main.getGameTime();
-				}
+			// chop
+			System.out.println("Chop");
+			mouseDown = false;
+		}
 
-				else if (percentXChange >= slashXThreshold
-						&& percentYChange >= slashYThreshold) {
+		else if (percentXChange >= slashXThreshold
+				&& percentYChange <= slashYThreshold) {
 
-					// slash
-					System.out.println("Slash");
-					initTime = Main.getGameTime();
-				}
+			// slash
+			System.out.println("Slash");
+			mouseDown = false;
+		}
 
-				else {
+		else {
 
-					// no action
-					System.out.println("Fail");
-					initTime = Main.getGameTime();
-				}
-			}
+			// no action
+			System.out.println("Fail");
 		}
 	}
 }
