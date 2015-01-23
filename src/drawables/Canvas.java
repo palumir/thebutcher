@@ -1,5 +1,7 @@
 package drawables;
 
+import items.Weapon;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,6 +37,8 @@ public class Canvas extends JComponent {
 	private Timer timer; // The timer to actually cause the animation updates.
 	private static long gameTime = 0; // The clock for the current canvas. In
 										// milliseconds.
+	
+//	private Weapon currentlyEquipped; This might be information obtained from the Player instead.
 	private boolean mouseDown = false;
 	private boolean swinging = false;
 
@@ -266,10 +270,10 @@ public class Canvas extends JComponent {
 
 		Point pos1 = new Point(initialXPos, initialYPos);
 		int thrustXThreshold = 15;
-		int chopXThreshold = 15;
-		int chopYThreshold = 30;
 		int slashXThreshold = 15;
-		int slashYThreshold = -30;
+		int slashYThreshold = 30;
+		int chopXThreshold = 15;
+		int chopYThreshold = -30;
 
 		Point pos2 = MouseInfo.getPointerInfo().getLocation();
 
@@ -287,27 +291,27 @@ public class Canvas extends JComponent {
 		// System.out.println(percentYChange);
 
 		if (percentXChange >= thrustXThreshold
-				&& percentYChange < chopYThreshold
-				&& percentYChange > slashYThreshold) {
+				&& percentYChange < slashYThreshold
+				&& percentYChange > chopYThreshold) {
 
 			// thrust
 			System.out.println("Thrust");
 			mouseDown = false;
 		}
 
-		else if (percentXChange >= chopXThreshold
-				&& percentYChange >= chopYThreshold) {
+		else if (percentXChange >= slashXThreshold
+				&& percentYChange >= slashYThreshold) {
 
 			// chop
-			System.out.println("Chop");
+			System.out.println("Slash");
 			mouseDown = false;
 		}
 
-		else if (percentXChange >= slashXThreshold
-				&& percentYChange <= slashYThreshold) {
+		else if (percentXChange >= chopXThreshold
+				&& percentYChange <= chopYThreshold) {
 
 			// slash
-			System.out.println("Slash");
+			System.out.println("Chop");
 			mouseDown = false;
 		}
 
