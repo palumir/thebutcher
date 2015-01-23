@@ -4,13 +4,18 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import player.Player;
 import drawables.Canvas;
 import drawables.Node;
 
 public class Unit extends Node implements MouseListener{
 	
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
+	
+	// Movement/Physics
+	protected boolean movingLeft = false;
+	protected boolean movingRight = false;
+	protected int moveSpeed = 3;
+	protected boolean jumping = false;
 	
 	public Unit() {
 		// Default unit
@@ -19,10 +24,12 @@ public class Unit extends Node implements MouseListener{
 	}
 	
 	public static void updateUnits() {
-		playerGravity();
+		Player.playerGravity();
+		Player.movePlayer();
 	}
 	
-	public static void playerGravity() {
-		Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), 0, -2);
+	public void setMoveSpeed() {
+		
 	}
+
 }

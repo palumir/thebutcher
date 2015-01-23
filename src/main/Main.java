@@ -6,8 +6,8 @@ import java.awt.geom.GeneralPath;
 
 import javax.swing.JFrame;
 
-import player.Player;
 import terrain.Forest;
+import units.Player;
 import units.Unit;
 import drawables.Canvas;
 import drawables.Node;
@@ -16,9 +16,6 @@ import drawables.Node;
  * The main class to run the program.
  */
 public class Main {
-	
-	private static int width = 600;
-	private static int height = 600;
 	
 	// Fucking remove this shit
 	public static final GeneralPath heart = Main.makeHeart();
@@ -35,15 +32,14 @@ public class Main {
 		initGame();
 		
 		// Create a character for testing.
-		Unit character = new Unit();
-		Player.setSelectedUnit(character);
-		Player.getSelectedUnit().instantlyMove(300,300);
+		Player player = new Player();
+		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 		Forest forest = new Forest();
 		
 		// Create the actual game frame on the computer screen.
 		JFrame frame = new JFrame("The Butcher");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(width, height);
+		frame.setSize(Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 		frame.setContentPane(Canvas.getGameCanvas());
 		frame.setVisible(true);
 	}
@@ -66,16 +62,6 @@ public class Main {
 	public static long getGameTime() {
 		
 		return System.currentTimeMillis(); // To-do: Return game time instead of system time.
-	}
-	
-	public static int getScreenWidth() {
-		
-		return width;
-	}
-	
-	public static int getScreenHeight() {
-		
-		return height;
 	}
 }
 

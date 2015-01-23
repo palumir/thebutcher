@@ -14,12 +14,17 @@ import java.util.ArrayList;
 // One drawable object.
 public class Node implements MouseMotionListener, MouseListener {
 
+	// Positioning
 	public AffineTransform trans = new AffineTransform();
+	
+	// Cosmetics
 	private Shape shape;
+	private Color color = Color.RED;
+	
+	// Node specific stuff
 	ArrayList<Node> children = new ArrayList<Node>();
 	public Node parent = null;
 	private String id;
-	private Color color = Color.RED;
 
 	// Create a node. But where?
 	public Node(Shape s, Color color) {
@@ -81,12 +86,17 @@ public class Node implements MouseMotionListener, MouseListener {
 	public void transform(AffineTransform t) {
 		this.trans.concatenate(t);
 	}
+	
+	// Return a new translated node.
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
 		// Remember the transform being used when called
 		AffineTransform t = g2.getTransform();
-		g2.transform(this.getFullTransform());
+		// Maintain aspect ratio.
+		AffineTransform currentTransform = this.getFullTransform();
+		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 		g2.setColor(this.color);
 		g2.fill(this.getShape());
 		

@@ -1,6 +1,7 @@
 package drawables;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -8,33 +9,41 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.lang.Math;
 
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.KeyStroke;
 import javax.swing.Timer;
-import javax.swing.event.MouseInputListener;
 
 import main.Main;
-import player.Player;
 import terrain.TerrainChunk;
+import units.Player;
 import units.Unit;
 
 // The actual canvas the game is drawn on.
 public class Canvas extends JComponent {
 
+	// List of all nodes to be drawn (pretty much everything)
 	private ArrayList<Node> nodes = new ArrayList<Node>();
+	
+	// The game canvas. Only one.
 	private static Canvas gameCanvas;
-	private static int FPS = 20; // How often we update the animation.
+	private static int FPS = 60; // How often we update the animation.
 	private Timer timer; // The timer to actually cause the animation updates.
 	private static long gameTime = 0; // The clock for the current canvas. In
 										// milliseconds.
+	// Screen information
+	private static int defaultWidth = 600;
+	private static int defaultHeight = 600;
+	
+	// Combat physics/Mouse Movements
 	private boolean mouseDown = false;
 	private boolean swinging = false;
 
@@ -81,41 +90,31 @@ public class Canvas extends JComponent {
 		timer = new Timer(20, taskPerformer);
 		timer.setInitialDelay(190);
 		timer.start();
+		this.setFocusable(true);
+		requestFocus();
+		
+		this.addComponentListener(new ComponentAdapter() {
+	        public void componentResized(ComponentEvent evt) {
+	            Component c = (Component)evt.getSource();
+	            repaint();
+	        }
+		});
+		this.addKeyListener(new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent k) {
+				Player.keyPressed(k);
+			}
 
-		// Deal with key presses for the game.
-		this.getInputMap().put(KeyStroke.getKeyStroke("UP"), "up");
-		this.getActionMap().put("up", new AbstractAction() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Climb/Enter door?
+			public void keyReleased(KeyEvent k) {
+				Player.keyReleased(k);
 			}
-		});
-		this.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "down");
-		this.getActionMap().put("down", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Crouch?
-			}
-		});
-		this.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "left");
-		this.getActionMap().put("left", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Move left.
-				Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), 3,
-						0);
-			}
-		});
-		this.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "right");
-		this.getActionMap().put("right", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Move right.
-				Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), -3,
-						0);
-			}
-		});
 
+			@Override
+			public void keyTyped(KeyEvent k) {
+				// Do nothing. We don't care yet.
+			}
+		});
 		this.addMouseListener(new MouseListener() {
 
 			@Override
@@ -279,9 +278,9 @@ public class Canvas extends JComponent {
 		int absYChange = pos2.y - pos1.x;
 
 		int percentXChange = (int) ((absXChange * 1.0)
-				/ (Main.getScreenWidth() * 1.0) * 100.0);
+				/ (getWidth() * 1.0) * 100.0);
 		int percentYChange = (int) (((absYChange * 1.0)
-				/ (Main.getScreenHeight() * 1.0) * 100.0) * -1.0);
+				/ (getHeight() * 1.0) * 100.0) * -1.0);
 
 		// System.out.println(percentXChange);
 		// System.out.println(percentYChange);
@@ -317,4 +316,21 @@ public class Canvas extends JComponent {
 			System.out.println("Fail");
 		}
 	}
+
+	public static int getDefaultWidth() {
+		return defaultWidth;
+	}
+
+	public static void setDefaultWidth(int defaultWidth) {
+		Canvas.defaultWidth = defaultWidth;
+	}
+
+	public static int getDefaultHeight() {
+		return defaultHeight;
+	}
+
+	public static void setDefaultHeight(int defaultHeight) {
+		Canvas.defaultHeight = defaultHeight;
+	}
+
 }
