@@ -103,19 +103,34 @@ public class Node implements MouseMotionListener, MouseListener {
 	}
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
-	public boolean touching(Node n, String direction) {
+	public boolean touching(Node n, String direction, float x, float y) {
 		double x1 = this.trans.getTranslateX();
 		double y1 = this.trans.getTranslateY();
 		double x2 = n.trans.getTranslateX();
 		double y2 = n.trans.getTranslateY();
 		boolean isTouching = false;
 		if(direction.equals("Up")) isTouching = false;
-		if(direction.equals("Down")) isTouching = (y2 - (y1 + ((Rectangle2D)this.getShape()).getHeight()/2) <= 0) // Shape is below top of y2
-												&& !(y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2 + ((Rectangle2D)n.getShape()).getHeight()) // Shape is NOT below the bottom of y2
-												&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 >= x2) // To the right of X2
-												&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 <= x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
-		if(direction.equals("Left")) isTouching = false;
-		if(direction.equals("Right")) isTouching = false;
+		if(direction.equals("Down")) { 
+			isTouching = y2 <= y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - y // Shape is below top of y2
+					&& !(y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2 + ((Rectangle2D)n.getShape()).getHeight()) // Shape is NOT below the bottom of y2
+					&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 > x2) // To the right of X2
+					&& (x1 - ((Rectangle2D)this.getShape()).getWidth()/2 < x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
+			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+		}
+		if(direction.equals("Left")) { 
+			isTouching = y1 > y2
+					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
+					&& x1 - ((Rectangle2D)this.getShape()).getWidth()/2 - x < x2 + ((Rectangle2D)n.getShape()).getWidth()
+					&& !(x1 + ((Rectangle2D)this.getShape()).getWidth()/2 < x2); 
+			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+		}
+		if(direction.equals("Right")) { 
+			isTouching =  y1 > y2
+					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
+					&& x1 + ((Rectangle2D)this.getShape()).getWidth()/2 - x > x2
+					&& !(x1 + ((Rectangle2D)this.getShape()).getWidth()/2 > x2 + ((Rectangle2D)n.getShape()).getWidth()); 
+			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+		}
 		return isTouching;
 	}
 
@@ -193,7 +208,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	}
 	
 	// Node movement basics
-	public void instantlyMove(int x, int y) {
+	public void instantlyMove(float x, float y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
 	}
 

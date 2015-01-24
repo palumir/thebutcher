@@ -11,6 +11,11 @@ public class Unit extends Node {
 	
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
 	
+	// Fall speed of the unit (this is for gravity, obviously)
+	private static float defaultFallSpeed = -3;
+	private static float fallSpeedCap = -10;
+	private float fallSpeed = -1;
+	
 	public Unit() {
 		// Default unit
 		super(new Rectangle2D.Double(-10, -10, 20, 20),Color.RED);
@@ -22,6 +27,26 @@ public class Unit extends Node {
 	}
 	
 	public static void playerGravity() {
-		Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), 0, -2);
+		// Accelerate
+		if(Player.getSelectedUnit().getFallSpeed() > fallSpeedCap) Player.getSelectedUnit().setFallSpeed(Player.getSelectedUnit().getFallSpeed() - 0.05f);
+		
+		// Move everything up!
+		Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), 0, Player.getSelectedUnit().getFallSpeed());
+	}
+
+	public float getFallSpeed() {
+		return fallSpeed;
+	}
+
+	public void setFallSpeed(float fallSpeed) {
+		this.fallSpeed = fallSpeed;
+	}
+
+	public static float getDefaultFallSpeed() {
+		return defaultFallSpeed;
+	}
+
+	public static void setDefaultFallSpeed(float defaultFallSpeed) {
+		Unit.defaultFallSpeed = defaultFallSpeed;
 	}
 }

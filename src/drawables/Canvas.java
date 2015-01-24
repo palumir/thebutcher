@@ -56,8 +56,32 @@ public class Canvas extends JComponent  {
 	}
 	
 	// Move all nodes except for...
-	public void moveAllBut(Node notMove, int x, int y) {
-		if(TerrainChunk.touchingTerrain(notMove, "Down")) if(y<0) y = 0;
+	public void moveAllButWithNoClip(Node notMove, float x, float y) {
+		for(int i = 0; i < nodes.size(); i++) {
+			Node n = nodes.get(i);
+			if(n!=notMove) {
+				n.instantlyMove(x,y);
+			}
+		}
+	}
+	
+	// Move all nodes except for...
+	public void moveAllBut(Node notMove, float x, float y) {
+		
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(notMove, "Down", x, y)) if(y<0) { 
+			y = 0;
+			((Unit)notMove).setFallSpeed(Unit.getDefaultFallSpeed());
+		}
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(notMove, "Left", x, y)) if(x>0) { 
+			x = 0;
+		}
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(notMove, "Right", x, y)) if(x<0) { 
+			x = 0;
+		}
+		
 		for(int i = 0; i < nodes.size(); i++) {
 			Node n = nodes.get(i);
 			if(n!=notMove) {
@@ -95,7 +119,7 @@ public class Canvas extends JComponent  {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	// Move left.
-	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),3, 0);
+	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),5, 0);
 	            }
 	    });
 		this.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "right");
@@ -103,7 +127,7 @@ public class Canvas extends JComponent  {
 	            @Override
 	            public void actionPerformed(ActionEvent e) {
 	            	// Move right.
-	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),-3, 0);
+	            	Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(),-5, 0);
 	            }
 	    });
 	}

@@ -35,6 +35,18 @@ public class Forest extends ArrayList<TerrainChunk> {
 		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestBrown);
 		chunk.instantlyMove(400, 620);
 		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestGreen);
+		chunk.instantlyMove(100, 610);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestBrown);
+		chunk.instantlyMove(100, 620);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestGreen);
+		chunk.instantlyMove(600, 610);
+		this.add(chunk);
+		chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, 200, 200),forestBrown);
+		chunk.instantlyMove(600, 620);
+		this.add(chunk);
 	}
 	
 }
