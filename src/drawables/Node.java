@@ -12,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import terrain.TerrainChunk;
+import units.Player;
 
 // One drawable object.
 public class Node implements MouseMotionListener, MouseListener {
@@ -115,11 +116,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	}
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
-	public boolean touching(Node n, String direction, float x, float y) {
-		
-		// If it's passable terrain we can't touch it.
-		if(n instanceof TerrainChunk && ((TerrainChunk)n).isPassable()) return false;
-		
+	public boolean touching(Node n, String direction, float x, float y) {	
 		// Check what direction we're touching things from
 		double x1 = this.trans.getTranslateX();
 		double y1 = this.trans.getTranslateY();
@@ -132,7 +129,9 @@ public class Node implements MouseMotionListener, MouseListener {
 					&& !(y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2 + ((Rectangle2D)n.getShape()).getHeight()) // Shape is NOT below the bottom of y2
 					&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 > x2) // To the right of X2
 					&& (x1 - ((Rectangle2D)this.getShape()).getWidth()/2 < x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
-			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+			if(isTouching) { 
+				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+			}
 		}
 		if(direction.equals("Left")) { 
 			isTouching = y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2

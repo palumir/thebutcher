@@ -20,7 +20,7 @@ public class Unit extends Node implements MouseListener{
 	protected boolean movingLeft = false;
 	protected boolean movingRight = false;
 	protected int moveSpeed = 3;
-	protected boolean jumping = false;
+	private boolean jumping = false;
 	
 	public Unit() {
 		// Default unit
@@ -47,5 +47,13 @@ public class Unit extends Node implements MouseListener{
 
 	public static void setDefaultFallSpeed(float defaultFallSpeed) {
 		Unit.defaultFallSpeed = defaultFallSpeed;
+	}
+
+	public boolean isJumping() {
+		return jumping;
+	}
+
+	public void setJumping(boolean jumping) {
+		this.jumping = jumping;
 	}
 }

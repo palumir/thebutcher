@@ -2,7 +2,7 @@ package units;
 
 import java.awt.event.KeyEvent;
 
-import main.Main;
+import terrain.TerrainChunk;
 import drawables.Canvas;
 
 
@@ -20,7 +20,7 @@ public class Player extends Unit  {
 
 	public static void playerGravity() {
 		// Accelerate
-		if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.05f);
+		if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
 		
 		// Move everything up!
 		Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
@@ -39,18 +39,25 @@ public class Player extends Unit  {
 		movingLeft = b;
 	}
 	
+	public void jump() {
+		
+		if(TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap)) { 
+			setJumping(true);
+			setFallSpeed(5);
+		}
+	}
+	
 	public static void keyPressed(KeyEvent k) {
 		// Deal with key presses for the player
 		if(k.getKeyCode() == KeyEvent.VK_LEFT) Player.getCurrentPlayer().moveLeft(true);
 		if(k.getKeyCode() == KeyEvent.VK_RIGHT) Player.getCurrentPlayer().moveRight(true);
-		if(k.getKeyCode() == KeyEvent.VK_UP); Player.getCurrentPlayer().jump(true);
+		if(k.getKeyCode() == KeyEvent.VK_UP) Player.getCurrentPlayer().jump();
 	}
 	
 	public static void keyReleased(KeyEvent k) {
 		// Deal with key release for the player
 		if(k.getKeyCode() == KeyEvent.VK_LEFT) Player.getCurrentPlayer().moveLeft(false);
 		if(k.getKeyCode() == KeyEvent.VK_RIGHT) Player.getCurrentPlayer().moveRight(false);
-		if(k.getKeyCode() == KeyEvent.VK_UP) Player.getCurrentPlayer().jump(false);
 	}
 	
 	public static Player getCurrentPlayer() {

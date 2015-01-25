@@ -23,7 +23,7 @@ public class TerrainChunk extends Node {
 	
 	// Is the current node "standing" on a terrain chunk?
 	public static boolean touchingTerrain(Node n, String direction, float x, float y) {
-		for(int i = 0; i < terrain.size(); i++) if(n.touching(terrain.get(i), direction, x, y)) return true;
+		for(int i = 0; i < terrain.size(); i++) if(!terrain.get(i).passable && n.touching(terrain.get(i), direction, x, y)) return true;
 		return false;
 	}
 	

@@ -141,6 +141,7 @@ public class Canvas extends JComponent {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				System.out.println(gameCanvas.getWidth());
 			}
 
 			@Override

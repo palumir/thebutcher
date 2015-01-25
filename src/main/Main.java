@@ -1,16 +1,13 @@
 package main;
 
-import java.awt.Color;
-import java.awt.Frame;
 import java.awt.geom.GeneralPath;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
 import terrain.Forest;
 import units.Player;
-import units.Unit;
 import drawables.Canvas;
-import drawables.Node;
 
 /**
  * The main class to run the program.
@@ -19,6 +16,9 @@ public class Main {
 	
 	// Fucking remove this shit
 	public static final GeneralPath heart = Main.makeHeart();
+	
+	// Global stuff we'll need for everything. Has to be done.
+	public static Random r = new Random();
 	
 	// Initialize the game. Stuff that MUST be done.
 	public static void initGame() {
