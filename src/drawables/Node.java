@@ -11,15 +11,22 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import terrain.TerrainChunk;
+
 // One drawable object.
 public class Node implements MouseMotionListener, MouseListener {
 
+	// Positioning
 	public AffineTransform trans = new AffineTransform();
+	
+	// Cosmetics
 	private Shape shape;
+	private Color color = Color.RED;
+	
+	// Node specific stuff
 	ArrayList<Node> children = new ArrayList<Node>();
 	public Node parent = null;
 	private String id;
-	private Color color = Color.RED;
 
 	// Create a node. But where?
 	public Node(Shape s, Color color) {
@@ -81,12 +88,17 @@ public class Node implements MouseMotionListener, MouseListener {
 	public void transform(AffineTransform t) {
 		this.trans.concatenate(t);
 	}
+	
+	// Return a new translated node.
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
 		// Remember the transform being used when called
 		AffineTransform t = g2.getTransform();
-		g2.transform(this.getFullTransform());
+		// Maintain aspect ratio.
+		AffineTransform currentTransform = this.getFullTransform();
+		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 		g2.setColor(this.color);
 		g2.fill(this.getShape());
 		
@@ -104,6 +116,11 @@ public class Node implements MouseMotionListener, MouseListener {
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
 	public boolean touching(Node n, String direction, float x, float y) {
+		
+		// If it's passable terrain we can't touch it.
+		if(n instanceof TerrainChunk && ((TerrainChunk)n).isPassable()) return false;
+		
+		// Check what direction we're touching things from
 		double x1 = this.trans.getTranslateX();
 		double y1 = this.trans.getTranslateY();
 		double x2 = n.trans.getTranslateX();
@@ -118,17 +135,17 @@ public class Node implements MouseMotionListener, MouseListener {
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		if(direction.equals("Left")) { 
-			isTouching = y1 > y2
+			isTouching = y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2
 					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
 					&& x1 - ((Rectangle2D)this.getShape()).getWidth()/2 - x < x2 + ((Rectangle2D)n.getShape()).getWidth()
-					&& !(x1 + ((Rectangle2D)this.getShape()).getWidth()/2 < x2); 
+					&& !(x1 < x2); 
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		if(direction.equals("Right")) { 
-			isTouching =  y1 > y2
+			isTouching =  y1 + ((Rectangle2D)this.getShape()).getHeight()/2  > y2
 					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
 					&& x1 + ((Rectangle2D)this.getShape()).getWidth()/2 - x > x2
-					&& !(x1 + ((Rectangle2D)this.getShape()).getWidth()/2 > x2 + ((Rectangle2D)n.getShape()).getWidth()); 
+					&& !(x1 > x2);
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		return isTouching;

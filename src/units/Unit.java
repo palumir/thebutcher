@@ -1,20 +1,26 @@
 package units;
 import java.awt.Color;
+import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import player.Player;
 import drawables.Canvas;
 import drawables.Node;
 
-public class Unit extends Node {
+public class Unit extends Node implements MouseListener{
 	
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
 	
 	// Fall speed of the unit (this is for gravity, obviously)
-	private static float defaultFallSpeed = -3;
-	private static float fallSpeedCap = -10;
+	private static float defaultFallSpeed = -1;
+	protected static float fallSpeedCap = -3;
 	private float fallSpeed = -1;
+	
+	// Movement/Physics
+	protected boolean movingLeft = false;
+	protected boolean movingRight = false;
+	protected int moveSpeed = 3;
+	protected boolean jumping = false;
 	
 	public Unit() {
 		// Default unit
@@ -23,15 +29,8 @@ public class Unit extends Node {
 	}
 	
 	public static void updateUnits() {
-		playerGravity();
-	}
-	
-	public static void playerGravity() {
-		// Accelerate
-		if(Player.getSelectedUnit().getFallSpeed() > fallSpeedCap) Player.getSelectedUnit().setFallSpeed(Player.getSelectedUnit().getFallSpeed() - 0.05f);
-		
-		// Move everything up!
-		Canvas.getGameCanvas().moveAllBut(Player.getSelectedUnit(), 0, Player.getSelectedUnit().getFallSpeed());
+		Player.playerGravity();
+		Player.movePlayer();
 	}
 
 	public float getFallSpeed() {
