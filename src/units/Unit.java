@@ -1,13 +1,17 @@
 package units;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.MouseListener;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
-import drawables.Canvas;
+import javax.imageio.ImageIO;
+
 import drawables.Node;
 
-public class Unit extends Node implements MouseListener{
+public class Unit extends Node implements MouseListener {
 	
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
 	
@@ -22,9 +26,12 @@ public class Unit extends Node implements MouseListener{
 	protected int moveSpeed = 3;
 	private boolean jumping = false;
 	
-	public Unit() {
+	// Cosmetics
+	
+	public Unit(int width, int height) {
 		// Default unit
-		super(new Rectangle2D.Double(-10, -10, 20, 20),Color.RED);
+		super(new Rectangle2D.Double((-1)*width/2, (-1)*height/2, width, height),Color.RED);
+		this.shapeHidden = true;
 		units.add(this);
 	}
 	

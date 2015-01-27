@@ -22,6 +22,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	
 	// Cosmetics
 	private Shape shape;
+	protected boolean shapeHidden = false;
 	private Color color = Color.RED;
 	
 	// Node specific stuff
@@ -94,25 +95,27 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
-		// Remember the transform being used when called
-		AffineTransform t = g2.getTransform();
-		// Maintain aspect ratio.
-		AffineTransform currentTransform = this.getFullTransform();
-		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-		g2.setColor(this.color);
-		g2.fill(this.getShape());
-		
-		// Restore the transform.
-		g2.setTransform(t);
-
-		// Paint each child
-		for (Node c : this.children) {
-			c.paintNode(g2);
+		if(!shapeHidden) {
+			// Remember the transform being used when called
+			AffineTransform t = g2.getTransform();
+			// Maintain aspect ratio.
+			AffineTransform currentTransform = this.getFullTransform();
+			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+			g2.setColor(this.color);
+			g2.fill(this.getShape());
+			
+			// Restore the transform.
+			g2.setTransform(t);
+	
+			// Paint each child
+			for (Node c : this.children) {
+				c.paintNode(g2);
+			}
+	
+			// Restore the transform.
+			g2.setTransform(t);
 		}
-
-		// Restore the transform.
-		g2.setTransform(t);
 	}
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
@@ -134,15 +137,15 @@ public class Node implements MouseMotionListener, MouseListener {
 			}
 		}
 		if(direction.equals("Left")) { 
-			isTouching = y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2
+			isTouching = y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - 1 > y2
 					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
 					&& x1 - ((Rectangle2D)this.getShape()).getWidth()/2 - x < x2 + ((Rectangle2D)n.getShape()).getWidth()
 					&& !(x1 < x2); 
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		if(direction.equals("Right")) { 
-			isTouching =  y1 + ((Rectangle2D)this.getShape()).getHeight()/2  > y2
-					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
+			isTouching =  y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - 1  > y2
+					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight() 
 					&& x1 + ((Rectangle2D)this.getShape()).getWidth()/2 - x > x2
 					&& !(x1 > x2);
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);

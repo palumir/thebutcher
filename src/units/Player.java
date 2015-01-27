@@ -1,9 +1,16 @@
 package units;
 
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+import javax.imageio.ImageIO;
 
 import terrain.TerrainChunk;
 import drawables.Canvas;
+import drawables.Node;
 
 
 // Global player data.
@@ -11,11 +18,56 @@ public class Player extends Unit  {
 	
 	private static Player currentPlayer;	
 	
+	// Cosmetics
+	BufferedImage[] sprites;
+	final static int squareWidth = 64; // Width of the square we cut out of the spritesheet
+	final static int realWidth = 32; // Width of the character. The square will be much larger.
+	final static int height = 64; // Height. Doesn't change.
+	final static int rows = 20;
+	final static int cols = 13;
+	
 	// Note: game only current supports one player. If we want multiple, we will need to change
 	// movement options and make the currentPlayer a list.
 	public Player() {
-		super();
+		super(realWidth,height);
 		currentPlayer = this;
+		initPlayer();
+	}
+	
+	private void initPlayer() {
+		// Load the player spritesheet.
+		try {
+			BufferedImage bigImg = ImageIO.read(new File("src/images/player/test_character.png"));
+			// The above line throws an checked IOException which must be caught
+			sprites = new BufferedImage[rows*cols];
+		
+			for (int i = 0; i < rows; i++)
+			{
+			    for (int j = 0; j < cols; j++)
+			    {
+			        sprites[(i * cols) + j] = bigImg.getSubimage(
+			            j * squareWidth,
+			            i * height,
+			            squareWidth,
+			            height
+			        );
+			    }
+			}
+		}
+		catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	public void paintNode(Graphics2D g2) {
+		// Remember the transform being used when called
+		AffineTransform t = g2.getTransform();
+		// Maintain aspect ratio.
+		AffineTransform currentTransform = this.getFullTransform();
+		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		g2.drawImage(sprites[3*cols + 0],-squareWidth/2,-height/2,null);
+
+		// Restore the transform.
+		g2.setTransform(t);
 	}
 
 	public static void playerGravity() {
