@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import terrain.TerrainChunk;
 import drawables.Canvas;
 import drawables.Node;
+import drawables.Sprite;
 
 
 // Global player data.
@@ -35,26 +36,7 @@ public class Player extends Unit  {
 	}
 	
 	private void initPlayer() {
-		// Load the player spritesheet.
-		try {
-			BufferedImage bigImg = ImageIO.read(new File("src/images/player/test_character.png"));
-			// The above line throws an checked IOException which must be caught
-			sprites = new BufferedImage[rows*cols];
-		
-			for (int i = 0; i < rows; i++)
-			{
-			    for (int j = 0; j < cols; j++)
-			    {
-			        sprites[(i * cols) + j] = bigImg.getSubimage(
-			            j * squareWidth,
-			            i * height,
-			            squareWidth,
-			            height
-			        );
-			    }
-			}
-		}
-		catch(Exception e) { e.printStackTrace(); }
+		sprites = Sprite.loadSpriteSheet("src/images/player/test_character.png",64,32,64,20,13);
 	}
 	
 	public void paintNode(Graphics2D g2) {
