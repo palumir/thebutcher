@@ -17,7 +17,7 @@ public class Unit extends Node implements MouseListener {
 	
 	// Fall speed of the unit (this is for gravity, obviously)
 	private static float defaultFallSpeed = -1;
-	protected static float fallSpeedCap = -3;
+	protected static float fallSpeedCap = -5;
 	private float fallSpeed = -1;
 	
 	// Movement/Physics
@@ -36,8 +36,7 @@ public class Unit extends Node implements MouseListener {
 	}
 	
 	public static void updateUnits() {
-		Player.playerGravity();
-		Player.movePlayer();
+		Player.updatePlayer();
 	}
 
 	public float getFallSpeed() {

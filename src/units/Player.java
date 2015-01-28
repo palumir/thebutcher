@@ -3,14 +3,11 @@ package units;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 
 import terrain.TerrainChunk;
 import drawables.Canvas;
-import drawables.Node;
+import drawables.SpriteAnimation;
+import drawables.SpriteSheet;
 
 
 // Global player data.
@@ -19,57 +16,102 @@ public class Player extends Unit  {
 	private static Player currentPlayer;	
 	
 	// Cosmetics
-	BufferedImage[] sprites;
-	final static int squareWidth = 64; // Width of the square we cut out of the spritesheet
-	final static int realWidth = 32; // Width of the character. The square will be much larger.
-	final static int height = 64; // Height. Doesn't change.
-	final static int rows = 20;
-	final static int cols = 13;
+	private SpriteSheet spriteSheet;
 	
-	// Note: game only current supports one player. If we want multiple, we will need to change
-	// movement options and make the currentPlayer a list.
+	// States
+	private boolean facingLeft = false; // Start facing right
+	
+	// Current animation
+	private SpriteAnimation currAnimation;
+	
+	// Hard define our player animations
+	private SpriteAnimation idleRight;
+	private SpriteAnimation idleLeft;
+	private SpriteAnimation jumpLeft;
+	private SpriteAnimation walkingRight;
+	private SpriteAnimation walkingLeft;
+	private SpriteAnimation jumpRight;
+	
+	// Player constructor
 	public Player() {
-		super(realWidth,height);
+		super(32,64); // Collision width/height.
 		currentPlayer = this;
-		initPlayer();
+		loadAnimations();
 	}
 	
-	private void initPlayer() {
-		// Load the player spritesheet.
-		try {
-			BufferedImage bigImg = ImageIO.read(new File("src/images/player/test_character.png"));
-			// The above line throws an checked IOException which must be caught
-			sprites = new BufferedImage[rows*cols];
-		
-			for (int i = 0; i < rows; i++)
-			{
-			    for (int j = 0; j < cols; j++)
-			    {
-			        sprites[(i * cols) + j] = bigImg.getSubimage(
-			            j * squareWidth,
-			            i * height,
-			            squareWidth,
-			            height
-			        );
-			    }
-			}
-		}
-		catch(Exception e) { e.printStackTrace(); }
+	// Load all of the player's animations
+	void loadAnimations() {
+		spriteSheet = new SpriteSheet("src/images/player/test_character.png",
+				64, 32, 64, 64, 20, 13);
+		walkingRight = new SpriteAnimation(spriteSheet, new int[] {
+				11 * spriteSheet.getColsInSheet(),
+				11 * spriteSheet.getColsInSheet() + 1,
+				11 * spriteSheet.getColsInSheet() + 2,
+				11 * spriteSheet.getColsInSheet() + 3,
+				11 * spriteSheet.getColsInSheet() + 4,
+				11 * spriteSheet.getColsInSheet() + 5,
+				11 * spriteSheet.getColsInSheet() + 6}, 500);
+		walkingLeft = new SpriteAnimation(spriteSheet, new int[] {
+				9 * spriteSheet.getColsInSheet(),
+				9 * spriteSheet.getColsInSheet() + 1,
+				9 * spriteSheet.getColsInSheet() + 2,
+				9 * spriteSheet.getColsInSheet() + 3,
+				9 * spriteSheet.getColsInSheet() + 4,
+				9 * spriteSheet.getColsInSheet() + 5,
+				9 * spriteSheet.getColsInSheet() + 6}, 500);
+		jumpLeft = new SpriteAnimation(spriteSheet, new int[] {
+				1 * spriteSheet.getColsInSheet(),
+				1 * spriteSheet.getColsInSheet() + 1,
+				1 * spriteSheet.getColsInSheet() + 2,
+				1 * spriteSheet.getColsInSheet() + 3,
+				1 * spriteSheet.getColsInSheet() + 4,
+				1 * spriteSheet.getColsInSheet() + 5,
+				1 * spriteSheet.getColsInSheet() + 6}, 500);
+		jumpRight = new SpriteAnimation(spriteSheet, new int[] {
+				3 * spriteSheet.getColsInSheet(),
+				3 * spriteSheet.getColsInSheet() + 1,
+				3 * spriteSheet.getColsInSheet() + 2,
+				3 * spriteSheet.getColsInSheet() + 3,
+				3 * spriteSheet.getColsInSheet() + 4,
+				3 * spriteSheet.getColsInSheet() + 5,
+				3 * spriteSheet.getColsInSheet() + 6}, 500);
+		idleRight = new SpriteAnimation(spriteSheet, new int[] {
+				3 * spriteSheet.getColsInSheet()}, 500);
+		idleLeft = new SpriteAnimation(spriteSheet, new int[] {
+				1 * spriteSheet.getColsInSheet()}, 500);
+		animate(walkingLeft);
 	}
 	
+	// Animate unit
+	public void animate(SpriteAnimation s) {
+		currAnimation = s;
+		s.loop(true);
+	}
+	
+	// Duh, update the player.
+	public static void updatePlayer() {
+		Player.playerGravity();
+		Player.movePlayer();
+	}
+	
+	// Override the paintNode function for Player.
 	public void paintNode(Graphics2D g2) {
 		// Remember the transform being used when called
 		AffineTransform t = g2.getTransform();
+		
 		// Maintain aspect ratio.
 		AffineTransform currentTransform = this.getFullTransform();
 		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-		g2.drawImage(sprites[3*cols + 0],-squareWidth/2,-height/2,null);
+		
+		// Draw the sprite.
+		g2.drawImage(currAnimation.getCurrentSprite(),-spriteSheet.getSpriteWidth()/2,-spriteSheet.getSpriteHeight()/2,null);
 
 		// Restore the transform.
 		g2.setTransform(t);
 	}
 
+	// Fall at all times, if possible.
 	public static void playerGravity() {
 		// Accelerate
 		if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
@@ -78,38 +120,72 @@ public class Player extends Unit  {
 		Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
 	}
 	
+	// Always be moving, if the player presses a key.
 	public static void movePlayer() {
-		if(currentPlayer.movingRight) Canvas.getGameCanvas().moveAllBut(currentPlayer, (-1)*currentPlayer.moveSpeed, 0);
-		if(currentPlayer.movingLeft) Canvas.getGameCanvas().moveAllBut(currentPlayer, currentPlayer.moveSpeed, 0);
+		if(currentPlayer.movingRight) { 
+			Canvas.getGameCanvas().moveAllBut(currentPlayer, (-1)*currentPlayer.moveSpeed, 0);
+			if(!currentPlayer.falling()) currentPlayer.animate(currentPlayer.walkingRight);
+			else currentPlayer.animate(currentPlayer.jumpRight);
+			currentPlayer.facingLeft = false;
+		}
+		else if(currentPlayer.movingLeft) { 
+			Canvas.getGameCanvas().moveAllBut(currentPlayer, currentPlayer.moveSpeed, 0);
+			if(!currentPlayer.falling()) currentPlayer.animate(currentPlayer.walkingLeft);
+			else currentPlayer.animate(currentPlayer.jumpLeft);
+			currentPlayer.facingLeft = true;
+		}
+		else {
+			if(currentPlayer.idle() && currentPlayer.facingLeft) {
+				currentPlayer.animate(currentPlayer.idleLeft);
+			}
+			else if(!currentPlayer.facingLeft && currentPlayer.idle()) {
+				currentPlayer.animate(currentPlayer.idleRight);
+			}
+		}
 	}
 	
+	// Player pressed right key
 	public void moveRight(boolean b) {
 		movingRight = b;
 	}
 	
+	// Player pressed left key.
 	public void moveLeft(boolean b) {
 		movingLeft = b;
 	}
 	
+	public boolean idle() {
+		return !movingRight && !movingLeft && !falling();
+	}
+	
+	// Are you falling?
+	public boolean falling() {
+		return !TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap);
+	}
+	
+	// Player pressed up key/jump
 	public void jump() {
-		
-		if(TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap)) { 
+		if(!falling()) { 
 			setJumping(true);
+			if(facingLeft) animate(jumpLeft);
+			if(!facingLeft) animate(jumpRight);
 			setFallSpeed(5);
 		}
 	}
 	
+	// Player responding to keypresses
 	public static void keyPressed(KeyEvent k) {
 		// Deal with key presses for the player
-		if(k.getKeyCode() == KeyEvent.VK_LEFT) Player.getCurrentPlayer().moveLeft(true);
-		if(k.getKeyCode() == KeyEvent.VK_RIGHT) Player.getCurrentPlayer().moveRight(true);
-		if(k.getKeyCode() == KeyEvent.VK_UP) Player.getCurrentPlayer().jump();
+		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) Player.getCurrentPlayer().moveLeft(true);
+		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) Player.getCurrentPlayer().moveRight(true);
+		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W|| k.getKeyCode() == KeyEvent.VK_SPACE) Player.getCurrentPlayer().jump();
 	}
 	
+	// Player responding to key releases
 	public static void keyReleased(KeyEvent k) {
 		// Deal with key release for the player
-		if(k.getKeyCode() == KeyEvent.VK_LEFT) Player.getCurrentPlayer().moveLeft(false);
-		if(k.getKeyCode() == KeyEvent.VK_RIGHT) Player.getCurrentPlayer().moveRight(false);
+		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) Player.getCurrentPlayer().moveLeft(false);
+		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) Player.getCurrentPlayer().moveRight(false);
 	}
 	
 	public static Player getCurrentPlayer() {
