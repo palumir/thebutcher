@@ -33,7 +33,7 @@ public class School extends ArrayList<TerrainChunk> {
 		float spawnHeight = (float) (Canvas.getDefaultHeight()/2 + ((Rectangle2D)Player.getCurrentPlayer().getShape()).getHeight()/2);
 		float spawnWidth = Canvas.getDefaultWidth()/2 - size/4;
 		
-		// Floor
+		/*// Floor
 		if(doorDown) {}
 		else {
 			chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, size + 1, size/4),forestBrown);
@@ -62,7 +62,7 @@ public class School extends ArrayList<TerrainChunk> {
 			chunk = new TerrainChunk(new Rectangle2D.Double(0, 0, size + 1, size/4),forestBrown);
 			chunk.instantlyMove(spawnWidth - size/4 - 3 + x, spawnHeight - (size - size/4) + 1 + y);
 			this.add(chunk);
-		}
+		}*/
 	}
 }
 

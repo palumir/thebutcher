@@ -70,7 +70,7 @@ public class Player extends Unit  {
 				3 * spriteSheet.getColsInSheet()}, 500);
 		idleLeft = new SpriteAnimation(spriteSheet, new int[] {
 				1 * spriteSheet.getColsInSheet()}, 500);
-		animate(walkingLeft);
+		animate(jumpRight);
 	}
 	
 	// Animate unit

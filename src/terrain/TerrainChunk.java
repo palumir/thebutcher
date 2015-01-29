@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -22,9 +23,9 @@ public class TerrainChunk extends Node {
 	private BufferedImage sprite;
 	
 	// Just one chunk of the terrain.
-	public TerrainChunk(Shape s, BufferedImage sp) {
-		super(s, Color.BLACK);
-		sprite = sp;
+	public TerrainChunk(BufferedImage sp) {
+		super(new Rectangle2D.Double(0, 0, sp.getWidth(), sp.getHeight()), Color.BLACK);
+		setSprite(sp);
 		this.shapeHidden = true;
 		terrain.add(this);
 	}
@@ -40,7 +41,7 @@ public class TerrainChunk extends Node {
 		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 		
 		// Draw the sprite.
-		g2.drawImage(sprite,-sprite.getWidth()/2,-sprite.getHeight()/2,null);
+		g2.drawImage(getSprite(),0,0,null);
 
 		// Restore the transform.
 		g2.setTransform(t);
@@ -58,6 +59,14 @@ public class TerrainChunk extends Node {
 
 	public boolean isPassable() {
 		return passable;
+	}
+
+	public BufferedImage getSprite() {
+		return sprite;
+	}
+
+	public void setSprite(BufferedImage sprite) {
+		this.sprite = sprite;
 	}
 }
 
