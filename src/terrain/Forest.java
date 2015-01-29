@@ -1,15 +1,18 @@
 package terrain;
-import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import drawables.SpriteSheet;
 import main.Main;
 
 // One drawable object.
 public class Forest extends ArrayList<TerrainChunk> {
 	
-	Color forestGreen = new Color(72,99,47);
-	Color forestBrown = new Color(133,117,91);
+	// Terrain sprites
+	private static BufferedImage grassy;
+	private static BufferedImage dirt;
+	private static BufferedImage dirtRoof;
 	
 	int renderX = 0;
 	int renderY = 0;
@@ -17,8 +20,14 @@ public class Forest extends ArrayList<TerrainChunk> {
 	// Create the shitty forest.
 	public Forest() {
 		super();
+		SpriteSheet sheet = new SpriteSheet(
+				"src/images/terrain/forest.png", 50, 50, 50, 50, 3, 1);
+		grassy = sheet.getSprites()[0];
+		dirt = sheet.getSprites()[1];
+		dirtRoof = sheet.getSprites()[2];
 		genNoobIsland();
 	}
+	
 	
 	// Generate nooby fucking island
 	void genNoobIsland() {

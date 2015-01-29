@@ -5,7 +5,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import terrain.School;
+import terrain.Graveyard;
 import units.Player;
 import drawables.Canvas;
 
@@ -34,7 +34,7 @@ public class Main {
 		// Create a character for testing.
 		Player player = new Player();
 		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
-		School school = new School();
+		Graveyard g = new Graveyard();
 		
 		// Create the actual game frame on the computer screen.
 		JFrame frame = new JFrame("The Butcher");

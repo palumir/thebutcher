@@ -1,9 +1,12 @@
 package terrain;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Area;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import drawables.Canvas;
 import drawables.Node;
 
 // One chunk of terrain.
@@ -15,10 +18,32 @@ public class TerrainChunk extends Node {
 	// Terrain chunk details
 	private boolean passable = false;
 	
+	// Cosmetics
+	private BufferedImage sprite;
+	
 	// Just one chunk of the terrain.
-	public TerrainChunk(Shape s, Color color) {
-		super(s, color);
+	public TerrainChunk(Shape s, BufferedImage sp) {
+		super(s, Color.BLACK);
+		sprite = sp;
+		this.shapeHidden = true;
 		terrain.add(this);
+	}
+	
+	// Override the paintNode function for Unit.
+	public void paintNode(Graphics2D g2) {
+		// Remember the transform being used when called
+		AffineTransform t = g2.getTransform();
+		
+		// Maintain aspect ratio.
+		AffineTransform currentTransform = this.getFullTransform();
+		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+		
+		// Draw the sprite.
+		g2.drawImage(sprite,-sprite.getWidth()/2,-sprite.getHeight()/2,null);
+
+		// Restore the transform.
+		g2.setTransform(t);
 	}
 	
 	// Is the current node "standing" on a terrain chunk?

@@ -141,22 +141,22 @@ public class Canvas extends JComponent {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.out.println(gameCanvas.getWidth());
+				//System.out.println(gameCanvas.getWidth());
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
+				/*if (e.getButton() == MouseEvent.BUTTON1) {
 					mouseDown = true;
 					initThread();
-				}
+				}*/
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
+				/*if (e.getButton() == MouseEvent.BUTTON1) {
 					mouseDown = false;
-				}
+				}*/
 			}
 
 			@Override
