@@ -9,16 +9,23 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 
 import terrain.TerrainChunk;
 import units.Player;
+import units.Unit;
 
 // One drawable object.
 public class Node implements MouseMotionListener, MouseListener {
 
 	// Positioning
 	public AffineTransform trans = new AffineTransform();
+	protected boolean movesWithPlayer = false;
+	protected int zIndex = 0;
+	
+	// Are we hidden?
+	protected boolean hidden = false;
 	
 	// Cosmetics
 	private Shape shape;
@@ -134,6 +141,9 @@ public class Node implements MouseMotionListener, MouseListener {
 					&& (x1 - ((Rectangle2D)this.getShape()).getWidth()/2 < x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
 			if(isTouching) { 
 				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+				if(this instanceof Unit) {
+					((Unit)this).onGround();
+				}
 			}
 		}
 		if(direction.equals("Left")) { 
@@ -181,6 +191,17 @@ public class Node implements MouseMotionListener, MouseListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return new AffineTransform();
+		}
+	}
+	
+	// Delete the node
+	public void deleteNode() {
+		for (int i = 0; i < Canvas.getGameCanvas().getNodes().size(); i++) {
+			Node n = Canvas.getGameCanvas().getNodes().get(i);
+			if(n==this) {
+				Canvas.getGameCanvas().getNodes().remove(i);
+				break;
+			}
 		}
 	}
 
@@ -237,6 +258,22 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	public void setShape(Shape shape) {
 		this.shape = shape;
+	}
+
+	public boolean isMovesWithPlayer() {
+		return movesWithPlayer;
+	}
+
+	public void setMovesWithPlayer(boolean movesWithPlayer) {
+		this.movesWithPlayer = movesWithPlayer;
+	}
+
+	public int getzIndex() {
+		return zIndex;
+	}
+
+	public void setzIndex(int zIndex) {
+		this.zIndex = zIndex;
 	}
 
 }

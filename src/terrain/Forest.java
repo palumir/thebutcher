@@ -3,8 +3,11 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.sound.sampled.Clip;
+
 import main.Main;
-import drawables.SpriteSheet;
+import audio.SoundClip;
+import drawables.sprites.SpriteSheet;
 
 // One drawable object.
 public class Forest extends ArrayList<TerrainChunk> {
@@ -14,14 +17,22 @@ public class Forest extends ArrayList<TerrainChunk> {
 	private static BufferedImage dirt;
 	private static BufferedImage dirtRoof;
 	
+	// Forest ambience
+	private static SoundClip music = new SoundClip("./../sounds/music/dimebag_ambience.wav");
+	// https://www.freesound.org/people/xDimebagx/sounds/193692/
+	
+	// Doodads
+	private static BufferedImage moon;
+	
 	int renderX = 0;
 	int renderY = 0;
 	
 	// Create the shitty forest.
 	public Forest() {
 		super();
+		music.getClip().loop(Clip.LOOP_CONTINUOUSLY);
 		SpriteSheet sheet = new SpriteSheet(
-				"src/images/terrain/forest.png", 50, 50, 50, 50, 3, 1);
+				"src/images/terrain/forest/forest.png", 50, 50, 50, 50, 3, 1);
 		grassy = sheet.getSprites()[0];
 		dirt = sheet.getSprites()[1];
 		dirtRoof = sheet.getSprites()[2];

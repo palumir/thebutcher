@@ -1,13 +1,14 @@
 package units;
 
+import items.Lantern;
+
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 
-import terrain.TerrainChunk;
 import drawables.Canvas;
-import drawables.SpriteAnimation;
-import drawables.SpriteSheet;
+import drawables.sprites.SpriteAnimation;
+import drawables.sprites.SpriteSheet;
 
 
 
@@ -16,19 +17,12 @@ public class Player extends Unit  {
 	
 	private static Player currentPlayer;	
 	
-	// Hard define our player animations
-	private SpriteAnimation idleRight;
-	private SpriteAnimation idleLeft;
-	private SpriteAnimation jumpLeft;
-	private SpriteAnimation walkingRight;
-	private SpriteAnimation walkingLeft;
-	private SpriteAnimation jumpRight;
-	
 	// Player constructor
 	public Player() {
-		super(20,64,new SpriteSheet("src/images/player/test_character.png",
+		super(20,64,new SpriteSheet("src/images/player/jack.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		currentPlayer = this;
+		this.zIndex = 1;
 		loadAnimations();
 	}
 
@@ -42,6 +36,7 @@ public class Player extends Unit  {
 				11 * spriteSheet.getColsInSheet() + 4,
 				11 * spriteSheet.getColsInSheet() + 5,
 				11 * spriteSheet.getColsInSheet() + 6}, 500);
+		walkingRight.loop(true);
 		walkingLeft = new SpriteAnimation(spriteSheet, new int[] {
 				9 * spriteSheet.getColsInSheet(),
 				9 * spriteSheet.getColsInSheet() + 1,
@@ -50,39 +45,20 @@ public class Player extends Unit  {
 				9 * spriteSheet.getColsInSheet() + 4,
 				9 * spriteSheet.getColsInSheet() + 5,
 				9 * spriteSheet.getColsInSheet() + 6}, 500);
+		walkingLeft.loop(true);
 		jumpLeft = new SpriteAnimation(spriteSheet, new int[] {
-				1 * spriteSheet.getColsInSheet(),
-				1 * spriteSheet.getColsInSheet() + 1,
-				1 * spriteSheet.getColsInSheet() + 2,
-				1 * spriteSheet.getColsInSheet() + 3,
-				1 * spriteSheet.getColsInSheet() + 4,
-				1 * spriteSheet.getColsInSheet() + 5,
 				1 * spriteSheet.getColsInSheet() + 6}, 500);
+		jumpLeft.loop(false);
 		jumpRight = new SpriteAnimation(spriteSheet, new int[] {
-				3 * spriteSheet.getColsInSheet(),
-				3 * spriteSheet.getColsInSheet() + 1,
-				3 * spriteSheet.getColsInSheet() + 2,
-				3 * spriteSheet.getColsInSheet() + 3,
-				3 * spriteSheet.getColsInSheet() + 4,
-				3 * spriteSheet.getColsInSheet() + 5,
 				3 * spriteSheet.getColsInSheet() + 6}, 500);
+		jumpRight.loop(false);
 		idleRight = new SpriteAnimation(spriteSheet, new int[] {
-				3 * spriteSheet.getColsInSheet()}, 500);
+				7 * spriteSheet.getColsInSheet()}, 500);
+		idleRight.loop(true);
 		idleLeft = new SpriteAnimation(spriteSheet, new int[] {
-				1 * spriteSheet.getColsInSheet()}, 500);
+				9 * spriteSheet.getColsInSheet()}, 500);
+		idleLeft.loop(true);
 		animate(jumpRight);
-	}
-	
-	// Animate unit
-	public void animate(SpriteAnimation s) {
-		currAnimation = s;
-		s.loop(true);
-	}
-	
-	// Duh, update the player.
-	public static void updatePlayer() {
-		Player.playerGravity();
-		Player.movePlayer();
 	}
 	
 	// Override the paintNode function for Player.
@@ -103,64 +79,46 @@ public class Player extends Unit  {
 	}
 
 	// Fall at all times, if possible.
-	public static void playerGravity() {
-		// Accelerate
-		if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
+	public void gravity() {
 		
-		// Move everything up!
-		Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
+		if(Player.getCurrentPlayer() != null ) {
+			// Accelerate
+			if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
+			
+			// Are we falling?
+			if(Player.getCurrentPlayer().falling()) {
+				Player.getCurrentPlayer().hitGround = false;
+			}
+			
+			// Move everything up!
+			Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
+		}
+	
 	}
 	
 	// Always be moving, if the player presses a key.
-	public static void movePlayer() {
-		if(currentPlayer.movingRight) { 
-			Canvas.getGameCanvas().moveAllBut(currentPlayer, (-1)*currentPlayer.moveSpeed, 0);
-			if(!currentPlayer.falling()) currentPlayer.animate(currentPlayer.walkingRight);
-			else currentPlayer.animate(currentPlayer.jumpRight);
-			currentPlayer.facingLeft = false;
-		}
-		else if(currentPlayer.movingLeft) { 
-			Canvas.getGameCanvas().moveAllBut(currentPlayer, currentPlayer.moveSpeed, 0);
-			if(!currentPlayer.falling()) currentPlayer.animate(currentPlayer.walkingLeft);
-			else currentPlayer.animate(currentPlayer.jumpLeft);
-			currentPlayer.facingLeft = true;
-		}
-		else {
-			if(currentPlayer.idle() && currentPlayer.facingLeft) {
-				currentPlayer.animate(currentPlayer.idleLeft);
+	public void move() {
+		if(this != null) {
+			if(this.movingRight) { 
+				Canvas.getGameCanvas().moveAllBut(this, (-1)*this.moveSpeed, 0);
+				if(!this.falling()) this.animate(this.walkingRight);
+				else this.animate(this.jumpRight);
+				this.facingLeft = false;
 			}
-			else if(!currentPlayer.facingLeft && currentPlayer.idle()) {
-				currentPlayer.animate(currentPlayer.idleRight);
+			else if(this.movingLeft) { 
+				Canvas.getGameCanvas().moveAllBut(this, this.moveSpeed, 0);
+				if(!this.falling()) this.animate(this.walkingLeft);
+				else this.animate(this.jumpLeft);
+				this.facingLeft = true;
 			}
-		}
-	}
-	
-	// Player pressed right key
-	public void moveRight(boolean b) {
-		movingRight = b;
-	}
-	
-	// Player pressed left key.
-	public void moveLeft(boolean b) {
-		movingLeft = b;
-	}
-	
-	public boolean idle() {
-		return !movingRight && !movingLeft && !falling();
-	}
-	
-	// Are you falling?
-	public boolean falling() {
-		return !TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap);
-	}
-	
-	// Player pressed up key/jump
-	public void jump() {
-		if(!falling()) { 
-			setJumping(true);
-			if(facingLeft) animate(jumpLeft);
-			if(!facingLeft) animate(jumpRight);
-			setFallSpeed(5);
+			else {
+				if(this.idle() && this.facingLeft) {
+					this.animate(this.idleLeft);
+				}
+				else if(!this.facingLeft && this.idle()) {
+					this.animate(this.idleRight);
+				}
+			}
 		}
 	}
 	
@@ -169,7 +127,8 @@ public class Player extends Unit  {
 		// Deal with key presses for the player
 		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) Player.getCurrentPlayer().moveLeft(true);
 		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) Player.getCurrentPlayer().moveRight(true);
-		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W|| k.getKeyCode() == KeyEvent.VK_SPACE) Player.getCurrentPlayer().jump();
+		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W) Player.getCurrentPlayer().jump();
+		if(k.getKeyCode() == KeyEvent.VK_SPACE) Lantern.toggle();
 	}
 	
 	// Player responding to key releases

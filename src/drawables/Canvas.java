@@ -61,20 +61,39 @@ public class Canvas extends JComponent {
 
 	// Run through each node and update it.
 	void updateNodes() {
-		for (int i = 0; i < nodes.size(); i++) {
-			Node n = nodes.get(i);
+		for (int i = 0; i < getNodes().size(); i++) {
+			Node n = getNodes().get(i);
 			n.update();
 		}
 	}
 
 	// Move all nodes except for...
 	public void moveAllButWithNoClip(Node notMove, float x, float y) {
-		for(int i = 0; i < nodes.size(); i++) {
-			Node n = nodes.get(i);
-			if(n!=notMove) {
+		for(int i = 0; i < getNodes().size(); i++) {
+			Node n = getNodes().get(i);
+			if(n!=notMove && !n.isMovesWithPlayer()) {
 				n.instantlyMove(x,y);
 			}
 		}
+	}
+	
+	// Move a unit
+	public void moveUnit(Node move, float x, float y) {
+		
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(move, "Down", -x, -y)) if(y>0) { 
+			y = 0;
+			((Unit)move).setFallSpeed(Unit.getDefaultFallSpeed());
+		}
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(move, "Left", -x, -y)) if(x<0) { 
+			x = 0;
+		}
+		// Are we landing on something?
+		if(TerrainChunk.touchingTerrain(move, "Right", -x, -y)) if(x>0) { 
+			x = 0;
+		}
+		move.instantlyMove(x, y);
 	}
 	
 	// Move all nodes except for...
@@ -94,9 +113,9 @@ public class Canvas extends JComponent {
 			x = 0;
 		}
 		
-		for(int i = 0; i < nodes.size(); i++) {
-			Node n = nodes.get(i);
-			if (n != notMove) {
+		for(int i = 0; i < getNodes().size(); i++) {
+			Node n = getNodes().get(i);
+			if (n != notMove && !n.isMovesWithPlayer()) {
 				n.instantlyMove(x, y);
 			}
 		}
@@ -232,8 +251,16 @@ public class Canvas extends JComponent {
 
 	// Paint each node. Easy.
 	public void paintNodes(Graphics g) {
-		for (Node n : nodes)
-			n.paintNode((Graphics2D) g);
+		int paintedNodes=0;
+		for(int i = 0; i < getNodes().size(); i++) {
+			for (Node n : getNodes()) {
+				if(n.zIndex == i) { 
+					n.paintNode((Graphics2D) g);
+					paintedNodes++;
+				}
+			}
+			if(paintedNodes>=getNodes().size()) break;
+		}
 	}
 
 	// Paint the background. Just black for now.
@@ -257,15 +284,15 @@ public class Canvas extends JComponent {
 
 	// Add a new node to be drawn on the canvas.
 	public void addNode(Node n) {
-		this.nodes.add(n);
+		this.getNodes().add(n);
 	}
 
 	// Get the node at p.
 	public Node getNode(Point2D p) {
 		Node hit = null;
 		int i = 0;
-		while (hit == null && i < nodes.size()) {
-			hit = nodes.get(i).hitNode(p);
+		while (hit == null && i < getNodes().size()) {
+			hit = getNodes().get(i).hitNode(p);
 			i++;
 		}
 		return hit;
@@ -349,6 +376,14 @@ public class Canvas extends JComponent {
 
 	public static void setDefaultHeight(int defaultHeight) {
 		Canvas.defaultHeight = defaultHeight;
+	}
+
+	public ArrayList<Node> getNodes() {
+		return nodes;
+	}
+
+	public void setNodes(ArrayList<Node> nodes) {
+		this.nodes = nodes;
 	}
 
 }
