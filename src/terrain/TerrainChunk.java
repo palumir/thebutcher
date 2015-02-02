@@ -27,7 +27,7 @@ public class TerrainChunk extends Node {
 		super(new Rectangle2D.Double(0, 0, sp.getWidth(), sp.getHeight()), Color.BLACK);
 		setSprite(sp);
 		this.shapeHidden = true;
-		terrain.add(this);
+		getTerrain().add(this);
 	}
 	
 	// Override the paintNode function for Unit.
@@ -49,7 +49,7 @@ public class TerrainChunk extends Node {
 	
 	// Is the current node "standing" on a terrain chunk?
 	public static boolean touchingTerrain(Node n, String direction, float x, float y) {
-		for(int i = 0; i < terrain.size(); i++) if(terrain.get(i).impassable && n.touching(terrain.get(i), direction, x, y)) return true;
+		for(int i = 0; i < getTerrain().size(); i++) if(getTerrain().get(i).impassable && n.touching(getTerrain().get(i), direction, x, y)) return true;
 		return false;
 	}
 
@@ -59,6 +59,14 @@ public class TerrainChunk extends Node {
 
 	public void setSprite(BufferedImage sprite) {
 		this.sprite = sprite;
+	}
+
+	public static ArrayList<TerrainChunk> getTerrain() {
+		return terrain;
+	}
+
+	public static void setTerrain(ArrayList<TerrainChunk> terrain) {
+		TerrainChunk.terrain = terrain;
 	}
 }
 

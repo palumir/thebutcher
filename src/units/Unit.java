@@ -24,8 +24,8 @@ public class Unit extends Node implements MouseListener {
 	private float fallSpeed = -3;
 	
 	// Sounds for monster interactions.
-	protected static SoundClip close = new SoundClip("./../sounds/ambience/violin_stab.wav");
-	protected static SoundClip chasing = new SoundClip("./../sounds/ambience/chasing.wav");
+	protected static SoundClip close = new SoundClip("./../sounds/ambience/violin_stab.wav", true);
+	protected static SoundClip chasing = new SoundClip("./../sounds/ambience/chasing.wav", true);
 
 	// Unitanimations
 	protected SpriteAnimation idleRight;
@@ -47,7 +47,7 @@ public class Unit extends Node implements MouseListener {
 	// Movement/Physics
 	protected boolean movingLeft = false;
 	protected boolean movingRight = false;
-	protected int moveSpeed = 3;
+	protected float moveSpeed = 3;
 	protected boolean hitGround = false;
 	
 	// Unit particle effects

@@ -12,10 +12,10 @@ import drawables.Node;
 
 public class Lantern extends Node {
 	
-	BasicStroke stroke1 = new BasicStroke(700);
-	BasicStroke stroke2 = new BasicStroke(800);
-	BasicStroke stroke3 = new BasicStroke(900);
-	BasicStroke stroke4 = new BasicStroke(1000);
+	BasicStroke stroke1 = new BasicStroke(800);
+	BasicStroke stroke2 = new BasicStroke(900);
+	BasicStroke stroke3 = new BasicStroke(975);
+	BasicStroke stroke4 = new BasicStroke(1050);
 	
 	private static boolean toggle = true;
 
@@ -37,7 +37,7 @@ public class Lantern extends Node {
 			AffineTransform currentTransform = this.getFullTransform();
 			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			float alpha = 0.60f;
+			float alpha = 0.40f;
 			
 			// Draw the lantern
 			int type = AlphaComposite.SRC_OVER; 

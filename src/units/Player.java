@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 
+import main.Main;
 import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
@@ -94,6 +95,11 @@ public class Player extends Unit  {
 			Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
 		}
 	
+	}
+	
+	// Kill the player. This obviously loses the game.
+	public void die() {
+		Main.purge(); // Destroy everything on the screen.
 	}
 	
 	// Always be moving, if the player presses a key.

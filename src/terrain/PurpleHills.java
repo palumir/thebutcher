@@ -3,11 +3,17 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
+import audio.BigClip;
+import audio.SoundClip;
 import main.Main;
 import drawables.sprites.SpriteSheet;
 
 // One drawable object.
 public class PurpleHills extends ArrayList<TerrainChunk> {
+	
+	// PH ambience
+	private static SoundClip music = new SoundClip("./../sounds/music/dimebag_ambience.wav", false);
+	// https://www.freesound.org/people/xDimebagx/sounds/193692/
 	
 	// Terrain sprites
 	private static BufferedImage grassy;
@@ -25,6 +31,7 @@ public class PurpleHills extends ArrayList<TerrainChunk> {
 	// Create the shitty forest.
 	public PurpleHills() {
 		super();
+		music.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY);
 		SpriteSheet terrainSheet = new SpriteSheet(
 				"src/images/terrain/purplehills/purplehills.png", 50, 50, 50, 50, 3, 1);
 		grassy = terrainSheet.getSprites()[0];
@@ -35,7 +42,7 @@ public class PurpleHills extends ArrayList<TerrainChunk> {
 		flower1 = flowerSheet.getSprites()[0];
 		flower2 = flowerSheet.getSprites()[1];
 		flower3 = flowerSheet.getSprites()[2];
-		genRandomWalkableLandBetween(-500,2000,600,900);
+		genRandomWalkableLandBetween(-2000,3000,600,900);
 	}
 	
 	// Generates land between x and y which is walkable.
