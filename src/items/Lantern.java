@@ -6,12 +6,23 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
+import main.Main;
+import audio.SoundClip;
 import drawables.Canvas;
 import drawables.Node;
 
 
 public class Lantern extends Node {
 	
+	// Sounds
+	protected static SoundClip switchSound = new SoundClip("./../sounds/effects/switch.wav", true);
+	
+	// Levels
+	private static int fuel = 50; // 0-100%
+	private static int fuelLastsFor = 60000; // milliseconds
+	private static double tickTime = 0;
+	
+	// Strokes for the light
 	BasicStroke stroke1 = new BasicStroke(800);
 	BasicStroke stroke2 = new BasicStroke(900);
 	BasicStroke stroke3 = new BasicStroke(975);
@@ -26,7 +37,30 @@ public class Lantern extends Node {
 	}
 	
 	public static void toggle() {
-		setToggle(!isToggle());
+		if(fuel<=0) { // Do we have no fuel left? UH OH.
+		}
+		else {
+			setToggle(!isToggle());
+			switchSound.getClip().stop();
+			switchSound.getClip().start();
+		}
+	}
+	
+	// Update
+	public void update() {
+		if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
+			if(fuel > 0) fuel--;
+			tickTime = Main.getGameTime();
+			
+			// If we have no fuel left, turn off.
+			if(fuel<=0) {
+				toggle = false;
+			}
+			stroke1 = new BasicStroke(700 + fuel*2f);
+			stroke2 = new BasicStroke(800 + fuel*2f);
+			stroke3 = new BasicStroke(925 + fuel*2f);
+			stroke4 = new BasicStroke(1000 + fuel*2f);
+		}
 	}
 	
 	// Paint the node and it's kids.
@@ -37,7 +71,7 @@ public class Lantern extends Node {
 			AffineTransform currentTransform = this.getFullTransform();
 			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			float alpha = 0.40f;
+			float alpha = 0.30f;
 			
 			// Draw the lantern
 			int type = AlphaComposite.SRC_OVER; 

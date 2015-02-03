@@ -19,11 +19,15 @@ public class Tabram extends Unit {
 	public static Tabram tabram = null;
 	
 	// How hard are we?
-	public static int AILevel = 3; 
+	public static int AILevel = 0; 
 	
 	// Static variables
-	public float meanderSpeed = 1;
-	public float chasingSpeed = 4f + (float)AILevel/2f;
+	private static float meanderSpeed = 1;
+	private static float chasingSpeed = 4;
+	private static float meanderStop = 3000;
+	private static int chaseRange = 150;
+	private static int closeRange = 230;
+	private static int killRange = 30;
 	
 	// States
 	private boolean closeToPlayer = false;
@@ -37,13 +41,23 @@ public class Tabram extends Unit {
 	protected static double meanderTime = 0;
 	
 	// Player constructor
-	public Tabram() {
+	public Tabram(int difficulty) {
 		super(20,64,new SpriteSheet("src/images/characters/tabram.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
+		AILevel = difficulty;
 		tabram = this;
 		zIndex = 0;
-		tabram = this;
+		
+		// Configure difficulty
+		meanderSpeed = 1 + (float)AILevel/1.3f;
+		chasingSpeed = 4f + (float)AILevel/2.3f;
+		meanderStop = 3000 - 100*AILevel;
+		chaseRange = 150+AILevel*4;
+		closeRange = 230;
+		killRange = 30+AILevel*2;
 		moveSpeed = meanderSpeed;
+		
+		// Load animations
 		loadAnimations();
 	}
 	
@@ -90,11 +104,6 @@ public class Tabram extends Unit {
 	}
 	
 	public void tabramAI() {
-		
-		// Constants
-		int chaseRange = 150+AILevel*3;
-		int closeRange = 230;
-		int killRange = 30;
 		
 		// STOP STATES
 		// If the player has gotten 150 away, stop chasing.
@@ -151,7 +160,7 @@ public class Tabram extends Unit {
 	}
 	
 	public void meander() {
-		if(Main.getGameTime() - meanderTime > 3000) {
+		if(Main.getGameTime() - meanderTime > meanderStop) {
 			meanderTime = Main.getGameTime();
 			if(!movingRight && !movingLeft) {
 				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
@@ -164,10 +173,12 @@ public class Tabram extends Unit {
 				}
 				else {
 					if(Main.r.nextInt(2)==1) {
+						if(AILevel > 4) if(Main.r.nextInt(5)==1) jump();
 						movingRight = true;
 						movingLeft = false;
 					}
 					else {
+						if(AILevel > 4) if(Main.r.nextInt(5)==1) jump();
 						movingLeft = true;
 						movingRight = false;
 					}
