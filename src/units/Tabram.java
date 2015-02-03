@@ -22,7 +22,7 @@ public class Tabram extends Unit {
 	public static int AILevel = 3; 
 	
 	// Static variables
-	public float meanderSpeed = 1 + (float)AILevel/4;
+	public float meanderSpeed = 1;
 	public float chasingSpeed = 4f + (float)AILevel/2f;
 	
 	// States
@@ -38,7 +38,7 @@ public class Tabram extends Unit {
 	
 	// Player constructor
 	public Tabram() {
-		super(20,64,new SpriteSheet("src/images/characters/smith.png",
+		super(20,64,new SpriteSheet("src/images/characters/tabram.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		tabram = this;
 		zIndex = 0;
@@ -108,7 +108,7 @@ public class Tabram extends Unit {
 		
 		// INITIATE STATES
 		// Kill player!
-		if(chasingPlayer && Player.getCurrentPlayer().close(killRange,this)) {
+		if(Player.getCurrentPlayer().close(killRange,this)) {
 			killPlayer();
 		}
 		// Chase player!
@@ -120,7 +120,7 @@ public class Tabram extends Unit {
 		// Play noise if we're close to player!
 		else if(!closeToPlayer && Player.getCurrentPlayer().close(closeRange,this)) {
 			closeToPlayer = true;
-			close.getClip().start(); 
+			//close.getClip().start(); 
 		}
 		
 		// STATES
@@ -146,16 +146,14 @@ public class Tabram extends Unit {
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
 		groan.getClip().start();
-		slash.getClip().loop(4);
+		slash.getClip().loop(3);
 		Background.setBackground(Color.RED);
 	}
 	
 	public void meander() {
 		if(Main.getGameTime() - meanderTime > 3000) {
-			System.out.println("Go");
 			meanderTime = Main.getGameTime();
 			if(!movingRight && !movingLeft) {
-				System.out.println("Idle");
 				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
 					movingLeft = true;
 					movingRight = false;
@@ -176,7 +174,6 @@ public class Tabram extends Unit {
 				}
 			}
 			else {
-				System.out.println("Moving");
 				movingRight = false;
 				movingLeft = false;
 			}
