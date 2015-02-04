@@ -109,7 +109,7 @@ public class Chapman extends Unit {
 		// If the player has gotten 150 away, stop chasing.
 		if(chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this)) {
 			chasingPlayer = false;
-			chasing.getClip().stop();
+			chasing.stop();
 			movingRight = false;
 			movingLeft = false;
 			moveSpeed = meanderSpeed;
@@ -123,7 +123,7 @@ public class Chapman extends Unit {
 		// Chase player!
 		else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
 			chasingPlayer = true;
-			chasing.getClip().loop(Clip.LOOP_CONTINUOUSLY);
+			chasing.loop(Clip.LOOP_CONTINUOUSLY);
 			moveSpeed = chasingSpeed;
 		}
 		// Play noise if we're close to player!
@@ -154,8 +154,8 @@ public class Chapman extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		groan.getClip().start();
-		slash.getClip().loop(3);
+		groan.start();
+		slash.loop(3);
 		Background.setBackground(Color.RED);
 	}
 	

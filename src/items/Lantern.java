@@ -41,8 +41,8 @@ public class Lantern extends Node {
 		}
 		else {
 			setToggle(!isToggle());
-			switchSound.getClip().stop();
-			switchSound.getClip().start();
+			switchSound.stop();
+			switchSound.start();
 		}
 	}
 	
@@ -56,10 +56,10 @@ public class Lantern extends Node {
 			if(getFuel()<=0) {
 				toggle = false;
 			}
-			stroke1 = new BasicStroke(700 + getFuel()*2f);
-			stroke2 = new BasicStroke(800 + getFuel()*2f);
-			stroke3 = new BasicStroke(925 + getFuel()*2f);
-			stroke4 = new BasicStroke(1000 + getFuel()*2f);
+			/*stroke1.width = 700 + getFuel()*2f;
+			stroke2.width = 800 + getFuel()*2f;
+			stroke3.width = 925 + getFuel()*2f;
+			stroke4.width = 1000 + getFuel()*2f;*/
 		}
 		System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}

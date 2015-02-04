@@ -35,7 +35,7 @@ public class Main {
 		createNewGameScene();
 		
 		// Create the actual game frame on the computer screen.
-		JFrame frame = new JFrame("SPOOKY GAME");
+		JFrame frame = new JFrame("Monk");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 		frame.setContentPane(Canvas.getGameCanvas());
@@ -49,9 +49,9 @@ public class Main {
 		Forest f = new Forest();
 		//PurpleHills purpleHills = new PurpleHills();
 		Lantern lantern = new Lantern();
-		Chapman chapman = new Chapman(10);
-		Nichols nichols = new Nichols(10);
-		chapman.instantlyMove(Canvas.getDefaultWidth()/2-(200 + r.nextInt(1500)),Canvas.getDefaultHeight()/2);
+		Chapman chapman = new Chapman(0);
+		Nichols nichols = new Nichols(0);
+		chapman.instantlyMove(Canvas.getDefaultWidth()/2-(300 + r.nextInt(1500)),Canvas.getDefaultHeight()/2);
 	}
 	
 	public static long getGameTime() {

@@ -19,6 +19,7 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 	private static BufferedImage dirtRoof;
 	
 	// Ambience
+	private static SoundClip pulse = new SoundClip("./../sounds/ambience/yewbic_ambience.wav", false);
 	// https://www.freesound.org/people/xDimebagx/sounds/193692/
 	
 	int renderX = 0;
@@ -27,6 +28,7 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 	// Create tabrampit scene
 	public NicholsPit() {
 		super();
+		pulse.loop(BigClip.LOOP_CONTINUOUSLY);
 		//music.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY);
 		SpriteSheet sheet = new SpriteSheet(
 				"src/images/terrain/forest/forest.png", 50, 50, 50, 50, 3, 1);

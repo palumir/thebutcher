@@ -25,6 +25,7 @@ public class Nichols extends Unit {
 	
 	// Spooky sound for when lantern is off.
 	protected static SoundClip violin = new SoundClip("./../sounds/ambience/spooky_violin.wav", false);
+	protected static SoundClip stab = new SoundClip("./../sounds/ambience/violin_stab.wav", true);
 	protected boolean playing = false;
 	
 	// Time to kill the player.
@@ -118,8 +119,8 @@ public class Nichols extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		Chapman.groan.getClip().start();
-		Chapman.slash.getClip().loop(3); // WIP IS TABRAM'S DEATH SCREEN
+		Chapman.groan.start();
+		Chapman.slash.loop(3); // WIP IS TABRAM'S DEATH SCREEN
 		Background.setBackground(Color.RED);
 	}
 	
@@ -131,19 +132,19 @@ public class Nichols extends Unit {
 		
 		else {
 			// If the lantern is on, don't time.
-			if(Lantern.isToggle()) {
-				playing = false;
-				violin.getBigClip().stop();
+			if(Lantern.isToggle() && violin.playing) {
+				violin.stop();
 				lastCheck = 0;
 			}
 			
 			// If the lantern is off, tick the timer.
 			else if(!Lantern.isToggle()) {
-				// Play spooky violin louder and louder.
-				FloatControl gainControl = 
-					    (FloatControl) violin.getBigClip().getControl(FloatControl.Type.MASTER_GAIN);
-				gainControl.setValue(-10.0f);
-				if(!playing) { violin.getBigClip().stop(); violin.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY); playing = true; }
+				// Play spooky violin louder and louder
+				// -15 => +30
+				double percent = totalTime/darknessKillPlayer;
+				float val = (float) (45*percent - 15);
+				violin.setVolume(val);
+				if(!violin.playing) violin.loop(BigClip.LOOP_CONTINUOUSLY);
 				
 				// Adjust the timer.
 				if(lastCheck==0) lastCheck = Main.getGameTime();
@@ -169,5 +170,6 @@ public class Nichols extends Unit {
 		Nichols n = new Nichols(AILevel);
 		// WIP DO SOMETHING BEFORE WE TRANSITION TO THE DEATH SCENE
 		n.createDeathScene();
+		stab.start();
 	}
 }

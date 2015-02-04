@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 public class SoundClip {
 	
@@ -17,6 +18,9 @@ public class SoundClip {
 	private Clip clip;
 	private BigClip bigClip;
 	private AudioInputStream inputStream;
+	
+	// Is it playing?
+	public boolean playing = false;
 	
 	public SoundClip(String fileLoc, boolean isSmall) {
 	      try {
@@ -41,16 +45,46 @@ public class SoundClip {
 	
 	public static void stopSounds() {
 		for(int i=0; i < allClips.size(); i++) {
-			if(allClips.get(i).small) allClips.get(i).getClip().stop();
-			else allClips.get(i).getBigClip().stop();
+			if(allClips.get(i).small) allClips.get(i).clip.stop();
+			else allClips.get(i).bigClip.stop();
 		}
 	}
 	
-	public Clip getClip() {
-		return clip;
+	public void setVolume(float f) {
+		FloatControl gainControl;
+		if(small) gainControl = (FloatControl) this.clip.getControl(FloatControl.Type.MASTER_GAIN);
+		else gainControl = (FloatControl) this.bigClip.getControl(FloatControl.Type.MASTER_GAIN);
+		// -15 => +30
+		gainControl.setValue(f);
 	}
 	
-	public BigClip getBigClip() {
-		return bigClip;
+	public void loop(int i) {
+		playing = true;
+		if(small) { 
+			clip.stop();
+			clip.loop(i);
+		}
+		else {
+			bigClip.stop();
+			bigClip.loop(i);
+		}
+	}
+	
+	public void start() {
+		playing = true;
+		if(small) { 
+			clip.stop();
+			clip.start();
+		}
+		else { 
+			bigClip.stop();
+			bigClip.start();
+		}
+	}
+	
+	public void stop() {
+		playing = false;
+		if(small) clip.stop();
+		else bigClip.stop();
 	}
 }

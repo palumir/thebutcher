@@ -27,7 +27,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 	// Create the shitty forest.
 	public Forest() {
 		super();
-		music.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY);
+		music.loop(BigClip.LOOP_CONTINUOUSLY);
 		SpriteSheet sheet = new SpriteSheet(
 				"src/images/terrain/forest/forest.png", 50, 50, 50, 50, 3, 1);
 		grassy = sheet.getSprites()[0];

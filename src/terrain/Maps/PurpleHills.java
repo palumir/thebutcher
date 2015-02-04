@@ -33,7 +33,7 @@ public class PurpleHills extends ArrayList<TerrainChunk> {
 	// Create the shitty forest.
 	public PurpleHills() {
 		super();
-		music.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY);
+		music.loop(BigClip.LOOP_CONTINUOUSLY);
 		SpriteSheet terrainSheet = new SpriteSheet(
 				"src/images/terrain/purplehills/purplehills.png", 50, 50, 50, 50, 3, 1);
 		grassy = terrainSheet.getSprites()[0];
