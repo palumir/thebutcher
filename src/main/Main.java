@@ -6,10 +6,10 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import terrain.PurpleHills;
+import terrain.Maps.Forest;
+import units.Chapman;
 import units.Nichols;
 import units.Player;
-import units.Tabram;
 import drawables.Canvas;
 
 /**
@@ -46,11 +46,12 @@ public class Main {
 		// Create a character for testing.
 		Player player = new Player();
 		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
-		PurpleHills f = new PurpleHills();
-		Lantern l = new Lantern();
-		Tabram s = new Tabram(1);
-		Nichols n = new Nichols(1);
-		s.instantlyMove(Canvas.getDefaultWidth()/2-(r.nextInt(1500)),Canvas.getDefaultHeight()/2);
+		Forest f = new Forest();
+		//PurpleHills purpleHills = new PurpleHills();
+		Lantern lantern = new Lantern();
+		Chapman chapman = new Chapman(10);
+		Nichols nichols = new Nichols(10);
+		chapman.instantlyMove(Canvas.getDefaultWidth()/2-(200 + r.nextInt(1500)),Canvas.getDefaultHeight()/2);
 	}
 	
 	public static long getGameTime() {

@@ -37,7 +37,7 @@ public class Lantern extends Node {
 	}
 	
 	public static void toggle() {
-		if(fuel<=0) { // Do we have no fuel left? UH OH.
+		if(getFuel()<=0) { // Do we have no fuel left? UH OH.
 		}
 		else {
 			setToggle(!isToggle());
@@ -49,18 +49,19 @@ public class Lantern extends Node {
 	// Update
 	public void update() {
 		if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
-			if(fuel > 0) fuel--;
+			if(getFuel() > 0) setFuel(getFuel() - 1);
 			tickTime = Main.getGameTime();
 			
 			// If we have no fuel left, turn off.
-			if(fuel<=0) {
+			if(getFuel()<=0) {
 				toggle = false;
 			}
-			stroke1 = new BasicStroke(700 + fuel*2f);
-			stroke2 = new BasicStroke(800 + fuel*2f);
-			stroke3 = new BasicStroke(925 + fuel*2f);
-			stroke4 = new BasicStroke(1000 + fuel*2f);
+			stroke1 = new BasicStroke(700 + getFuel()*2f);
+			stroke2 = new BasicStroke(800 + getFuel()*2f);
+			stroke3 = new BasicStroke(925 + getFuel()*2f);
+			stroke4 = new BasicStroke(1000 + getFuel()*2f);
 		}
+		System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}
 	
 	// Paint the node and it's kids.
@@ -106,6 +107,14 @@ public class Lantern extends Node {
 
 	public static void setToggle(boolean toggle) {
 		Lantern.toggle = toggle;
+	}
+
+	public static int getFuel() {
+		return fuel;
+	}
+
+	public static void setFuel(int fuel) {
+		Lantern.fuel = fuel;
 	}
 	
 }

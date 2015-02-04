@@ -1,12 +1,16 @@
 package units;
 
+import items.Lantern;
+
 import java.awt.Color;
 
-import items.Lantern;
+import javax.sound.sampled.FloatControl;
+
 import main.Main;
 import saving.SaveState;
-import terrain.Forest;
-import terrain.PurpleHills;
+import terrain.SceneMaps.NicholsPit;
+import audio.BigClip;
+import audio.SoundClip;
 import drawables.Background;
 import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
@@ -19,11 +23,14 @@ public class Nichols extends Unit {
 	// How hard are we?
 	public static int AILevel = 0;
 	
+	// Spooky sound for when lantern is off.
+	protected static SoundClip violin = new SoundClip("./../sounds/ambience/spooky_violin.wav", false);
+	protected boolean playing = false;
+	
 	// Time to kill the player.
-	public static int darknessKillPlayer = 5000 - AILevel*1000*2;
+	public static int darknessKillPlayer = 30000 - AILevel*2500;
 	public static double lastCheck = 0;
 	public static double totalTime = 0;
-	
 	
 	// Have we died? What deathscene.
 	private int deathScene = -1; // -1 if not dead.
@@ -36,6 +43,7 @@ public class Nichols extends Unit {
 		zIndex = 0;
 		nichols = this;
 		AILevel = difficulty;
+		darknessKillPlayer = 30000 - AILevel*2500;
 		hidden = true;
 		loadAnimations();
 	}
@@ -85,17 +93,20 @@ public class Nichols extends Unit {
 		deathSceneStart = Main.getGameTime();
 		deathScene = Main.r.nextInt(2);
 		if(deathScene == 1 || deathScene==0) {
-			createForestDeathScene();
+			createPitDeathScene();
 		}
 	}
 	
 	// WIP FOREST DEATH SCENE
-	public void createForestDeathScene() {
+	public void createPitDeathScene() {
 		// Create a character for testing.
 		Player player = new Player();
 		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
-		Forest f = new Forest();
+		NicholsPit f = new NicholsPit();
 		Lantern l = new Lantern();
+		Lantern.setFuel(100);
+		Lantern.toggle();
+		Background.setC(new Color(77,23,8));
 	}
 	
 	public void runDeathScene() {
@@ -107,8 +118,8 @@ public class Nichols extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		Tabram.groan.getClip().start();
-		Tabram.slash.getClip().loop(3); // WIP IS TABRAM'S DEATH SCREEN
+		Chapman.groan.getClip().start();
+		Chapman.slash.getClip().loop(3); // WIP IS TABRAM'S DEATH SCREEN
 		Background.setBackground(Color.RED);
 	}
 	
@@ -121,18 +132,26 @@ public class Nichols extends Unit {
 		else {
 			// If the lantern is on, don't time.
 			if(Lantern.isToggle()) {
+				playing = false;
+				violin.getBigClip().stop();
 				lastCheck = 0;
 			}
 			
 			// If the lantern is off, tick the timer.
 			else if(!Lantern.isToggle()) {
+				// Play spooky violin louder and louder.
+				FloatControl gainControl = 
+					    (FloatControl) violin.getBigClip().getControl(FloatControl.Type.MASTER_GAIN);
+				gainControl.setValue(-10.0f);
+				if(!playing) { violin.getBigClip().stop(); violin.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY); playing = true; }
+				
+				// Adjust the timer.
 				if(lastCheck==0) lastCheck = Main.getGameTime();
 				else {
 					totalTime += Main.getGameTime() - lastCheck;
 					lastCheck = Main.getGameTime();
 				}
 			}
-			System.out.println(totalTime);
 			
 			// Kill the player if we go over our time limit
 			if(totalTime > darknessKillPlayer) {
