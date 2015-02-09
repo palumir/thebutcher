@@ -1,12 +1,13 @@
 package terrain;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import units.Unit;
 import drawables.Canvas;
 import drawables.Node;
 
@@ -50,6 +51,17 @@ public class TerrainChunk extends Node {
 	// Is the current node "standing" on a terrain chunk?
 	public static boolean touchingTerrain(Node n, String direction, float x, float y) {
 		for(int i = 0; i < getTerrain().size(); i++) if(getTerrain().get(i).impassable && n.touching(getTerrain().get(i), direction, x, y)) return true;
+		return false;
+	}
+	
+	// Is the current node IN terrain? 
+	public static boolean inTerrain(Unit u) {
+		for(int i = 0; i < getTerrain().size(); i++) {
+			TerrainChunk t = getTerrain().get(i);
+			float uRadius = (float) Math.max(((Rectangle2D) u.getShape()).getWidth(),((Rectangle2D) u.getShape()).getHeight());
+			float tRadius = (float) Math.max(((Rectangle2D) t.getShape()).getWidth(),((Rectangle2D) t.getShape()).getHeight());
+			if(u.close((int) (uRadius + tRadius - 1), t)) return true;
+		}
 		return false;
 	}
 

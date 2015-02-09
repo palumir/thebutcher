@@ -71,7 +71,7 @@ public class Unit extends Node implements MouseListener {
 	
 	// Override the paintNode function for Unit.
 	public void paintNode(Graphics2D g2) {
-		if(!hidden) {
+		if(!isHidden()) {
 			// Remember the transform being used when called
 			AffineTransform t = g2.getTransform();
 			
@@ -93,17 +93,11 @@ public class Unit extends Node implements MouseListener {
 			Unit u = units.get(i);
 			u.updateUnit();
 		}
+		
+		// Deal with our baddies.
+		Chapman.spawnOrDespawn();
 	}
-	
-	// Check if this unit is within a radius of u;
-	public boolean close(int radius, Unit u) {
-		float yDistance = (float) (u.trans.getTranslateY() - this.trans.getTranslateY());
-		float xDistance = (float) (u.trans.getTranslateX() - this.trans.getTranslateX());
-		float distanceXY = (float) Math.sqrt(yDistance * yDistance
-				+ xDistance * xDistance); // It should take this many frames
-		return radius > distanceXY;
-	}
-	
+
 	// Create an effect somewhere due to a unit interaction.
 	public static void playEffect(int x, int y, SpriteSheet s, int duration) {
 		Animation a = new Animation(s.getSpriteWidth(),s.getSpriteHeight(), s, duration);

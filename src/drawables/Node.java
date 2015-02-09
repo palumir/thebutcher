@@ -25,7 +25,7 @@ public class Node implements MouseMotionListener, MouseListener {
 	protected int zIndex = 0;
 	
 	// Are we hidden?
-	protected boolean hidden = false;
+	private boolean hidden = false;
 	
 	// Cosmetics
 	private Shape shape;
@@ -247,6 +247,16 @@ public class Node implements MouseMotionListener, MouseListener {
 		
 	}
 	
+	// Check if this unit is within a radius of u;
+	public boolean close(int radius, Node u) {
+		float yDistance = (float) (u.trans.getTranslateY() - this.trans.getTranslateY());
+		float xDistance = (float) (u.trans.getTranslateX() - this.trans.getTranslateX());
+		float distanceXY = (float) Math.sqrt(yDistance * yDistance
+				+ xDistance * xDistance); // It should take this many frames
+		return radius > distanceXY;
+	}
+	
+	
 	// Node movement basics
 	public void instantlyMove(float x, float y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
@@ -274,6 +284,14 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	public void setzIndex(int zIndex) {
 		this.zIndex = zIndex;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 
 }

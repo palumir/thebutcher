@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import main.Main;
+import terrain.Doodad;
 import terrain.TerrainChunk;
 import audio.BigClip;
 import audio.SoundClip;
@@ -18,6 +19,9 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 	private static BufferedImage dirt;
 	private static BufferedImage dirtRoof;
 	
+	// Doodads
+	private static BufferedImage willow;
+	
 	// Ambience
 	private static SoundClip pulse = new SoundClip("./../sounds/ambience/yewbic_ambience.wav", false);
 	// https://www.freesound.org/people/xDimebagx/sounds/193692/
@@ -29,13 +33,20 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 	public NicholsPit() {
 		super();
 		pulse.loop(BigClip.LOOP_CONTINUOUSLY);
-		//music.getBigClip().loop(BigClip.LOOP_CONTINUOUSLY);
 		SpriteSheet sheet = new SpriteSheet(
 				"src/images/terrain/forest/forest.png", 50, 50, 50, 50, 3, 1);
+		
+		// Load terrain
 		grassy = sheet.getSprites()[0];
 		dirt = sheet.getSprites()[1];
 		dirtRoof = sheet.getSprites()[2];
-		genRandomWalkableLandBetween(-200,500,Canvas.getDefaultHeight()/2 + 50,900);
+		
+		// Load doodads
+		SpriteSheet treeSheet = new SpriteSheet(
+				"src/images/terrain/forest/doodads/weepingwillow.png", 308, 308, 200, 200, 1, 1);
+		willow = treeSheet.getSprites()[0];
+		
+		genRandomWalkableLandBetween(-50,1000,Canvas.getDefaultHeight()/2  + 50,900);
 	}
 	
 	// Generates land between x and y which is walkable.
@@ -47,21 +58,35 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 		// Some pre-calcs.
 		int howManyAcross = Math.abs(x2 - x1)/50;
 		int howManyTall = Math.max(Math.abs(y2-y1)/(50*5), r.nextInt(Math.max(Math.abs(y2 - y1)/50 - 2,1)) + 2); 
+		int howManyDown = -2;
 		
+		// Add the willow.
+		Doodad doodad = new Doodad(willow);
+		doodad.instantlyMove(((x1 / grassy.
+				getWidth())) * grassy.getWidth() - grassy.getWidth()/2, (
+				howManyDown + y1 / grassy.getHeight())
+				* grassy.getHeight()
+				- grassy.getHeight());
+		this.add(doodad);
 		// Spawn our terrain with our random calculations
 		for(int i = 0; i < howManyAcross; i++) {
 			for(int j = 0; j < howManyTall; j++) {
 				if(j==0) chunk = new TerrainChunk(grassy);
 				else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
 				else chunk = new TerrainChunk(dirt);
-				chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j+ y1/50)*chunk.getSprite().getHeight());
+				chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j+howManyDown+y1/50)*chunk.getSprite().getHeight());
 				this.add(chunk);
 			}
 			
-		// Move the bottom up or down. For randomness.
-		if(r.nextInt(2) == 1) howManyTall--;
-		else howManyTall++;
-		howManyTall = Math.min(Math.max(howManyTall,2),Math.abs(y2 - y1)/50);
+		// Build a hill down.
+		if(i>3) {
+			howManyDown++;
+		}
+		
+		// Build a hill up.
+		if(i>15) {
+			howManyDown = howManyDown - 2;
+		}
 		}
 	}
 }

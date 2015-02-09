@@ -18,15 +18,16 @@ public class Lantern extends Node {
 	protected static SoundClip switchSound = new SoundClip("./../sounds/effects/switch.wav", true);
 	
 	// Levels
-	private static int fuel = 50; // 0-100%
+	private static int fuel = 100; // 0-100%
 	private static int fuelLastsFor = 60000; // milliseconds
+	private static boolean fuelDropping = true;
 	private static double tickTime = 0;
 	
 	// Strokes for the light
-	BasicStroke stroke1 = new BasicStroke(800);
-	BasicStroke stroke2 = new BasicStroke(900);
-	BasicStroke stroke3 = new BasicStroke(975);
-	BasicStroke stroke4 = new BasicStroke(1050);
+	BasicStroke stroke1 = new BasicStroke(500 + getFuel()*3f);
+	BasicStroke stroke2 = new BasicStroke(600 + getFuel()*3f);
+	BasicStroke stroke3 = new BasicStroke(700 + getFuel()*3f);
+	BasicStroke stroke4 = new BasicStroke(850 + getFuel()*3f);
 	
 	private static boolean toggle = true;
 
@@ -34,6 +35,10 @@ public class Lantern extends Node {
 		super(new Rectangle2D.Double(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight()), Color.BLACK);
 		this.movesWithPlayer = true;
 		this.zIndex = 1;
+		stroke1 = new BasicStroke(500 + getFuel()*3f);
+		stroke2 = new BasicStroke(600 + getFuel()*3f);
+		stroke3 = new BasicStroke(700 + getFuel()*3f);
+		stroke4 = new BasicStroke(850 + getFuel()*3f);
 	}
 	
 	public static void toggle() {
@@ -46,20 +51,30 @@ public class Lantern extends Node {
 		}
 	}
 	
+	public static void toggleSilent() {
+		if(getFuel()<=0) { // Do we have no fuel left? UH OH.
+		}
+		else {
+			setToggle(!isToggle());
+		}
+	}
+	
 	// Update
 	public void update() {
-		if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
-			if(getFuel() > 0) setFuel(getFuel() - 1);
-			tickTime = Main.getGameTime();
-			
-			// If we have no fuel left, turn off.
-			if(getFuel()<=0) {
-				toggle = false;
+		if(fuelDropping) {
+			if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
+				if(getFuel() > 0) setFuel(getFuel() - 1);
+				tickTime = Main.getGameTime();
+				
+				// If we have no fuel left, turn off.
+				if(getFuel()<=0) {
+					toggle = false;
+				}
+				stroke1 = new BasicStroke(500 + getFuel()*3f);
+				stroke2 = new BasicStroke(600 + getFuel()*3f);
+				stroke3 = new BasicStroke(700 + getFuel()*3f);
+				stroke4 = new BasicStroke(850 + getFuel()*3f);
 			}
-			/*stroke1.width = 700 + getFuel()*2f;
-			stroke2.width = 800 + getFuel()*2f;
-			stroke3.width = 925 + getFuel()*2f;
-			stroke4.width = 1000 + getFuel()*2f;*/
 		}
 		System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}
@@ -72,7 +87,7 @@ public class Lantern extends Node {
 			AffineTransform currentTransform = this.getFullTransform();
 			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			float alpha = 0.30f;
+			float alpha = 0.50f;
 			
 			// Draw the lantern
 			int type = AlphaComposite.SRC_OVER; 
@@ -81,20 +96,21 @@ public class Lantern extends Node {
 			g2.setPaint(color);
 			
 			if(isToggle()) {
-				g2.setStroke(stroke1);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+			/*	g2.setStroke(stroke1);
+				if(fuel<=42) g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				else g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.setStroke(stroke2);
 				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.setStroke(stroke3);
 				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.setStroke(stroke4);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());*/
 			}
 			else {
+				/*g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());*/
 			}
 			
 			// Restore the transform.
@@ -115,6 +131,14 @@ public class Lantern extends Node {
 
 	public static void setFuel(int fuel) {
 		Lantern.fuel = fuel;
+	}
+
+	public static boolean isFuelDropping() {
+		return fuelDropping;
+	}
+
+	public static void setFuelDropping(boolean fuelDropping) {
+		Lantern.fuelDropping = fuelDropping;
 	}
 	
 }

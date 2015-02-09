@@ -49,9 +49,9 @@ public class Main {
 		Forest f = new Forest();
 		//PurpleHills purpleHills = new PurpleHills();
 		Lantern lantern = new Lantern();
-		Chapman chapman = new Chapman(0);
-		Nichols nichols = new Nichols(0);
-		chapman.instantlyMove(Canvas.getDefaultWidth()/2-(300 + r.nextInt(1500)),Canvas.getDefaultHeight()/2);
+		Chapman.AILevel = 1;
+		Nichols.AILevel = 1;
+		Nichols nichols = new Nichols();
 	}
 	
 	public static long getGameTime() {

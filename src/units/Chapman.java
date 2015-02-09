@@ -10,6 +10,7 @@ import main.Main;
 import terrain.TerrainChunk;
 import audio.SoundClip;
 import drawables.Background;
+import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
 
@@ -28,10 +29,16 @@ public class Chapman extends Unit {
 	private static int chaseRange = 150;
 	private static int closeRange = 230;
 	private static int killRange = 30;
+	private static double minSpawnInterval = 30000;
+	private static double spawnCheck = 10000;
+	
+	// When we he last spawned?
+	private static double lastSpawn = 0;
 	
 	// States
 	private boolean closeToPlayer = false;
 	private boolean chasingPlayer = false;
+	private boolean passed = false; // Has the player actually passed chapman?
 	
 	// Sounds for Chapman
 	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
@@ -41,12 +48,12 @@ public class Chapman extends Unit {
 	protected static double meanderTime = 0;
 	
 	// Player constructor
-	public Chapman(int difficulty) {
+	public Chapman() {
 		super(20,64,new SpriteSheet("src/images/characters/Chapman.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
-		AILevel = difficulty;
 		chapman = this;
 		zIndex = 0;
+		passed = false;
 		
 		// Configure difficulty
 		meanderSpeed = 1 + (float)AILevel/1.3f;
@@ -56,6 +63,7 @@ public class Chapman extends Unit {
 		closeRange = 230;
 		killRange = 30+AILevel*2;
 		moveSpeed = meanderSpeed;
+		minSpawnInterval = 30000 + AILevel*6000;
 		
 		// Load animations
 		loadAnimations();
@@ -98,12 +106,49 @@ public class Chapman extends Unit {
 	
 	// Obviously, update the unit every frame.
 	public void updateUnit() {
-		this.chapmanAI();
+		this.AI();
 		this.gravity();
 		this.move();
 	}
 	
-	public void chapmanAI() {
+	// What to do when Chapman isn't spawned?
+	public static void spawnOrDespawn() {
+		if(chapman==null) {
+			
+			// Spawn randomly. WIP: THIS SHOULD BE TIMER BASED TOO AT A POINT
+			if(Main.r.nextInt(2) == 1) {
+				spawn();
+			}
+		
+		}
+		
+		// Delete Chapman if we move past and he goes off screen, or if we move 3 screens away from him.
+		else if((chapman.passed && !chapman.close(Math.max(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) ||
+				!chapman.close(Math.max(3*Canvas.getDefaultWidth()/2, 3*Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) {
+			chapman.deleteUnit(); 
+			chapman = null;
+		}
+	}
+	
+	// Spawn chapman
+	public static void spawn() {
+		Chapman c = new Chapman();
+		Player p = Player.getCurrentPlayer();
+		
+		// Is the player moving left or right? Don't spawn Chapman behind the player, silly!
+		int leftOrRight = 1;
+		if(p.facingLeft) leftOrRight = -1;
+		
+		// Move to off screen. Don't care about terrain at this point
+		c.instantlyMove((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
+		
+		// If we're in terrain, then move up until we're not.
+		while(TerrainChunk.inTerrain(c)) {
+			c.instantlyMove(0, -5);
+		}
+	}
+	
+	public void AI() {
 		
 		// STOP STATES
 		// If the player has gotten 150 away, stop chasing.
@@ -149,6 +194,11 @@ public class Chapman extends Unit {
 		if(movingLeft && TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) {
 			movingLeft = false;
 			movingRight = false;
+		}
+		
+		// Let the player know if Chapman has passed.
+		if(Math.abs(Player.getCurrentPlayer().trans.getTranslateX() - this.trans.getTranslateX()) < 5) {
+			passed = true;
 		}
 	}
 	

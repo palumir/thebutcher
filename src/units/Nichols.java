@@ -4,8 +4,6 @@ import items.Lantern;
 
 import java.awt.Color;
 
-import javax.sound.sampled.FloatControl;
-
 import main.Main;
 import saving.SaveState;
 import terrain.SceneMaps.NicholsPit;
@@ -38,14 +36,13 @@ public class Nichols extends Unit {
 	private double deathSceneStart = 0;
 	
 	// Player constructor
-	public Nichols(int difficulty) {
+	public Nichols() {
 		super(20,64,new SpriteSheet("src/images/characters/smith.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		zIndex = 0;
 		nichols = this;
-		AILevel = difficulty;
 		darknessKillPlayer = 30000 - AILevel*2500;
-		hidden = true;
+		setHidden(true);
 		loadAnimations();
 	}
 	
@@ -105,14 +102,15 @@ public class Nichols extends Unit {
 		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 		NicholsPit f = new NicholsPit();
 		Lantern l = new Lantern();
-		Lantern.setFuel(100);
-		Lantern.toggle();
-		Background.setC(new Color(77,23,8));
+		Lantern.setFuelDropping(false);
+		Lantern.setFuel(5);
+		Lantern.toggleSilent();
+		Background.setC(Color.BLACK);
 	}
 	
 	public void runDeathScene() {
 		// Kill after random seconds. I'm a fucking asshole.
-		if(Main.getGameTime() - deathSceneStart >  (Main.r.nextInt(15)*1000 + 5000)) {
+		if(Main.getGameTime() - deathSceneStart >  (Main.r.nextInt(15)*1000 + 7000)) {
 			killPlayer();
 		}
 	}
@@ -142,7 +140,7 @@ public class Nichols extends Unit {
 				// Play spooky violin louder and louder
 				// -15 => +30
 				double percent = totalTime/darknessKillPlayer;
-				float val = (float) (45*percent - 15);
+				float val = (float) (21*percent - 15);
 				violin.setVolume(val);
 				if(!violin.playing) violin.loop(BigClip.LOOP_CONTINUOUSLY);
 				
@@ -167,7 +165,7 @@ public class Nichols extends Unit {
 		SaveState.purgeAll();
 		
 		// Create nichols so we can run the scene.
-		Nichols n = new Nichols(AILevel);
+		Nichols n = new Nichols();
 		// WIP DO SOMETHING BEFORE WE TRANSITION TO THE DEATH SCENE
 		n.createDeathScene();
 		stab.start();
