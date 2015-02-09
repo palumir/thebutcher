@@ -12,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import main.Main;
+import units.Player;
 import units.Unit;
 
 // One drawable object.
@@ -22,10 +23,8 @@ public class Node implements MouseMotionListener, MouseListener {
 	protected boolean movesWithPlayer = false;
 	protected int zIndex = 0;
 	
-	// Are we hidden, what fps?
+	// Are we hidden
 	protected boolean hidden = false;
-	protected int FPS = Canvas.getFPS();
-	protected double lastPainted = 0;
 	
 	// Cosmetics
 	private Shape shape;
@@ -102,28 +101,28 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
-			// When was it last painted?
-			lastPainted = Main.getGameTime();
-			
-			// Remember the transform being used when called
-			AffineTransform t = g2.getTransform();
-			// Maintain aspect ratio.
-			AffineTransform currentTransform = this.getFullTransform();
-			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			g2.setColor(this.color);
-			g2.fill(this.getShape());
-			
-			// Restore the transform.
-			g2.setTransform(t);
-	
-			// Paint each child
-			for (Node c : this.children) {
-				c.paintNode(g2);
+		// Only paint it if the player can see it...
+		if(Player.getCurrentPlayer().close(Math.max(Canvas.getDefaultHeight()/2 + 200, Canvas.getDefaultWidth()/2 + 200),this)) {
+				// Remember the transform being used when called
+				AffineTransform t = g2.getTransform();
+				// Maintain aspect ratio.
+				AffineTransform currentTransform = this.getFullTransform();
+				g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+				g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
+				g2.setColor(this.color);
+				g2.fill(this.getShape());
+				
+				// Restore the transform.
+				g2.setTransform(t);
+		
+				// Paint each child
+				for (Node c : this.children) {
+					c.paintNode(g2);
+				}
+		
+				// Restore the transform.
+				g2.setTransform(t);
 			}
-	
-			// Restore the transform.
-			g2.setTransform(t);
 	}
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:
@@ -248,6 +247,16 @@ public class Node implements MouseMotionListener, MouseListener {
 		
 	}
 	
+	// Check if this unit is within a radius of u;
+	public boolean close(int radius, Node u) {
+		float yDistance = (float) (u.trans.getTranslateY() - this.trans.getTranslateY());
+		float xDistance = (float) (u.trans.getTranslateX() - this.trans.getTranslateX());
+		float distanceXY = (float) Math.sqrt(yDistance * yDistance
+				+ xDistance * xDistance); // It should take this many frames
+		return radius > distanceXY;
+	}
+	
+	
 	// Node movement basics
 	public void instantlyMove(float x, float y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
@@ -275,6 +284,14 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	public void setzIndex(int zIndex) {
 		this.zIndex = zIndex;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 
 }

@@ -55,6 +55,7 @@ public class SoundClip {
 		if(small) gainControl = (FloatControl) this.clip.getControl(FloatControl.Type.MASTER_GAIN);
 		else gainControl = (FloatControl) this.bigClip.getControl(FloatControl.Type.MASTER_GAIN);
 		// -15 => +30
+		if(f>6) f = 6;
 		gainControl.setValue(f);
 	}
 	

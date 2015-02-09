@@ -33,7 +33,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 		grassy = sheet.getSprites()[0];
 		dirt = sheet.getSprites()[1];
 		dirtRoof = sheet.getSprites()[2];
-		genRandomWalkableLandBetween(-10000,10000,600,900);
+		genRandomWalkableLandBetween(-5000,5000,600,5000);
 	}
 	
 	// Generates land between x and y which is walkable.
@@ -42,31 +42,54 @@ public class Forest extends ArrayList<TerrainChunk> {
 		Random r = Main.r;
 		TerrainChunk chunk = null;
 		
+		// Empty chunk, for tunnels
+		TerrainChunk emptyChunk = new TerrainChunk(grassy);
+		emptyChunk.setImpassable(false);
+		
 		// Some pre-calcs.
 		int howManyAcross = Math.abs(x2 - x1)/50;
-		int howManyTall = Math.max(Math.abs(y2-y1)/(50*5), r.nextInt(Math.max(Math.abs(y2 - y1)/50 - 2,1)) + 2); 
+		int howManyTall = Math.abs(y2-y1)/(50); 
 		int howManyDown = 0;
+		int chanceForTunnel = 2;
+		
+		// Keep a record of where things are.
+		TerrainChunk[][] currentTerrain = new TerrainChunk[howManyAcross][howManyTall];
 		
 		// Spawn our terrain with our random calculations
 		for(int i = 0; i < howManyAcross; i++) {
 			for(int j = 0; j < howManyTall; j++) {
-				if(j==0) chunk = new TerrainChunk(grassy);
-				else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
-				else chunk = new TerrainChunk(dirt);
-				chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j + howManyDown + y1/50)*chunk.getSprite().getHeight());
-				this.add(chunk);
+					if(j==0) chunk = new TerrainChunk(grassy);
+					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
+					else chunk = new TerrainChunk(dirt);
+					chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j + howManyDown + y1/50)*chunk.getSprite().getHeight());
+					this.add(chunk);
+					currentTerrain[i][j] = chunk;
 			}
+			// Move the top up or down. For randomness.
+			int bestOf = r.nextInt(9);
+			if(bestOf==0) howManyDown += 1; 
+			else if(bestOf==1) howManyDown -= 1;
+			else  howManyDown += 0;
+		}
 			
-		// Move the top up or down. For randomness.
-		int bestOf = r.nextInt(9);
-		if(bestOf==0) howManyDown += 1; 
-		else if(bestOf==1) howManyDown -= 1;
-		else  howManyDown += 0;
-			
-		// Move the bottom up or down. For randomness.
-		if(r.nextInt(2) == 1) howManyTall--;
-		else howManyTall++;
-		howManyTall = Math.min(Math.max(howManyTall,2),Math.abs(y2 - y1)/50);
+		// Make one tunnel
+		int howLong = 100;
+		boolean[][] tunneledFrom = new boolean[howManyAcross][howManyTall];
+		for(int i=0; i < howManyAcross; i++) for(int j=0; j < howManyTall; j++) tunneledFrom[i][j] = false;
+		for(int i = 0; i < howManyAcross; i++) {
+			// Do we tunnel?
+			if(r.nextInt(chanceForTunnel) == 1) {
+				currentTerrain[i][0].deleteChunk();
+				currentTerrain[i][0] = emptyChunk;
+				int j = 0;
+				int length = 0;
+				while(length < howLong) {
+					int direction = r.nextInt(4); // 0 - left 1 - right 2 - down left 3 - down right
+					int howManyInDirection = r.nextInt(howLong - length + 1);
+					length++;
+				}
+			break;
+			}
 		}
 	}
 }

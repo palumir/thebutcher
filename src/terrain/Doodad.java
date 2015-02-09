@@ -16,7 +16,7 @@ public class Doodad extends TerrainChunk {
 	// Just one chunk of the terrain.
 	public Doodad(BufferedImage sp) {
 		super(sp);
-		impassable = false;
+		setImpassable(false);
 	}
 }
 
