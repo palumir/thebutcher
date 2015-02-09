@@ -33,7 +33,7 @@ public class Canvas extends JComponent {
 	
 	// The game canvas. Only one.
 	private static Canvas gameCanvas;
-	private static int FPS = 60; // How often we update the animation.
+	private static int maxFPS = 50; // How often we update the animation.
 	private Timer timer; // The timer to actually cause the animation updates.
 	private static long gameTime = 0; // The clock for the current canvas. In
 										// milliseconds.
@@ -126,7 +126,7 @@ public class Canvas extends JComponent {
 
 		// Start the game timer.
 		this.setOpaque(true); // we paint every pixel; Java can optimize
-		timer = new Timer(20, taskPerformer);
+		timer = new Timer(1000/maxFPS, taskPerformer);
 		timer.setInitialDelay(190);
 		timer.start();
 		this.setFocusable(true);
@@ -384,6 +384,14 @@ public class Canvas extends JComponent {
 
 	public void setNodes(ArrayList<Node> nodes) {
 		this.nodes = nodes;
+	}
+
+	public static int getFPS() {
+		return maxFPS;
+	}
+
+	public static void setFPS(int fPS) {
+		maxFPS = fPS;
 	}
 
 }

@@ -9,11 +9,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 
-import terrain.TerrainChunk;
-import units.Player;
+import main.Main;
 import units.Unit;
 
 // One drawable object.
@@ -24,8 +22,10 @@ public class Node implements MouseMotionListener, MouseListener {
 	protected boolean movesWithPlayer = false;
 	protected int zIndex = 0;
 	
-	// Are we hidden?
+	// Are we hidden, what fps?
 	protected boolean hidden = false;
+	protected int FPS = Canvas.getFPS();
+	protected double lastPainted = 0;
 	
 	// Cosmetics
 	private Shape shape;
@@ -102,7 +102,9 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
-		if(!shapeHidden) {
+			// When was it last painted?
+			lastPainted = Main.getGameTime();
+			
 			// Remember the transform being used when called
 			AffineTransform t = g2.getTransform();
 			// Maintain aspect ratio.
@@ -122,7 +124,6 @@ public class Node implements MouseMotionListener, MouseListener {
 	
 			// Restore the transform.
 			g2.setTransform(t);
-		}
 	}
 	
 	// Test intersection of two nodes. Does not ask about children. ASSUMES RECTANGLES. D:

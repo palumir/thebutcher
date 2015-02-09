@@ -23,10 +23,11 @@ public class Lantern extends Node {
 	private static double tickTime = 0;
 	
 	// Strokes for the light
-	BasicStroke stroke1 = new BasicStroke(800);
-	BasicStroke stroke2 = new BasicStroke(900);
-	BasicStroke stroke3 = new BasicStroke(975);
-	BasicStroke stroke4 = new BasicStroke(1050);
+	private static BasicStroke strokeSmall = new BasicStroke(1);
+	private static BasicStroke stroke1 = new BasicStroke(150);
+	private static BasicStroke stroke2 = new BasicStroke(150);
+	private static BasicStroke stroke3 = new BasicStroke(150);
+	private static BasicStroke stroke4 = new BasicStroke(150);
 	
 	private static boolean toggle = true;
 
@@ -34,6 +35,7 @@ public class Lantern extends Node {
 		super(new Rectangle2D.Double(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight()), Color.BLACK);
 		this.movesWithPlayer = true;
 		this.zIndex = 1;
+		FPS = 49;
 	}
 	
 	public static void toggle() {
@@ -48,7 +50,6 @@ public class Lantern extends Node {
 	
 	// Update
 	public void update() {
-		if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
 			if(getFuel() > 0) setFuel(getFuel() - 1);
 			tickTime = Main.getGameTime();
 			
@@ -56,16 +57,19 @@ public class Lantern extends Node {
 			if(getFuel()<=0) {
 				toggle = false;
 			}
-			/*stroke1.width = 700 + getFuel()*2f;
-			stroke2.width = 800 + getFuel()*2f;
-			stroke3.width = 925 + getFuel()*2f;
-			stroke4.width = 1000 + getFuel()*2f;*/
-		}
+			stroke1 = new BasicStroke(700 + getFuel()*2f);
+			stroke2 = new BasicStroke(800 + getFuel()*2f);
+			stroke3 = new BasicStroke(925 + getFuel()*2f);
+			stroke4 = new BasicStroke(1000 + getFuel()*2f);
 		System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}
 	
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
+		if(Main.getGameTime() - lastPainted > 1000/FPS) {
+			// When was it last painted?
+			lastPainted = Main.getGameTime();
+			
 			// Remember the transform being used when called
 			AffineTransform t = g2.getTransform();
 			// Maintain aspect ratio.
@@ -80,25 +84,28 @@ public class Lantern extends Node {
 			Color color = new Color(0, 0, 0, alpha); //Black 
 			g2.setPaint(color);
 			
-			if(isToggle()) {
+			/*if(isToggle()) {
+				int fuelConst = getFuel()*2;
 				g2.setStroke(stroke1);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.drawOval(fuelConst/2,fuelConst/2,Canvas.getDefaultWidth() - fuelConst, Canvas.getDefaultHeight() - fuelConst);
 				g2.setStroke(stroke2);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.drawOval(fuelConst/2,fuelConst/2,Canvas.getDefaultWidth() - fuelConst, Canvas.getDefaultHeight() - fuelConst);
 				g2.setStroke(stroke3);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.drawOval(fuelConst/2,fuelConst/2,Canvas.getDefaultWidth() - fuelConst, Canvas.getDefaultHeight() - fuelConst);
 				g2.setStroke(stroke4);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+				g2.drawOval(fuelConst/2,fuelConst/2,Canvas.getDefaultWidth() - fuelConst, Canvas.getDefaultHeight() - fuelConst);
 			}
 			else {
+				g2.setStroke(strokeSmall);
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-			}
+			}*/
 			
 			// Restore the transform.
 			g2.setTransform(t);
+		}
 	}
 
 	public static boolean isToggle() {

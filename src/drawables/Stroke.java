@@ -12,7 +12,9 @@ import java.awt.BasicStroke;
 public class Stroke extends BasicStroke{
      float lineWidth, miterLimit, dashArray[], dashPhase;
      int endCap, lineJoin;
-     public Stroke() {
+     public Stroke(int width) {
+    	 super(width);
+    	 this.lineWidth = width;
      }
      public Stroke(float width, int cap, int join, float miterLimit, float[] dash, float dash_phase){
           super(width,cap,join,miterLimit,dash,dash_phase);
