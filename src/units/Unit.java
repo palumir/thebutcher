@@ -21,7 +21,10 @@ public class Unit extends Node implements MouseListener {
 	// Fall speed of the unit (this is for gravity, obviously)
 	private static float defaultFallSpeed = -3;
 	protected static float fallSpeedCap = -5;
-	private float fallSpeed = -3;
+	protected float fallSpeed = -3;
+	protected int wallJumps = 0;
+	protected int numWallJumps = 3;
+	protected float jumpSpeed = 5.6f;
 	
 	// Sounds for monster interactions.
 	protected static SoundClip chasing = new SoundClip("./../sounds/ambience/chasing.wav", true);
@@ -54,7 +57,7 @@ public class Unit extends Node implements MouseListener {
 	
 	public Unit(int width, int height, SpriteSheet ss) {
 		// Default unit
-		super(new Rectangle2D.Double((-1)*width/2, (-1)*height/2, width, height),Color.RED);
+		super(width, height);
 		spriteSheet = ss;
 		this.shapeHidden = true;
 		units.add(this);
@@ -63,6 +66,7 @@ public class Unit extends Node implements MouseListener {
 	// What happens when the unit is on the ground.
 	public void onGround() {
 		if(hitGround==false && fallSpeed < 0) {
+			wallJumps = 0;
 			playEffect((int) this.trans.getTranslateX(),(int) this.trans.getTranslateY(),Unit.jumpEffect,500);
 			this.setFallSpeed(Unit.defaultFallSpeed);
 			hitGround = true;
@@ -141,6 +145,11 @@ public class Unit extends Node implements MouseListener {
 		return !TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap);
 	}
 	
+	// Are touching wall?
+	public boolean wallTouching() {
+		return TerrainChunk.touchingTerrain(this,"Left",moveSpeed,0) || TerrainChunk.touchingTerrain(this,"Right",-moveSpeed,0);
+	}
+	
 	// Move right
 	public void moveRight(boolean b) {
 		movingRight = b;
@@ -159,10 +168,17 @@ public class Unit extends Node implements MouseListener {
 	// Player pressed up key/jump
 	public void jump() {
 		if(!falling()) { 
-			setFallSpeed(5);
+			setFallSpeed(jumpSpeed);
 			hitGround = false;
 			if(facingLeft) animate(jumpLeft);
 			else animate(jumpRight);
+		}
+		if(wallTouching() && wallJumps != numWallJumps) {
+			setFallSpeed(jumpSpeed - jumpSpeed*(wallJumps/numWallJumps));
+			hitGround = false;
+			if(facingLeft) animate(jumpLeft);
+			else animate(jumpRight);
+			wallJumps++;
 		}
 	}
 	

@@ -19,17 +19,18 @@ public class Nichols extends Unit {
 	public static Nichols nichols;
 	
 	// How hard are we?
-	public static int AILevel = 0;
+	public static int AILevel = 1;
 	
 	// Spooky sound for when lantern is off.
 	protected static SoundClip violin = new SoundClip("./../sounds/ambience/spooky_violin.wav", false);
 	protected static SoundClip stab = new SoundClip("./../sounds/ambience/violin_stab.wav", true);
 	protected boolean playing = false;
 	
-	// Time to kill the player.
+	// Static AI variables
 	public static int darknessKillPlayer = 30000 - AILevel*2500;
 	public static double lastCheck = 0;
 	public static double totalTime = 0;
+	public static float howQuicklyDoWeGiveBackTime = 1f; // 1x as fast
 	
 	// Have we died? What deathscene.
 	private int deathScene = -1; // -1 if not dead.
@@ -41,7 +42,11 @@ public class Nichols extends Unit {
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		zIndex = 0;
 		nichols = this;
+		
+		// AI Static variables
 		darknessKillPlayer = 30000 - AILevel*2500;
+		howQuicklyDoWeGiveBackTime = 1/Math.max(1,AILevel);
+		
 		setHidden(true);
 		loadAnimations();
 	}
@@ -133,6 +138,23 @@ public class Nichols extends Unit {
 			if(Lantern.isToggle() && violin.playing) {
 				violin.stop();
 				lastCheck = 0;
+			}
+			
+			// If the lantern is on, give them their time back.
+			else if(Lantern.isToggle()) {
+				// Play spooky violin louder and louder
+				// -15 => +30
+				double percent = totalTime/darknessKillPlayer;
+				float val = (float) (21*percent - 15);
+				violin.setVolume(val);
+				
+				// Adjust the timer.
+				if(lastCheck==0) lastCheck = Main.getGameTime();
+				else {
+					totalTime -= Main.getGameTime() - howQuicklyDoWeGiveBackTime*lastCheck;
+					if(totalTime<0) totalTime = 0;
+					lastCheck = Main.getGameTime();
+				}
 			}
 			
 			// If the lantern is off, tick the timer.

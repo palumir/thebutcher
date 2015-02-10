@@ -64,7 +64,7 @@ public class PurpleHills extends ArrayList<TerrainChunk> {
 			for(int j = 0; j < howManyTall; j++) {
 				
 				// Decide if we want a grass top, dirt middle, or dirt bottom.
-				if(j==0) {
+				/*if(j==0) {
 					chunk = new TerrainChunk(grassy);
 					
 					// Maybe even add a random doodad on top?
@@ -82,7 +82,7 @@ public class PurpleHills extends ArrayList<TerrainChunk> {
 					}
 				}
 				else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
-				else chunk = new TerrainChunk(dirt);
+				else chunk = new TerrainChunk(dirt);*/
 				chunk.instantlyMove((i+(x1/chunk.getSprite().getWidth()))*chunk.getSprite().getWidth(), (j + howManyDown + y1/chunk.getSprite().getHeight())*chunk.getSprite().getHeight());
 				this.add(chunk);
 			}

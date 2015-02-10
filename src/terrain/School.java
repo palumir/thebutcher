@@ -30,7 +30,7 @@ public class School extends ArrayList<TerrainChunk> {
 	
 	void genClassRoom(int x, int y, int size, boolean doorLeft, boolean doorRight, boolean doorDown, boolean doorUp) {
 		TerrainChunk chunk;	
-		float spawnHeight = (float) (Canvas.getDefaultHeight()/2 + ((Rectangle2D)Player.getCurrentPlayer().getShape()).getHeight()/2);
+		float spawnHeight = (float) (Canvas.getDefaultHeight()/2 + Player.getCurrentPlayer().getHeight()/2);
 		float spawnWidth = Canvas.getDefaultWidth()/2 - size/4;
 		
 		/*// Floor

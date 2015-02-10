@@ -33,7 +33,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 		grassy = sheet.getSprites()[0];
 		dirt = sheet.getSprites()[1];
 		dirtRoof = sheet.getSprites()[2];
-		genRandomWalkableLandBetween(-5000,5000,600,5000);
+		genRandomWalkableLandBetween(-200,200,10,100);
 	}
 	
 	// Generates land between x and y which is walkable.
@@ -43,12 +43,12 @@ public class Forest extends ArrayList<TerrainChunk> {
 		TerrainChunk chunk = null;
 		
 		// Empty chunk, for tunnels
-		TerrainChunk emptyChunk = new TerrainChunk(grassy);
+		TerrainChunk emptyChunk = new TerrainChunk(grassy,0,0);
 		emptyChunk.setImpassable(false);
 		
 		// Some pre-calcs.
-		int howManyAcross = Math.abs(x2 - x1)/50;
-		int howManyTall = Math.abs(y2-y1)/(50); 
+		int howManyAcross = Math.abs(x2 - x1);
+		int howManyTall = Math.abs(y2-y1); 
 		int howManyDown = 0;
 		int chanceForTunnel = 20;
 		
@@ -58,18 +58,12 @@ public class Forest extends ArrayList<TerrainChunk> {
 		// Spawn our terrain with our random calculations
 		for(int i = 0; i < howManyAcross; i++) {
 			for(int j = 0; j < howManyTall; j++) {
-					if(j==0) chunk = new TerrainChunk(grassy);
-					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
-					else chunk = new TerrainChunk(dirt);
-					chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j + howManyDown + y1/50)*chunk.getSprite().getHeight());
+					if(j==0) chunk = new TerrainChunk(grassy, (i+(x1)), (j + howManyDown + y1));
+					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + howManyDown + y1));
+					else chunk = new TerrainChunk(dirt, (i+(x1)), (j + howManyDown + y1));
 					this.add(chunk);
 					currentTerrain[i][j] = chunk;
 			}
-			// Move the top up or down. For randomness.
-			int bestOf = r.nextInt(9);
-			if(bestOf==0) howManyDown += 1; 
-			else if(bestOf==1) howManyDown -= 1;
-			else  howManyDown += 0;
 		}
 			
 		// Make one tunnel
@@ -81,31 +75,55 @@ public class Forest extends ArrayList<TerrainChunk> {
 			if(r.nextInt(chanceForTunnel) == 1) {
 				currentTerrain[x][0].deleteChunk();
 				currentTerrain[x][0] = emptyChunk;
-				int j = 1;
-				int i = x+1;
+				int j = 0;
+				int i = x;
 				int length = 0;
 				while(length < howLong) {
 					int direction = r.nextInt(4); // 0 - left 1 - right 2 - down left 3 - down right
-					int howManyInDirection = 5;
+					
+					// Left or right go as far as you want.
+					int howManyInDirection = Math.max(5,Math.min(r.nextInt(howLong),howLong/3));
+					
+					// Down left/Down Right only go up to a certain point
+					if(direction == 3 || direction == 2) {
+						howManyInDirection = Math.max(3, r.nextInt(6));
+					}
+					
+					// Don't allow the grass to get owned.
+					if((j == 0 || j == 1) && (direction == 1 || direction == 0)) {
+						howManyInDirection = 0;
+					}
+					
+					// Put down the blocks
 					for(int m = 0; m < howManyInDirection; m++) {
 						if(j+1 < howManyTall && i-1 >=0 && i + 1 < howManyAcross) {
 							if(direction==0) {
 								i--;
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
+								currentTerrain[i][j+1].deleteChunk();
+								currentTerrain[i][j+1] = emptyChunk;
 							}
 							if(direction==1) {
 								i++;
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
+								currentTerrain[i][j+1].deleteChunk();
+								currentTerrain[i][j+1] = emptyChunk;
 							}
 							if(direction==2) {
 								j++;
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
+								i++;
+								currentTerrain[i][j].deleteChunk();
+								currentTerrain[i][j] = emptyChunk;
 							}
 							if(direction==3) {
 								j++;
+								currentTerrain[i][j].deleteChunk();
+								currentTerrain[i][j] = emptyChunk;
+								i--;
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 							}
@@ -114,7 +132,6 @@ public class Forest extends ArrayList<TerrainChunk> {
 						else { length = howLong; break; }
 					}	
 				}
-			break;
 			}
 		}
 	}

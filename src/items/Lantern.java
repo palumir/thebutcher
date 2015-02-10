@@ -33,7 +33,7 @@ public class Lantern extends Node {
 	private static boolean toggle = true;
 
 	public Lantern() {
-		super(new Rectangle2D.Double(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight()), Color.BLACK);
+		super(Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 		this.movesWithPlayer = true;
 		this.zIndex = 1;
 		stroke1 = new BasicStroke(500 + getFuel()*3f);
@@ -77,7 +77,7 @@ public class Lantern extends Node {
 				stroke4 = new BasicStroke(850 + getFuel()*3f);
 			}
 		}
-		System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
+		//System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}
 	
 	// Paint the node and it's kids.

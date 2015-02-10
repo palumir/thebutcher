@@ -20,7 +20,7 @@ public class Chapman extends Unit {
 	public static Chapman chapman = null;
 	
 	// How hard are we?
-	public static int AILevel = 0; 
+	public static int AILevel = 1; 
 	
 	// Static variables
 	private static float meanderSpeed = 1;
@@ -70,7 +70,7 @@ public class Chapman extends Unit {
 		closeRange = 230;
 		killRange = 30+AILevel*2;
 		moveSpeed = meanderSpeed;
-		minSpawnCheck = 5000;
+		minSpawnCheck = 2500;
 		defaultSpawnCheck = 30000 + AILevel*6000;
 		spawnChance = 100 - AILevel*9; // spawnChance/100 is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;

@@ -61,20 +61,14 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 		int howManyDown = -2;
 		
 		// Add the willow.
-		Doodad doodad = new Doodad(willow);
-		doodad.instantlyMove(((x1 / grassy.
-				getWidth())) * grassy.getWidth() - grassy.getWidth()/2, (
-				howManyDown + y1 / grassy.getHeight())
-				* grassy.getHeight()
-				- grassy.getHeight());
+		Doodad doodad = new Doodad(willow, x1, y1);
 		this.add(doodad);
 		// Spawn our terrain with our random calculations
 		for(int i = 0; i < howManyAcross; i++) {
 			for(int j = 0; j < howManyTall; j++) {
-				if(j==0) chunk = new TerrainChunk(grassy);
-				else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof);
-				else chunk = new TerrainChunk(dirt);
-				chunk.instantlyMove((i+(x1/50))*chunk.getSprite().getWidth(), (j+howManyDown+y1/50)*chunk.getSprite().getHeight());
+				if(j==0) chunk = new TerrainChunk(grassy, i+(x1), (j+howManyDown+y1));
+				else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, i+(x1), (j+howManyDown+y1));
+				else chunk = new TerrainChunk(dirt, i+(x1), (j+howManyDown+y1));
 				this.add(chunk);
 			}
 			

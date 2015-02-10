@@ -14,8 +14,8 @@ import drawables.Node;
 public class Doodad extends TerrainChunk {
 	
 	// Just one chunk of the terrain.
-	public Doodad(BufferedImage sp) {
-		super(sp);
+	public Doodad(BufferedImage sp, float x, float y) {
+		super(sp, x, y);
 		setImpassable(false);
 	}
 }

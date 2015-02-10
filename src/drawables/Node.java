@@ -27,9 +27,9 @@ public class Node implements MouseMotionListener, MouseListener {
 	protected boolean hidden = false;
 	
 	// Cosmetics
-	private Shape shape;
+	private int width;
+	private int height;
 	protected boolean shapeHidden = false;
-	private Color color = Color.RED;
 	
 	// Node specific stuff
 	ArrayList<Node> children = new ArrayList<Node>();
@@ -37,10 +37,10 @@ public class Node implements MouseMotionListener, MouseListener {
 	private String id;
 
 	// Create a node. But where?
-	public Node(Shape s, Color color) {
+	public Node(int w, int h) {
+		width = w;
+		setHeight(h);
 		this.id = "id";
-		this.setShape(s);
-		this.color = color;
 		Canvas.getGameCanvas().addNode(this);
 	}
 	
@@ -70,27 +70,6 @@ public class Node implements MouseMotionListener, MouseListener {
 			}
 		}
 	}
-	
-	// Does the node contain a point?
-	public boolean containsPoint(Point2D p) {
-		AffineTransform inverseTransform = this.getFullInverseTransform();
-		Point2D pPrime = inverseTransform.transform(p, null);
-		return this.getShape().contains(pPrime);
-	}
-
-	// Gets the node hit at p. Prefers children.
-	public Node hitNode(Point2D p) {
-		for (Node c : this.children) {
-			Node hit = c.hitNode(p);
-			if (hit != null)
-				return hit;
-		}
-		if (this.containsPoint(p)) {
-			return this;
-		} else {
-			return null;
-		}
-	}
 
 	// Transforms the current node.
 	public void transform(AffineTransform t) {
@@ -109,8 +88,6 @@ public class Node implements MouseMotionListener, MouseListener {
 				AffineTransform currentTransform = this.getFullTransform();
 				g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 				g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-				g2.setColor(this.color);
-				g2.fill(this.getShape());
 				
 				// Restore the transform.
 				g2.setTransform(t);
@@ -133,12 +110,20 @@ public class Node implements MouseMotionListener, MouseListener {
 		double x2 = n.trans.getTranslateX();
 		double y2 = n.trans.getTranslateY();
 		boolean isTouching = false;
-		if(direction.equals("Up")) isTouching = false;
+		if(direction.equals("Up")) { 
+			isTouching = y1 - getHeight()/6 - y < y2 + n.getHeight()
+					&& !(y1 < y2) // Shape is NOT above Y2
+					&& (x1 + width/2 > x2) // To the right of X2
+					&& (x1 - width/2 < x2 + n.width); // To the left of X2 plus the width
+			if(isTouching) { 
+				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
+			}
+		}
 		if(direction.equals("Down")) { 
-			isTouching = y2 <= y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - y // Shape is below top of y2
-					&& !(y1 + ((Rectangle2D)this.getShape()).getHeight()/2 > y2 + ((Rectangle2D)n.getShape()).getHeight()) // Shape is NOT below the bottom of y2
-					&& (x1 + ((Rectangle2D)this.getShape()).getWidth()/2 > x2) // To the right of X2
-					&& (x1 - ((Rectangle2D)this.getShape()).getWidth()/2 < x2 + ((Rectangle2D)n.getShape()).getWidth()); // To the left of X2 plus the width
+			isTouching = y2 <= y1 + getHeight()/2 - y // Shape is below top of y2
+					&& !(y1 + getHeight()/2 > y2 + n.getHeight()) // Shape is NOT below the bottom of y2
+					&& (x1 + width/2 > x2) // To the right of X2
+					&& (x1 - width/2 < x2 + n.width); // To the left of X2 plus the width
 			if(isTouching) { 
 				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 				if(this instanceof Unit) {
@@ -147,16 +132,16 @@ public class Node implements MouseMotionListener, MouseListener {
 			}
 		}
 		if(direction.equals("Left")) { 
-			isTouching = y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - 1 > y2
-					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight()
-					&& x1 - ((Rectangle2D)this.getShape()).getWidth()/2 - x < x2 + ((Rectangle2D)n.getShape()).getWidth()
+			isTouching = y1 + getHeight()/2 - 1 > y2
+					&& y1 < y2 + n.getHeight()
+					&& x1 - width/2 - x < x2 + n.width
 					&& !(x1 < x2); 
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		if(direction.equals("Right")) { 
-			isTouching =  y1 + ((Rectangle2D)this.getShape()).getHeight()/2 - 1  > y2
-					&& y1 < y2 + ((Rectangle2D)n.getShape()).getHeight() 
-					&& x1 + ((Rectangle2D)this.getShape()).getWidth()/2 - x > x2
+			isTouching =  y1 + getHeight()/2 - 1  > y2
+					&& y1 < y2 + n.getHeight() 
+					&& x1 + width/2 - x > x2
 					&& !(x1 > x2);
 			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
@@ -257,17 +242,13 @@ public class Node implements MouseMotionListener, MouseListener {
 	}
 	
 	
+	public float getWidth() {
+		return width;
+	}
+	
 	// Node movement basics
 	public void instantlyMove(float x, float y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
-	}
-
-	public Shape getShape() {
-		return shape;
-	}
-
-	public void setShape(Shape shape) {
-		this.shape = shape;
 	}
 
 	public boolean isMovesWithPlayer() {
@@ -292,6 +273,14 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 }

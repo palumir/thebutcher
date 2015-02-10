@@ -99,16 +99,24 @@ public class Canvas extends JComponent {
 	// Move all nodes except for...
 	public void moveAllBut(Node notMove, float x, float y) {
 		
+		// Are we hitting the roof?
+		if(TerrainChunk.touchingTerrain(notMove, "Up", x, y)) if(y>0) { 
+			y = 0;
+			((Unit)notMove).setFallSpeed(0);
+		}
+		
 		// Are we landing on something?
 		if(TerrainChunk.touchingTerrain(notMove, "Down", x, y)) if(y<0) { 
 			y = 0;
 			((Unit)notMove).setFallSpeed(Unit.getDefaultFallSpeed());
 		}
-		// Are we landing on something?
+		
+		// Are we moving Left?
 		if(TerrainChunk.touchingTerrain(notMove, "Left", x, y)) if(x>0) { 
 			x = 0;
 		}
-		// Are we landing on something?
+		
+		// Are we moving Right?
 		if(TerrainChunk.touchingTerrain(notMove, "Right", x, y)) if(x<0) { 
 			x = 0;
 		}
@@ -285,17 +293,6 @@ public class Canvas extends JComponent {
 	// Add a new node to be drawn on the canvas.
 	public void addNode(Node n) {
 		this.getNodes().add(n);
-	}
-
-	// Get the node at p.
-	public Node getNode(Point2D p) {
-		Node hit = null;
-		int i = 0;
-		while (hit == null && i < getNodes().size()) {
-			hit = getNodes().get(i).hitNode(p);
-			i++;
-		}
-		return hit;
 	}
 
 	public static Canvas getGameCanvas() {

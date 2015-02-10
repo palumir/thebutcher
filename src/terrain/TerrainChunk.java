@@ -16,7 +16,7 @@ import drawables.Node;
 public class TerrainChunk extends Node {
 
 	// All the terrain. EVERYTHING.
-	private static ArrayList<TerrainChunk> terrain = new ArrayList<TerrainChunk>();
+	private static ArrayList<ArrayList<TerrainChunk>> terrain = new ArrayList<ArrayList<TerrainChunk>>();
 	
 	// Cosmetics
 	private BufferedImage sprite;
@@ -27,11 +27,12 @@ public class TerrainChunk extends Node {
 	// Constructor for the empty chunk.
 	
 	// Just one chunk of the terrain.
-	public TerrainChunk(BufferedImage sp) {
-		super(new Rectangle2D.Double(0, 0, sp.getWidth(), sp.getHeight()), Color.BLACK);
+	public TerrainChunk(BufferedImage sp, float x, float y) {
+		super(sp.getWidth(), sp.getHeight());
 		setSprite(sp);
 		this.shapeHidden = true;
-		getTerrain().add(this);
+		getTerrain().add(add(this);
+		this.instantlyMove((x)*getSprite().getWidth(), (y)*getSprite().getHeight());
 	}
 	
 	// Override the paintNode function for Unit.
@@ -64,8 +65,8 @@ public class TerrainChunk extends Node {
 	public static boolean inTerrain(Unit u) {
 		for(int i = 0; i < getTerrain().size(); i++) {
 			TerrainChunk t = getTerrain().get(i);
-			float uRadius = (float) Math.max(((Rectangle2D) u.getShape()).getWidth(),((Rectangle2D) u.getShape()).getHeight());
-			float tRadius = (float) Math.max(((Rectangle2D) t.getShape()).getWidth(),((Rectangle2D) t.getShape()).getHeight());
+			float uRadius = (float) Math.max(u.getWidth(), u.getHeight());
+			float tRadius = (float) Math.max(t.getWidth(), t.getHeight());
 			if(u.close((int) (uRadius + tRadius - 1), t)) return true;
 		}
 		return false;

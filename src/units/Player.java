@@ -23,8 +23,8 @@ public class Player extends Unit  {
 		super(20,64,new SpriteSheet("src/images/player/jack.png",
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		currentPlayer = this;
+		moveSpeed = 4;
 		this.zIndex = 1;
-		this.moveSpeed = 20;
 		loadAnimations();
 	}
 
@@ -85,7 +85,9 @@ public class Player extends Unit  {
 		
 		if(Player.getCurrentPlayer() != null ) {
 			// Accelerate
-			if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap) Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
+			if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap)  { 
+				Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
+			}
 			
 			// Are we falling?
 			if(Player.getCurrentPlayer().falling()) {
