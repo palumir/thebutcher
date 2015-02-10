@@ -24,6 +24,7 @@ public class Player extends Unit  {
 				64, 20, 64, 64, 20, 13)); // Collision width/height.
 		currentPlayer = this;
 		this.zIndex = 1;
+		this.moveSpeed = 20;
 		loadAnimations();
 	}
 
