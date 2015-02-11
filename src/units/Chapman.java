@@ -72,7 +72,7 @@ public class Chapman extends Unit {
 		moveSpeed = meanderSpeed;
 		minSpawnCheck = 2500;
 		defaultSpawnCheck = 30000 + AILevel*6000;
-		spawnChance = 100 - AILevel*9; // spawnChance/100 is the spawnChance, every 10 seconds or so.
+		spawnChance = 2; // spawnChance/100 is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 		
 		// Load animations
@@ -153,71 +153,75 @@ public class Chapman extends Unit {
 	public static void spawn() {
 		Chapman c = new Chapman();
 		Player p = Player.getCurrentPlayer();
-		
-		// Is the player moving left or right? Don't spawn Chapman behind the player, silly!
-		int leftOrRight = 1;
-		if(p.facingLeft) leftOrRight = -1;
-		
-		// Move to off screen. Don't care about terrain at this point
-		c.instantlyMove((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
-		
-		// If we're in terrain, then move up until we're not.
-		while(TerrainChunk.inTerrain(c)) {
-			c.instantlyMove(0, -5);
+		if(p!=null) {
+			
+			// Is the player moving left or right? Don't spawn Chapman behind the player, silly!
+			int leftOrRight = 1;
+			if(p.facingLeft) leftOrRight = -1;
+			
+			// Move to off screen. Don't care about terrain at this point
+			c.instantlyMove((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
+			
+			// If we're in terrain, then move up until we're not.
+			while(TerrainChunk.inTerrain(c)) {
+				c.instantlyMove(0, -5);
+			}
 		}
 	}
 	
 	public void AI() {
-		
-		// STOP STATES
-		// If the player has gotten 150 away, stop chasing.
-		if(chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this)) {
-			chasingPlayer = false;
-			chasing.stop();
-			movingRight = false;
-			movingLeft = false;
-			moveSpeed = meanderSpeed;
-		}
-		
-		// INITIATE STATES
-		// Kill player!
-		if(Player.getCurrentPlayer().close(killRange,this)) {
-			killPlayer();
-		}
-		// Chase player!
-		else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
-			chasingPlayer = true;
-			chasing.loop(Clip.LOOP_CONTINUOUSLY);
-			moveSpeed = chasingSpeed;
-		}
-		// Play noise if we're close to player!
-		else if(!closeToPlayer && Player.getCurrentPlayer().close(closeRange,this)) {
-			closeToPlayer = true;
-			//close.getClip().start(); 
-		}
-		
-		// STATES
-		// Start chasing the player if he's close and has his lantern on.
-		if(chasingPlayer) {
-			follow(Player.getCurrentPlayer());
-		}
-		else {
-			meander();
-		}
-		
-		// Don't let him walk into walls.
-		if(movingRight && TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
-			movingLeft = false;
-			movingRight = false;
-		}
-		if(movingLeft && TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) {
-			movingLeft = false;
-			movingRight = false;
-		}
-		
-		// Let the player know if Chapman has passed.
-		if(Math.abs(Player.getCurrentPlayer().trans.getTranslateX() - this.trans.getTranslateX()) < 5) {
-			passed = true;
+		if(Player.getCurrentPlayer() != null) {
+			System.out.println((int) ((this.getX()/50)) + "x" + (int) (this.getY()/50));
+			// STOP STATES
+			// If the player has gotten 150 away, stop chasing.
+			if(chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this)) {
+				chasingPlayer = false;
+				chasing.stop();
+				movingRight = false;
+				movingLeft = false;
+				moveSpeed = meanderSpeed;
+			}
+			
+			// INITIATE STATES
+			// Kill player!
+			if(Player.getCurrentPlayer().close(killRange,this)) {
+				killPlayer();
+			}
+			// Chase player!
+			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
+				chasingPlayer = true;
+				chasing.loop(Clip.LOOP_CONTINUOUSLY);
+				moveSpeed = chasingSpeed;
+			}
+			// Play noise if we're close to player!
+			else if(!closeToPlayer && Player.getCurrentPlayer().close(closeRange,this)) {
+				closeToPlayer = true;
+				//close.getClip().start(); 
+			}
+			
+			// STATES
+			// Start chasing the player if he's close and has his lantern on.
+			if(chasingPlayer) {
+				follow(Player.getCurrentPlayer());
+			}
+			else {
+				//meander();
+			}
+			
+			// Don't let him walk into walls.
+			if(movingRight && TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
+				movingLeft = false;
+				movingRight = false;
+			}
+			if(movingLeft && TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) {
+				movingLeft = false;
+				movingRight = false;
+			}
+			
+			// Let the player know if Chapman has passed.
+			if(Math.abs(Player.getCurrentPlayer().trans.getTranslateX() - this.trans.getTranslateX()) < 5) {
+				passed = true;
+			}
 		}
 	}
 	

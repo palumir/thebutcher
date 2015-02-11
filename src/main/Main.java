@@ -43,13 +43,18 @@ public class Main {
 	}
 	
 	public static void createNewGameScene() {
+		// Spawn our map first.
+		Forest f = new Forest();
+		
 		// Create a character for testing.
 		Player player = new Player();
 		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
-		Forest f = new Forest();
-		//PurpleHills purpleHills = new PurpleHills();
+		
+		// Create our lantern
 		Lantern lantern = new Lantern();
-		Chapman.AILevel = 10;
+		Chapman.AILevel = 1;
+		Chapman c = new Chapman();
+		c.instantlyMove(40,40);
 		Nichols.AILevel = 10;
 		Nichols nichols = new Nichols();
 	}

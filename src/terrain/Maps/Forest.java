@@ -3,8 +3,9 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
-import terrain.TerrainChunk;
 import main.Main;
+import terrain.Doodad;
+import terrain.TerrainChunk;
 import audio.BigClip;
 import audio.SoundClip;
 import drawables.sprites.SpriteSheet;
@@ -21,6 +22,11 @@ public class Forest extends ArrayList<TerrainChunk> {
 	private static SoundClip music = new SoundClip("./../sounds/music/dimebag_ambience.wav", false);
 	// https://www.freesound.org/people/xDimebagx/sounds/193692/
 	
+	// Doodad sprites
+	private static BufferedImage flower1;
+	private static BufferedImage flower2;
+	private static BufferedImage flower3;
+	
 	int renderX = 0;
 	int renderY = 0;
 	
@@ -33,7 +39,12 @@ public class Forest extends ArrayList<TerrainChunk> {
 		grassy = sheet.getSprites()[0];
 		dirt = sheet.getSprites()[1];
 		dirtRoof = sheet.getSprites()[2];
-		genRandomWalkableLandBetween(-200,200,10,100);
+		SpriteSheet flowerSheet = new SpriteSheet(
+				"src/images/terrain/purplehills/doodads/flowers.png", 123, 123, 180, 180, 1, 3);
+		flower1 = flowerSheet.getSprites()[0];
+		flower2 = flowerSheet.getSprites()[1];
+		flower3 = flowerSheet.getSprites()[2];
+		genRandomWalkableLandBetween(-200,100,10,100);
 	}
 	
 	// Generates land between x and y which is walkable.
@@ -49,7 +60,6 @@ public class Forest extends ArrayList<TerrainChunk> {
 		// Some pre-calcs.
 		int howManyAcross = Math.abs(x2 - x1);
 		int howManyTall = Math.abs(y2-y1); 
-		int howManyDown = 0;
 		int chanceForTunnel = 20;
 		
 		// Keep a record of where things are.
@@ -58,16 +68,18 @@ public class Forest extends ArrayList<TerrainChunk> {
 		// Spawn our terrain with our random calculations
 		for(int i = 0; i < howManyAcross; i++) {
 			for(int j = 0; j < howManyTall; j++) {
-					if(j==0) chunk = new TerrainChunk(grassy, (i+(x1)), (j + howManyDown + y1));
-					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + howManyDown + y1));
-					else chunk = new TerrainChunk(dirt, (i+(x1)), (j + howManyDown + y1));
+					if(j==0)  { 
+						chunk = new TerrainChunk(grassy, (i+(x1)), (j + y1));
+					}
+					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + y1));
+					else chunk = new TerrainChunk(dirt, (i+(x1)), (j + y1));
 					this.add(chunk);
 					currentTerrain[i][j] = chunk;
 			}
 		}
 			
-		// Make one tunnel
-		int howLong = 100;
+		// Make tennels
+		int howLong = 200;
 		boolean[][] tunneledFrom = new boolean[howManyAcross][howManyTall];
 		for(int i=0; i < howManyAcross; i++) for(int j=0; j < howManyTall; j++) tunneledFrom[i][j] = false;
 		for(int x = 0; x < howManyAcross; x++) {
@@ -134,8 +146,21 @@ public class Forest extends ArrayList<TerrainChunk> {
 				}
 			}
 		}
+		// Spawn our terrain with our random calculations
+		for(int i = 0; i < howManyAcross; i++) { 
+			// Maybe even add a random doodad on top?
+			if(r.nextInt(2)==1 && currentTerrain[i][0] != emptyChunk) {
+				int pickOne = r.nextInt(3);
+				Doodad doodad = null;
+				if(pickOne==0) doodad = new Doodad(flower1, i + x1 - flower1.getWidth()/TerrainChunk.getDefaultBlockSize(), y1 - flower1.getHeight()/TerrainChunk.getDefaultBlockSize());
+				if(pickOne==1) doodad = new Doodad(flower2, i + x1 - flower2.getWidth()/TerrainChunk.getDefaultBlockSize(), y1 - flower2.getHeight()/TerrainChunk.getDefaultBlockSize());
+				if(pickOne==2) doodad = new Doodad(flower3, i + x1 - flower3.getWidth()/TerrainChunk.getDefaultBlockSize(), y1 - flower3.getHeight()/TerrainChunk.getDefaultBlockSize());
+				this.add(doodad);
+			}
+		}
 	}
 }
+
 
 
 

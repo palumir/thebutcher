@@ -40,10 +40,6 @@ public class Canvas extends JComponent {
 	// Screen information
 	private static int defaultWidth = 600;
 	private static int defaultHeight = 600;
-	
-	// Combat physics/Mouse Movements
-	private boolean mouseDown = false;
-	private boolean swinging = false;
 
 	// Initialize the game canvas.
 	public static void initCanvas() {
@@ -72,13 +68,17 @@ public class Canvas extends JComponent {
 		for(int i = 0; i < getNodes().size(); i++) {
 			Node n = getNodes().get(i);
 			if(n!=notMove && !n.isMovesWithPlayer()) {
+				if(n instanceof Unit && !(n instanceof Player)) {
+					((Unit) n).setX((float) (n.trans.getTranslateX() + x));
+					((Unit) n).setY((float) (n.trans.getTranslateY() + y));
+				}
 				n.instantlyMove(x,y);
 			}
 		}
 	}
 	
 	// Move a unit
-	public void moveUnit(Node move, float x, float y) {
+	public void moveUnit(Unit move, float x, float y) {
 		
 		// Are we landing on something?
 		if(TerrainChunk.touchingTerrain(move, "Down", -x, -y)) if(y>0) { 
@@ -93,11 +93,15 @@ public class Canvas extends JComponent {
 		if(TerrainChunk.touchingTerrain(move, "Right", -x, -y)) if(x>0) { 
 			x = 0;
 		}
+		if(move instanceof Unit && !(move instanceof Player)) {
+			((Unit)move).setX((float) ((Unit) move).getX() + x);
+			((Unit)move).setY((float) ((Unit) move).getY() + y);
+		}
 		move.instantlyMove(x, y);
 	}
 	
 	// Move all nodes except for...
-	public void moveAllBut(Node notMove, float x, float y) {
+	public void moveAllBut(Unit notMove, float x, float y) {
 		
 		// Are we hitting the roof?
 		if(TerrainChunk.touchingTerrain(notMove, "Up", x, y)) if(y>0) { 
@@ -110,7 +114,7 @@ public class Canvas extends JComponent {
 			y = 0;
 			((Unit)notMove).setFallSpeed(Unit.getDefaultFallSpeed());
 		}
-		
+	
 		// Are we moving Left?
 		if(TerrainChunk.touchingTerrain(notMove, "Left", x, y)) if(x>0) { 
 			x = 0;
@@ -126,6 +130,12 @@ public class Canvas extends JComponent {
 			if (n != notMove && !n.isMovesWithPlayer()) {
 				n.instantlyMove(x, y);
 			}
+		}
+		
+		if(notMove instanceof Player) {
+			// Tell the terrain system "where" our unit is
+			((Player) notMove).setY(((Player) notMove).getY() - y);
+			((Player) notMove).setX(((Player) notMove).getX() - x);
 		}
 	}
 
@@ -194,7 +204,7 @@ public class Canvas extends JComponent {
 
 		});
 
-		this.addMouseMotionListener(new MouseMotionListener() {
+		/*this.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
@@ -212,10 +222,10 @@ public class Canvas extends JComponent {
 
 			}
 
-		});
+		});*/
 	}
 
-	private synchronized boolean checkAndMark() {
+	/*private synchronized boolean checkAndMark() {
 		if (swinging)
 			return false;
 		swinging = true;
@@ -255,7 +265,7 @@ public class Canvas extends JComponent {
 				}
 			}.start();
 		}
-	}
+	}*/
 
 	// Paint each node. Easy.
 	public void paintNodes(Graphics g) {
@@ -303,7 +313,7 @@ public class Canvas extends JComponent {
 		Canvas.gameCanvas = gameCanvas;
 	}
 
-	public void swingRecognize(int initialXPos, int initialYPos) {
+	/*public void swingRecognize(int initialXPos, int initialYPos) {
 
 		Point pos1 = new Point(initialXPos, initialYPos);
 		int thrustXThreshold = 15;
@@ -357,7 +367,7 @@ public class Canvas extends JComponent {
 			// no action
 			System.out.println("Fail");
 		}
-	}
+	}*/
 
 	public static int getDefaultWidth() {
 		return defaultWidth;

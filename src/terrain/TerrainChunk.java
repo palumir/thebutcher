@@ -16,8 +16,11 @@ import drawables.Node;
 public class TerrainChunk extends Node {
 
 	// All the terrain. EVERYTHING.
-	private static Map<int[],TerrainChunk> terrain = new HashMap<int[],TerrainChunk>();
-	private int[] mapPos;
+	private static Map<String,TerrainChunk> terrain = new HashMap<String,TerrainChunk>();
+	private String mapPos;
+	
+	// Default stuff
+	private static int defaultBlockSize = 50; // 50by50
 	
 	// Cosmetics
 	private BufferedImage sprite;
@@ -32,9 +35,8 @@ public class TerrainChunk extends Node {
 		super(sp.getWidth(), sp.getHeight());
 		setSprite(sp);
 		this.shapeHidden = true;
-		mapPos = new int[]{(int) x,(int) y};
-		terrain.put(mapPos,this);
-		this.instantlyMove((x)*getSprite().getWidth(), (y)*getSprite().getHeight());
+		terrain.put((int)x + "x" + (int)y,this);
+		this.instantlyMove((int)(x)*getSprite().getWidth(), (int)(y)*getSprite().getHeight());
 	}
 	
 	// Override the paintNode function for Unit.
@@ -58,23 +60,36 @@ public class TerrainChunk extends Node {
 	}
 	
 	// Is the current node "standing" on a terrain chunk?
-	public static boolean touchingTerrain(Node n, String direction, float x, float y) {
-		System.out.println(terrain);
-		for(int i = -2; i < 3; i++) {
-			int[] whatPos = new int[]{ (int) ((n.trans.getTranslateX()/50) + i), (int) (n.trans.getTranslateY()/50)};
-			if(getTerrain().get(whatPos) == null) break;
-			if(getTerrain().get(whatPos).isImpassable() && n.touching(getTerrain().get(whatPos), direction, x, y)) return true;
+	public static boolean touchingTerrain(Unit n, String direction, float x, float y) {
+		
+		// Check 10 blocks around the unit for "touching". General rule.
+		for(int i = -5; i < 5; i++) {
+			for(int j = -5; j < 5; j++) {
+				String whatPos =(int) ((n.getX()/defaultBlockSize) + i) + "x" + (int) (n.getY()/defaultBlockSize + j);
+				if(getTerrain().get(whatPos) == null) {
+				}
+				else {
+					if(getTerrain().get(whatPos).isImpassable() && n.touching(getTerrain().get(whatPos), direction, x, y)) return true;
+				}
+			}
 		}
 		return false;
 	}
 	
 	// Is the current node IN terrain? 
 	public static boolean inTerrain(Unit u) {
-		for(int i = 0; i < getTerrain().size(); i++) {
-			TerrainChunk t = getTerrain().get(i);
-			float uRadius = (float) Math.max(u.getWidth(), u.getHeight());
-			float tRadius = (float) Math.max(t.getWidth(), t.getHeight());
-			if(u.close((int) (uRadius + tRadius - 1), t)) return true;
+		
+		// Check 10 blocks around the unit for "inside". General rule.
+		for(int i = -5; i < 5; i++) {
+			for(int j = -5; j < 5; j++) {
+				String whatPos =(int) ((u.getX()/defaultBlockSize) + i) + "x" + (int) (u.getY()/defaultBlockSize + j);
+				TerrainChunk t = getTerrain().get(whatPos);
+				float uRadius = (float) Math.max(u.getWidth(), u.getHeight());
+				if(t!=null) { 
+					float tRadius = (float) Math.max(t.getWidth(), t.getHeight());
+					if(u.close((int) (uRadius + tRadius - 1), t)) return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -93,11 +108,11 @@ public class TerrainChunk extends Node {
 		this.sprite = sprite;
 	}
 
-	public static Map<int[],TerrainChunk> getTerrain() {
+	public static Map<String,TerrainChunk> getTerrain() {
 		return terrain;
 	}
 
-	public static void setTerrain(Map<int[],TerrainChunk> terrain) {
+	public static void setTerrain(Map<String,TerrainChunk> terrain) {
 		TerrainChunk.terrain = terrain;
 	}
 
@@ -107,6 +122,10 @@ public class TerrainChunk extends Node {
 
 	public void setImpassable(boolean impassable) {
 		this.impassable = impassable;
+	}
+
+	public static int getDefaultBlockSize() {
+		return defaultBlockSize;
 	}
 }
 

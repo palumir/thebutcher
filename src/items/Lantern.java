@@ -96,7 +96,7 @@ public class Lantern extends Node {
 			Color color = new Color(0, 0, 0, alpha); //Black 
 			g2.setPaint(color);
 			
-			if(isToggle()) {
+			/*if(isToggle()) {
 				int fuelConst = getFuel()*2;
 				if(fuel<=42) g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				else g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
@@ -113,7 +113,7 @@ public class Lantern extends Node {
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-			}
+			}*/
 			
 			// Restore the transform.
 			g2.setTransform(t);

@@ -26,6 +26,10 @@ public class Unit extends Node implements MouseListener {
 	protected int numWallJumps = 3;
 	protected float jumpSpeed = 5.6f;
 	
+	// Where are we relative to the map?
+	protected float movedX = 0;
+	protected float movedY = 0;
+	
 	// Sounds for monster interactions.
 	protected static SoundClip chasing = new SoundClip("./../sounds/ambience/chasing.wav", true);
 
@@ -184,6 +188,7 @@ public class Unit extends Node implements MouseListener {
 	
 	// Do the unit gravity. Ignore players, of course. 
 	public void gravity() {
+			
 			// Accelerate
 			if(this.getFallSpeed() > Unit.fallSpeedCap) this.setFallSpeed(this.getFallSpeed() - 0.2f);
 			
@@ -227,5 +232,21 @@ public class Unit extends Node implements MouseListener {
 
 	public static void setDefaultFallSpeed(float defaultFallSpeed) {
 		Unit.defaultFallSpeed = defaultFallSpeed;
+	}
+	
+	public float getX() {
+		return movedX;
+	}
+	
+	public float getY() {
+		return movedY;
+	}
+	
+	public void setX(float newX) {
+		movedX = newX;
+	}
+	
+	public void setY(float newY) {
+		movedY = newY;
 	}
 }

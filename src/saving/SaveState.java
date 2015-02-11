@@ -12,7 +12,7 @@ import drawables.Node;
 public class SaveState {
 	
 	private ArrayList<Node> nodes;
-	private Map<int[],TerrainChunk> terrain;
+	private Map<String,TerrainChunk> terrain;
 	private ArrayList<Unit> units;
 	
 	// Create a local savestate.

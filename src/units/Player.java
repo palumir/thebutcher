@@ -18,6 +18,10 @@ public class Player extends Unit  {
 	
 	private static Player currentPlayer;	
 	
+	// Where is the player in the map?
+	private float movedX = 0;
+	private float movedY = 0;
+	
 	// Player constructor
 	public Player() {
 		super(20,64,new SpriteSheet("src/images/player/jack.png",
@@ -25,6 +29,8 @@ public class Player extends Unit  {
 		currentPlayer = this;
 		moveSpeed = 4;
 		this.zIndex = 1;
+		setX(Canvas.getDefaultWidth()/2);
+		setY(Canvas.getDefaultHeight()/2);
 		loadAnimations();
 	}
 
