@@ -241,7 +241,6 @@ public class Node implements MouseMotionListener, MouseListener {
 		return radius > distanceXY;
 	}
 	
-	
 	public float getWidth() {
 		return width;
 	}
