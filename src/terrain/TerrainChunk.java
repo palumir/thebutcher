@@ -1,11 +1,11 @@
 package terrain;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import units.Player;
 import units.Unit;
@@ -16,7 +16,8 @@ import drawables.Node;
 public class TerrainChunk extends Node {
 
 	// All the terrain. EVERYTHING.
-	private static ArrayList<ArrayList<TerrainChunk>> terrain = new ArrayList<ArrayList<TerrainChunk>>();
+	private static Map<int[],TerrainChunk> terrain = new HashMap<int[],TerrainChunk>();
+	private int[] mapPos;
 	
 	// Cosmetics
 	private BufferedImage sprite;
@@ -31,7 +32,8 @@ public class TerrainChunk extends Node {
 		super(sp.getWidth(), sp.getHeight());
 		setSprite(sp);
 		this.shapeHidden = true;
-		getTerrain().add(add(this);
+		mapPos = new int[]{(int) x,(int) y};
+		terrain.put(mapPos,this);
 		this.instantlyMove((x)*getSprite().getWidth(), (y)*getSprite().getHeight());
 	}
 	
@@ -57,7 +59,12 @@ public class TerrainChunk extends Node {
 	
 	// Is the current node "standing" on a terrain chunk?
 	public static boolean touchingTerrain(Node n, String direction, float x, float y) {
-		for(int i = 0; i < getTerrain().size(); i++) if(getTerrain().get(i).isImpassable() && n.touching(getTerrain().get(i), direction, x, y)) return true;
+		System.out.println(terrain);
+		for(int i = -2; i < 3; i++) {
+			int[] whatPos = new int[]{ (int) ((n.trans.getTranslateX()/50) + i), (int) (n.trans.getTranslateY()/50)};
+			if(getTerrain().get(whatPos) == null) break;
+			if(getTerrain().get(whatPos).isImpassable() && n.touching(getTerrain().get(whatPos), direction, x, y)) return true;
+		}
 		return false;
 	}
 	
@@ -75,13 +82,7 @@ public class TerrainChunk extends Node {
 	// Delete the unit.
 	public void deleteChunk() {
 		this.deleteNode();
-		for (int i = 0; i < terrain.size(); i++) {
-			TerrainChunk u = terrain.get(i);
-			if(u==this) {
-				terrain.remove(i);
-				break;
-			}
-		}
+		terrain.remove(mapPos);
 	}
 
 	public BufferedImage getSprite() {
@@ -92,11 +93,11 @@ public class TerrainChunk extends Node {
 		this.sprite = sprite;
 	}
 
-	public static ArrayList<TerrainChunk> getTerrain() {
+	public static Map<int[],TerrainChunk> getTerrain() {
 		return terrain;
 	}
 
-	public static void setTerrain(ArrayList<TerrainChunk> terrain) {
+	public static void setTerrain(Map<int[],TerrainChunk> terrain) {
 		TerrainChunk.terrain = terrain;
 	}
 

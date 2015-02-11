@@ -1,6 +1,7 @@
 package saving;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import audio.SoundClip;
 import terrain.TerrainChunk;
@@ -11,7 +12,7 @@ import drawables.Node;
 public class SaveState {
 	
 	private ArrayList<Node> nodes;
-	private ArrayList<TerrainChunk> terrain;
+	private Map<int[],TerrainChunk> terrain;
 	private ArrayList<Unit> units;
 	
 	// Create a local savestate.
