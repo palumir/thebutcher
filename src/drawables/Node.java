@@ -115,9 +115,6 @@ public class Node implements MouseMotionListener, MouseListener {
 					&& !(y1 < y2) // Shape is NOT above Y2
 					&& (x1 + width/2 > x2) // To the right of X2
 					&& (x1 - width/2 < x2 + n.width); // To the left of X2 plus the width
-			if(isTouching) { 
-				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
-			}
 		}
 		if(direction.equals("Down")) { 
 			isTouching = y2 <= y1 + getHeight()/2 - y // Shape is below top of y2
@@ -125,7 +122,6 @@ public class Node implements MouseMotionListener, MouseListener {
 					&& (x1 + width/2 > x2) // To the right of X2
 					&& (x1 - width/2 < x2 + n.width); // To the left of X2 plus the width
 			if(isTouching) { 
-				Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 				if(this instanceof Unit) {
 					((Unit)this).onGround();
 				}
@@ -136,14 +132,12 @@ public class Node implements MouseMotionListener, MouseListener {
 					&& y1 < y2 + n.getHeight()
 					&& x1 - width/2 - x < x2 + n.width
 					&& !(x1 < x2); 
-			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		if(direction.equals("Right")) { 
 			isTouching =  y1 + getHeight()/2 - 1  > y2
 					&& y1 < y2 + n.getHeight() 
 					&& x1 + width/2 - x > x2
 					&& !(x1 > x2);
-			if(isTouching) Canvas.getGameCanvas().moveAllButWithNoClip(this, 0, 0);
 		}
 		return isTouching;
 	}

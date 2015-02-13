@@ -29,7 +29,7 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 	int renderX = 0;
 	int renderY = 0;
 	
-	// Create tabrampit scene
+	// Create Nicholspit scene
 	public NicholsPit() {
 		super();
 		pulse.loop(BigClip.LOOP_CONTINUOUSLY);
@@ -46,7 +46,7 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 				"src/images/terrain/forest/doodads/weepingwillow.png", 308, 308, 200, 200, 1, 1);
 		willow = treeSheet.getSprites()[0];
 		
-		genRandomWalkableLandBetween(-50,1000,Canvas.getDefaultHeight()/2  + 50,900);
+		genRandomWalkableLandBetween(-5,100,10,100);
 	}
 	
 	// Generates land between x and y which is walkable.
@@ -56,8 +56,8 @@ public class NicholsPit extends ArrayList<TerrainChunk> {
 		TerrainChunk chunk = null;
 		
 		// Some pre-calcs.
-		int howManyAcross = Math.abs(x2 - x1)/50;
-		int howManyTall = Math.max(Math.abs(y2-y1)/(50*5), r.nextInt(Math.max(Math.abs(y2 - y1)/50 - 2,1)) + 2); 
+		int howManyAcross = Math.abs(x2 - x1);
+		int howManyTall = Math.max(Math.abs(y2-y1), r.nextInt(Math.max(Math.abs(y2 - y1) - 2,1)) + 2); 
 		int howManyDown = -2;
 		
 		// Add the willow.

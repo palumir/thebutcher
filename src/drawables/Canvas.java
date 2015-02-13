@@ -62,20 +62,6 @@ public class Canvas extends JComponent {
 			n.update();
 		}
 	}
-
-	// Move all nodes except for...
-	public void moveAllButWithNoClip(Node notMove, float x, float y) {
-		for(int i = 0; i < getNodes().size(); i++) {
-			Node n = getNodes().get(i);
-			if(n!=notMove && !n.isMovesWithPlayer()) {
-				if(n instanceof Unit && !(n instanceof Player)) {
-					((Unit) n).setX((float) (n.trans.getTranslateX() + x));
-					((Unit) n).setY((float) (n.trans.getTranslateY() + y));
-				}
-				n.instantlyMove(x,y);
-			}
-		}
-	}
 	
 	// Move a unit
 	public void moveUnit(Unit move, float x, float y) {
@@ -95,7 +81,7 @@ public class Canvas extends JComponent {
 		}
 		if(move instanceof Unit && !(move instanceof Player)) {
 			((Unit)move).setX((float) ((Unit) move).getX() + x);
-			((Unit)move).setY((float) ((Unit) move).getY() + y);
+			((Unit) move).setY((float) ((Unit) move).getY() + y);
 		}
 		move.instantlyMove(x, y);
 	}

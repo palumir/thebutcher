@@ -52,9 +52,7 @@ public class Main {
 		
 		// Create our lantern
 		Lantern lantern = new Lantern();
-		Chapman.AILevel = 1;
-		Chapman c = new Chapman();
-		c.instantlyMove(40,40);
+		Chapman.AILevel = 10;
 		Nichols.AILevel = 10;
 		Nichols nichols = new Nichols();
 	}

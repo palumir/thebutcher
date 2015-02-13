@@ -72,7 +72,7 @@ public class Chapman extends Unit {
 		moveSpeed = meanderSpeed;
 		minSpawnCheck = 2500;
 		defaultSpawnCheck = 30000 + AILevel*6000;
-		spawnChance = 2; // spawnChance/100 is the spawnChance, every 10 seconds or so.
+		spawnChance = 10/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 		
 		// Load animations
@@ -171,7 +171,6 @@ public class Chapman extends Unit {
 	
 	public void AI() {
 		if(Player.getCurrentPlayer() != null) {
-			System.out.println((int) ((this.getX()/50)) + "x" + (int) (this.getY()/50));
 			// STOP STATES
 			// If the player has gotten 150 away, stop chasing.
 			if(chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this)) {
@@ -205,7 +204,7 @@ public class Chapman extends Unit {
 				follow(Player.getCurrentPlayer());
 			}
 			else {
-				//meander();
+				meander();
 			}
 			
 			// Don't let him walk into walls.

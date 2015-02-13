@@ -79,7 +79,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 		}
 			
 		// Make tennels
-		int howLong = 200;
+		int howLong = 500;
 		boolean[][] tunneledFrom = new boolean[howManyAcross][howManyTall];
 		for(int i=0; i < howManyAcross; i++) for(int j=0; j < howManyTall; j++) tunneledFrom[i][j] = false;
 		for(int x = 0; x < howManyAcross; x++) {
@@ -94,7 +94,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 					int direction = r.nextInt(4); // 0 - left 1 - right 2 - down left 3 - down right
 					
 					// Left or right go as far as you want.
-					int howManyInDirection = Math.max(5,Math.min(r.nextInt(howLong),howLong/3));
+					int howManyInDirection = Math.max(5,Math.min(r.nextInt(howLong),10));
 					
 					// Down left/Down Right only go up to a certain point
 					if(direction == 3 || direction == 2) {
