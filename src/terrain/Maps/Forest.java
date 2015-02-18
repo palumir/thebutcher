@@ -19,7 +19,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 	private static BufferedImage dirtRoof;
 	
 	// Forest ambience
-	private static SoundClip music = new SoundClip("./../sounds/music/dimebag_ambience.wav", false);
+	private static SoundClip music = new SoundClip("./../sounds/ambience/klankbleed.wav", false); // Sound from http://www.freesound.org/people/klankbeeld/
 	// https://www.freesound.org/people/xDimebagx/sounds/193692/
 	
 	// Doodad sprites
@@ -147,7 +147,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 			}
 		}
 		// Spawn our terrain with our random calculations
-		for(int i = 0; i < howManyAcross; i++) { 
+	/*	for(int i = 0; i < howManyAcross; i++) { 
 			// Maybe even add a random doodad on top?
 			if(r.nextInt(2)==1 && currentTerrain[i][0] != emptyChunk) {
 				int pickOne = r.nextInt(3);
@@ -157,7 +157,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 				if(pickOne==2) doodad = new Doodad(flower3, i + x1 - flower3.getWidth()/TerrainChunk.getDefaultBlockSize(), y1 - flower3.getHeight()/TerrainChunk.getDefaultBlockSize());
 				this.add(doodad);
 			}
-		}
+		}*/
 	}
 }
 

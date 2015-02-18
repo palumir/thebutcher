@@ -14,6 +14,8 @@ import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
 
+// Nichols is a cunt. He plays random sounds to spook you, and kills you when your
+// lantern is done. Not a visible unit.
 public class Nichols extends Unit {
 	
 	public static Nichols nichols;
@@ -24,6 +26,7 @@ public class Nichols extends Unit {
 	// Spooky sound for when lantern is off.
 	protected static SoundClip violin = new SoundClip("./../sounds/ambience/spooky_violin.wav", false);
 	protected static SoundClip stab = new SoundClip("./../sounds/ambience/violin_stab.wav", true);
+	protected static SoundClip ghost = new SoundClip("./../sounds/effects/ghost.wav", true);
 	protected boolean playing = false;
 	
 	// Static AI variables
@@ -31,6 +34,8 @@ public class Nichols extends Unit {
 	public static double lastCheck = 0;
 	public static double totalTime = 0;
 	public static float howQuicklyDoWeGiveBackTime = 1f; // 1x as fast
+	public static double lastEvent = 0;
+	public static double randomEventTimer = 10000;
 	
 	// Have we died? What deathscene.
 	private int deathScene = -1; // -1 if not dead.
@@ -98,6 +103,24 @@ public class Nichols extends Unit {
 		if(deathScene == 1 || deathScene==0) {
 			createPitDeathScene();
 		}
+	}
+	
+	// Random events. 
+	public static void randomEvents() {
+			// Only check to make a noise every randomEventTimer (10 default) seconds
+			if(Main.getGameTime() - lastEvent > randomEventTimer) {
+				lastEvent = Main.getGameTime();
+				
+				// Chance to make a noise
+				if(Main.r.nextInt(100) == 1) {
+					randomSound().start();
+				}
+			}
+	}
+	
+	// Choose a random noice
+	public static SoundClip randomSound() {
+		return ghost;
 	}
 	
 	// WIP FOREST DEATH SCENE

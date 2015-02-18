@@ -103,6 +103,7 @@ public class Unit extends Node implements MouseListener {
 		}
 		
 		// Deal with our baddies.
+		Nichols.randomEvents();
 		Chapman.spawnOrDespawn();
 	}
 
@@ -110,6 +111,13 @@ public class Unit extends Node implements MouseListener {
 	public static void playEffect(int x, int y, SpriteSheet s, int duration) {
 		Animation a = new Animation(s.getSpriteWidth(),s.getSpriteHeight(), s, duration);
 		a.instantlyMove(x,y);
+	}
+	
+	// Move with consideration to terrain
+	public void instantlyMoveNotify(float x, float y) {
+		instantlyMove(x,y);
+		setX(getX() + x);
+		setY(getY() + y);
 	}
 
 	// Obviously, update the unit every frame.

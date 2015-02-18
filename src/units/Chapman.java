@@ -14,6 +14,8 @@ import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
 
+
+// Chapman is fairly basic. Turn light off to run by him. Move him off screen, he disappears. Spawns randomly, very fast.
 public class Chapman extends Unit {
 	
 	// Make sure there's only one Chapman at once.
@@ -160,11 +162,11 @@ public class Chapman extends Unit {
 			if(p.facingLeft) leftOrRight = -1;
 			
 			// Move to off screen. Don't care about terrain at this point
-			c.instantlyMove((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
+			c.instantlyMoveNotify((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
 			
 			// If we're in terrain, then move up until we're not.
 			while(TerrainChunk.inTerrain(c)) {
-				c.instantlyMove(0, -5);
+				c.instantlyMoveNotify(0, -5);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package main;
 
 import items.Lantern;
+import items.LanternFuel;
 
 import java.util.Random;
 
@@ -52,6 +53,10 @@ public class Main {
 		
 		// Create our lantern
 		Lantern lantern = new Lantern();
+		LanternFuel lf = new LanternFuel();
+		lf.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
+		
+		// Configure enemy AI
 		Chapman.AILevel = 10;
 		Nichols.AILevel = 10;
 		Nichols nichols = new Nichols();
