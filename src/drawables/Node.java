@@ -56,27 +56,10 @@ public class Node implements MouseMotionListener, MouseListener {
 		return this.parent;
 	}
 
-	// Animation timer has ticked.
-	public void update() {
-		this.updateChildren();
-	}
-
-	// Update the kids.
-	public void updateChildren() {
-		if(children != null && children.size() > 0) {
-			for(int i = 0; i < children.size(); i++) {
-				Node s = children.get(i);
-				s.update();
-			}
-		}
-	}
-
 	// Transforms the current node.
 	public void transform(AffineTransform t) {
 		this.trans.concatenate(t);
 	}
-	
-	// Return a new translated node.
 
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
@@ -228,11 +211,14 @@ public class Node implements MouseMotionListener, MouseListener {
 	
 	// Check if this unit is within a radius of u;
 	public boolean close(int radius, Node u) {
-		float yDistance = (float) (u.trans.getTranslateY() - this.trans.getTranslateY());
-		float xDistance = (float) (u.trans.getTranslateX() - this.trans.getTranslateX());
-		float distanceXY = (float) Math.sqrt(yDistance * yDistance
-				+ xDistance * xDistance); // It should take this many frames
-		return radius > distanceXY;
+		if(u != null) {
+			float yDistance = (float) (u.trans.getTranslateY() - this.trans.getTranslateY());
+			float xDistance = (float) (u.trans.getTranslateX() - this.trans.getTranslateX());
+			float distanceXY = (float) Math.sqrt(yDistance * yDistance
+					+ xDistance * xDistance); // It should take this many frames
+			return radius > distanceXY;
+		}
+		return false;
 	}
 	
 	public float getWidth() {

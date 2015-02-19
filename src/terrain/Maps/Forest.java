@@ -1,4 +1,6 @@
 package terrain.Maps;
+import items.LanternFuel;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
@@ -8,6 +10,7 @@ import terrain.Doodad;
 import terrain.TerrainChunk;
 import audio.BigClip;
 import audio.SoundClip;
+import drawables.Canvas;
 import drawables.sprites.SpriteSheet;
 
 // One drawable object.
@@ -70,6 +73,8 @@ public class Forest extends ArrayList<TerrainChunk> {
 			for(int j = 0; j < howManyTall; j++) {
 					if(j==0)  { 
 						chunk = new TerrainChunk(grassy, (i+(x1)), (j + y1));
+						LanternFuel lf = new LanternFuel();
+						lf.instantlyMove((float)chunk.trans.getTranslateX(),(float)chunk.trans.getTranslateY()-100);
 					}
 					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + y1));
 					else chunk = new TerrainChunk(dirt, (i+(x1)), (j + y1));

@@ -1,5 +1,7 @@
 package drawables;
 
+import items.Item;
+
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,19 +51,11 @@ public class Canvas extends JComponent {
 	// The thing that performs the tasks every time the timer ticks.
 	ActionListener taskPerformer = new ActionListener() {
 		public void actionPerformed(ActionEvent evt) {
-			updateNodes();
 			Unit.updateUnits();
+			Item.updateItems();
 			repaint();
 		}
 	};
-
-	// Run through each node and update it.
-	void updateNodes() {
-		for (int i = 0; i < getNodes().size(); i++) {
-			Node n = getNodes().get(i);
-			n.update();
-		}
-	}
 	
 	// Move a unit
 	public void moveUnit(Unit move, float x, float y) {
@@ -81,7 +75,7 @@ public class Canvas extends JComponent {
 		}
 		if(move instanceof Unit && !(move instanceof Player)) {
 			((Unit)move).setX((float) ((Unit) move).getX() + x);
-			((Unit) move).setY((float) ((Unit) move).getY() + y);
+			((Unit)move).setY((float) ((Unit) move).getY() + y);
 		}
 		move.instantlyMove(x, y);
 	}

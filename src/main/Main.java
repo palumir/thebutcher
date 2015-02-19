@@ -11,6 +11,7 @@ import terrain.Maps.Forest;
 import units.Chapman;
 import units.Nichols;
 import units.Player;
+import units.Smith;
 import drawables.Canvas;
 
 /**
@@ -47,19 +48,22 @@ public class Main {
 		// Spawn our map first.
 		Forest f = new Forest();
 		
-		// Create a character for testing.
+		// Create the player. Move him to the middle of the screen.
 		Player player = new Player();
-		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 		
 		// Create our lantern
 		Lantern lantern = new Lantern();
-		LanternFuel lf = new LanternFuel();
-		lf.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 		
 		// Configure enemy AI
-		Chapman.AILevel = 10;
-		Nichols.AILevel = 10;
+		Smith.setAI(1);
+		Nichols.setAI(1);
+		Chapman.setAI(1);
+		
+		// Always spawn nichols.
 		Nichols nichols = new Nichols();
+		
+		//TESTING
+		//Chapman c = new Chapman();
 	}
 	
 	public static long getGameTime() {

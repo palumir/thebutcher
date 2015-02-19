@@ -83,6 +83,15 @@ public class SoundClip {
 		}
 	}
 	
+	public void restart() {
+		if(small) {
+			clip.setFramePosition(0);
+		}
+		else {
+			bigClip.setFramePosition(0);
+		}
+	}
+	
 	public void stop() {
 		playing = false;
 		if(small) clip.stop();

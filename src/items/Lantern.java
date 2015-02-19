@@ -12,7 +12,7 @@ import drawables.Canvas;
 import drawables.Node;
 
 
-public class Lantern extends Node {
+public class Lantern extends Item {
 	
 	// Sounds
 	protected static SoundClip switchSound = new SoundClip("./../sounds/effects/switch.wav", true);
@@ -25,21 +25,17 @@ public class Lantern extends Node {
 	
 	// Strokes for the light
 	private static BasicStroke strokeSmall = new BasicStroke(1);
-	BasicStroke stroke1 = new BasicStroke(500 + getFuel()*3f);
-	BasicStroke stroke2 = new BasicStroke(600 + getFuel()*3f);
-	BasicStroke stroke3 = new BasicStroke(700 + getFuel()*3f);
-	BasicStroke stroke4 = new BasicStroke(850 + getFuel()*3f);
+	static BasicStroke stroke1 = new BasicStroke(500 + getFuel()*3f);
+	static BasicStroke stroke2 = new BasicStroke(600 + getFuel()*3f);
+	static BasicStroke stroke3 = new BasicStroke(700 + getFuel()*3f);
+	static BasicStroke stroke4 = new BasicStroke(850 + getFuel()*3f);
 	
 	private static boolean toggle = true;
 
 	public Lantern() {
-		super(Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
+		super(null, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 		this.movesWithPlayer = true;
 		this.zIndex = 1;
-		stroke1 = new BasicStroke(500 + getFuel()*3f);
-		stroke2 = new BasicStroke(600 + getFuel()*3f);
-		stroke3 = new BasicStroke(700 + getFuel()*3f);
-		stroke4 = new BasicStroke(850 + getFuel()*3f);
 	}
 	
 	public static void toggle() {
@@ -61,7 +57,7 @@ public class Lantern extends Node {
 	}
 	
 	// Update
-	public void update() {
+	public void updateItem() {
 		if(fuelDropping) {
 			if(toggle && Main.getGameTime() - tickTime > fuelLastsFor/100) {
 				if(getFuel() > 0) setFuel(getFuel() - 1);
@@ -71,10 +67,6 @@ public class Lantern extends Node {
 				if(getFuel()<=0) {
 					toggle = false;
 				}
-				stroke1 = new BasicStroke(500 + getFuel()*3f);
-				stroke2 = new BasicStroke(600 + getFuel()*3f);
-				stroke3 = new BasicStroke(700 + getFuel()*3f);
-				stroke4 = new BasicStroke(850 + getFuel()*3f);
 			}
 		}
 		//System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
@@ -133,6 +125,10 @@ public class Lantern extends Node {
 
 	public static void setFuel(int fuel) {
 		Lantern.fuel = fuel;
+		stroke1 = new BasicStroke(500 + getFuel()*3f);
+		stroke2 = new BasicStroke(600 + getFuel()*3f);
+		stroke3 = new BasicStroke(700 + getFuel()*3f);
+		stroke4 = new BasicStroke(850 + getFuel()*3f);
 	}
 
 	public static boolean isFuelDropping() {

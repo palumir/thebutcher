@@ -19,8 +19,8 @@ public class Player extends Unit  {
 	private static Player currentPlayer;	
 	
 	// Where is the player in the map?
-	private float movedX = 0;
-	private float movedY = 0;
+	private static float playerMovedX = 0;
+	private static float playerMovedY = 0;
 	
 	// Player constructor
 	public Player() {
@@ -32,6 +32,9 @@ public class Player extends Unit  {
 		setX(Canvas.getDefaultWidth()/2);
 		setY(Canvas.getDefaultHeight()/2);
 		loadAnimations();
+		
+		// Center the player.
+		this.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 	}
 
 	// Load all of the player's animations
@@ -102,6 +105,7 @@ public class Player extends Unit  {
 			
 			// Move everything up!
 			Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
+			//setPlayerMovedY(getPlayerMovedY() + Player.getCurrentPlayer().getFallSpeed()*this.moveSpeed);
 		}
 	
 	}
@@ -113,15 +117,17 @@ public class Player extends Unit  {
 	
 	// Always be moving, if the player presses a key.
 	public void move() {
-		if(this != null) {
+		if(this != null && !stunned) {
 			if(this.movingRight) { 
 				Canvas.getGameCanvas().moveAllBut(this, (-1)*this.moveSpeed, 0);
+				setPlayerMovedX(getPlayerMovedX() + this.moveSpeed);
 				if(!this.falling()) this.animate(this.walkingRight);
 				else this.animate(this.jumpRight);
 				this.facingLeft = false;
 			}
 			else if(this.movingLeft) { 
 				Canvas.getGameCanvas().moveAllBut(this, this.moveSpeed, 0);
+				setPlayerMovedX(getPlayerMovedX() - this.moveSpeed);
 				if(!this.falling()) this.animate(this.walkingLeft);
 				else this.animate(this.jumpLeft);
 				this.facingLeft = true;
@@ -159,5 +165,21 @@ public class Player extends Unit  {
 
 	public static void setCurrentPlayer(Player s) {
 		currentPlayer = s;
+	}
+
+	public static float getPlayerMovedY() {
+		return playerMovedY;
+	}
+
+	public static void setPlayerMovedY(float playerMovedY) {
+		Player.playerMovedY = playerMovedY;
+	}
+
+	public static float getPlayerMovedX() {
+		return playerMovedX;
+	}
+
+	public static void setPlayerMovedX(float playerMovedX) {
+		Player.playerMovedX = playerMovedX;
 	}
 }

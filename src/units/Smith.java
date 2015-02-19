@@ -15,18 +15,18 @@ import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
 
 
-// Chapman is fairly basic. Turn light off to run by him. Move him off screen, he disappears. Spawns randomly, very fast.
-public class Chapman extends Unit {
+// Smith is fairly basic. Turn light off to run by him. Move him off screen, he disappears. Spawns randomly, very fast.
+public class Smith extends Unit {
 	
-	// Make sure there's only one Chapman at once.
-	public static Chapman chapman = null;
+	// Make sure there's only one Smith at once.
+	public static Smith Smith = null;
 	
 	// How hard are we?
 	public static int AILevel = 1; 
 	
 	// Static variables
-	private static float meanderSpeed = 0.5f;
-	private static float chasingSpeed = 0.5f;
+	private static float meanderSpeed = 1;
+	private static float chasingSpeed = 4;
 	private static float meanderStop = 3000;
 	private static int chaseRange = 150;
 	private static int closeRange = 230;
@@ -47,10 +47,9 @@ public class Chapman extends Unit {
 	// States
 	private boolean closeToPlayer = false;
 	private boolean chasingPlayer = false;
-	private boolean passed = false; // Has the player actually passed chapman?
+	private boolean passed = false; // Has the player actually passed Smith?
 	
-	// Sounds for Chapman
-	protected static SoundClip pulsing = new SoundClip("./../sounds/effects/pulse.wav", true);
+	// Sounds for Smith
 	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
 	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
 	
@@ -58,12 +57,13 @@ public class Chapman extends Unit {
 	protected static double meanderTime = 0;
 	
 	// Player constructor
-	public Chapman() {
-		super(20,64,new SpriteSheet("src/images/characters/Chapman.png",
-				59, 59, 84, 86, 4, 4)); // Collision width/height.
-		chapman = this;
+	public Smith() {
+		super(20,64,new SpriteSheet("src/images/characters/smith.png",
+				64, 20, 64, 64, 20, 13)); // Collision width/height.
+		Smith = this;
 		zIndex = 0;
 		passed = false;
+		
 		setAI(AILevel);
 		moveSpeed = meanderSpeed;
 		
@@ -74,28 +74,34 @@ public class Chapman extends Unit {
 	// Load all of the animations
 	void loadAnimations() {
 		walkingRight = new SpriteAnimation(spriteSheet, new int[] {
-				2 * spriteSheet.getColsInSheet(),
-				2 * spriteSheet.getColsInSheet() + 1,
-				2 * spriteSheet.getColsInSheet() + 2,
-				2 * spriteSheet.getColsInSheet() + 3}, 1000);
+				11 * spriteSheet.getColsInSheet(),
+				11 * spriteSheet.getColsInSheet() + 1,
+				11 * spriteSheet.getColsInSheet() + 2,
+				11 * spriteSheet.getColsInSheet() + 3,
+				11 * spriteSheet.getColsInSheet() + 4,
+				11 * spriteSheet.getColsInSheet() + 5,
+				11 * spriteSheet.getColsInSheet() + 6}, 500);
 		walkingRight.loop(true);
 		walkingLeft = new SpriteAnimation(spriteSheet, new int[] {
-				1 * spriteSheet.getColsInSheet(),
-				1 * spriteSheet.getColsInSheet() + 1,
-				1 * spriteSheet.getColsInSheet() + 2,
-				1 * spriteSheet.getColsInSheet() + 3}, 1000);
+				9 * spriteSheet.getColsInSheet(),
+				9 * spriteSheet.getColsInSheet() + 1,
+				9 * spriteSheet.getColsInSheet() + 2,
+				9 * spriteSheet.getColsInSheet() + 3,
+				9 * spriteSheet.getColsInSheet() + 4,
+				9 * spriteSheet.getColsInSheet() + 5,
+				9 * spriteSheet.getColsInSheet() + 6}, 500);
 		walkingLeft.loop(true);
 		jumpLeft = new SpriteAnimation(spriteSheet, new int[] {
-				1 * spriteSheet.getColsInSheet() + 0}, 500);
+				1 * spriteSheet.getColsInSheet() + 6}, 500);
 		jumpLeft.loop(false);
 		jumpRight = new SpriteAnimation(spriteSheet, new int[] {
-				1 * spriteSheet.getColsInSheet() + 0}, 500);
+				3 * spriteSheet.getColsInSheet() + 6}, 500);
 		jumpRight.loop(false);
 		idleRight = new SpriteAnimation(spriteSheet, new int[] {
-				2 * spriteSheet.getColsInSheet()}, 500);
+				7 * spriteSheet.getColsInSheet()}, 500);
 		idleRight.loop(true);
 		idleLeft = new SpriteAnimation(spriteSheet, new int[] {
-				2 * spriteSheet.getColsInSheet()}, 500);
+				9 * spriteSheet.getColsInSheet()}, 500);
 		idleLeft.loop(true);
 		animate(jumpRight);
 	}
@@ -112,21 +118,21 @@ public class Chapman extends Unit {
 		AILevel = i;
 		
 		// Configure difficulty
-		meanderSpeed = 0.7f;
-		chasingSpeed = 0.9f;
+		meanderSpeed = 1 + (float)AILevel/1.3f;
+		chasingSpeed = 4f + (float)AILevel/2.3f;
 		meanderStop = 3000 - 100*AILevel;
-		chaseRange = Math.max(Canvas.getDefaultWidth()/2+100,Canvas.getDefaultHeight()/2+100);
+		chaseRange = 150+AILevel*4;
 		closeRange = 230;
-		killRange = 60;
-		minSpawnCheck = 2500;
-		defaultSpawnCheck = 30000 + AILevel*6000;
-		spawnChance = 10/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
+		killRange = 30+AILevel*2;
+		minSpawnCheck = 2;
+		defaultSpawnCheck = 2;
+		spawnChance = 2; // 1/spawnChance is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 	}
 	
-	// What to do when Chapman isn't spawned?
+	// What to do when Smith isn't spawned?
 	public static void spawnOrDespawn() {
-		if(chapman==null) {
+		if(Smith==null) {
 			
 			// Only check to spawn every 10 seconds
 			if(Main.getGameTime() - lastSpawn > Math.max(spawnCheck,minSpawnCheck)) {
@@ -144,27 +150,27 @@ public class Chapman extends Unit {
 		
 		}
 		
-		// Delete Chapman if we move past and he goes off screen, or if we move 3 screens away from him.
-		else if((chapman.passed && !chapman.close(Math.max(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) ||
-				!chapman.close(Math.max(4*Canvas.getDefaultWidth()/2, 3*Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) {
-			pulsing.stop();
-			chapman.deleteUnit(); 
-			chapman = null;
+		// Delete Smith if we move past and he goes off screen, or if we move 3 screens away from him.
+		else if((Smith.passed && !Smith.close(Math.max(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) ||
+				!Smith.close(Math.max(3*Canvas.getDefaultWidth()/2, 3*Canvas.getDefaultHeight()/2),Player.getCurrentPlayer())) {
+			chasing.stop();
+			Smith.deleteUnit(); 
+			Smith = null;
 		}
 	}
 	
-	// Spawn chapman
+	// Spawn Smith
 	public static void spawn() {
-		Chapman c = new Chapman();
+		Smith c = new Smith();
 		Player p = Player.getCurrentPlayer();
 		if(p!=null) {
 			
-			// Is the player moving left or right? Don't spawn Chapman behind the player, silly!
+			// Is the player moving left or right? Don't spawn Smith behind the player, silly!
 			int leftOrRight = 1;
 			if(p.facingLeft) leftOrRight = -1;
 			
 			// Move to off screen. Don't care about terrain at this point
-			c.instantlyMoveNotify((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
+			c.instantlyMoveNotify((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2)),(float)(p.trans.getTranslateY()));
 			
 			// If we're in terrain, then move up until we're not.
 			while(TerrainChunk.inTerrain(c)) {
@@ -175,11 +181,13 @@ public class Chapman extends Unit {
 	
 	public void AI() {
 		if(Player.getCurrentPlayer() != null) {
+			System.out.println("Chapman: " + (int)this.getX()/50 + "x" + (int)this.getY()/50);
+			System.out.println("Character: " + (int)Player.getCurrentPlayer().getX()/50 + "x" + (int)Player.getCurrentPlayer().getY()/50);
 			// STOP STATES
 			// If the player has gotten 150 away, stop chasing.
-			if(chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this)) {
+			if(Smith == null || (chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this))) {
 				chasingPlayer = false;
-				pulsing.stop();
+				chasing.stop();
 				movingRight = false;
 				movingLeft = false;
 				moveSpeed = meanderSpeed;
@@ -193,8 +201,8 @@ public class Chapman extends Unit {
 			// Chase player!
 			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
 				chasingPlayer = true;
-				pulsing.restart();
-				pulsing.loop(Clip.LOOP_CONTINUOUSLY);
+				chasing.restart();
+				chasing.loop(Clip.LOOP_CONTINUOUSLY);
 				moveSpeed = chasingSpeed;
 			}
 			// Play noise if we're close to player!
@@ -205,7 +213,6 @@ public class Chapman extends Unit {
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
 			if(chasingPlayer) {
-				Player.getCurrentPlayer().stun(true);
 				follow(Player.getCurrentPlayer());
 			}
 			else {
@@ -238,7 +245,7 @@ public class Chapman extends Unit {
 	}
 	
 	public void meander() {
-		if(Main.getGameTime() - meanderTime > meanderStop) {
+		/*if(Main.getGameTime() - meanderTime > meanderStop) {
 			meanderTime = Main.getGameTime();
 			if(!movingRight && !movingLeft) {
 				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
@@ -251,10 +258,12 @@ public class Chapman extends Unit {
 				}
 				else {
 					if(Main.r.nextInt(2)==1) {
+						if(AILevel > 4) if(Main.r.nextInt(5)==1) jump();
 						movingRight = true;
 						movingLeft = false;
 					}
 					else {
+						if(AILevel > 4) if(Main.r.nextInt(5)==1) jump();
 						movingLeft = true;
 						movingRight = false;
 					}
@@ -264,18 +273,19 @@ public class Chapman extends Unit {
 				movingRight = false;
 				movingLeft = false;
 			}
-		}
+		}*/
 	}
 	
 	public void follow(Unit u) {
-		Player.getCurrentPlayer().stun(true);
 		if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
 			this.movingRight = true;
 			this.movingLeft = false;
+			if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
 		}
 		if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
 			this.movingRight = false;
 			this.movingLeft = true;
+			if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
 		}
 	}
 }

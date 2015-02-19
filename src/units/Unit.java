@@ -30,6 +30,12 @@ public class Unit extends Node implements MouseListener {
 	protected float movedX = 0;
 	protected float movedY = 0;
 	
+	// Firstmove - are we spawning
+	protected boolean firstMove = true;
+	
+	// Stunned?
+	protected boolean stunned = false;
+	
 	// Sounds for monster interactions.
 	protected static SoundClip chasing = new SoundClip("./../sounds/ambience/chasing.wav", true);
 
@@ -104,6 +110,7 @@ public class Unit extends Node implements MouseListener {
 		
 		// Deal with our baddies.
 		Nichols.randomEvents();
+		Smith.spawnOrDespawn();
 		Chapman.spawnOrDespawn();
 	}
 
@@ -116,8 +123,15 @@ public class Unit extends Node implements MouseListener {
 	// Move with consideration to terrain
 	public void instantlyMoveNotify(float x, float y) {
 		instantlyMove(x,y);
-		setX(getX() + x);
-		setY(getY() + y);
+		double playerX = 0;
+		double playerY = 0;
+		if(firstMove) {
+			playerX = Player.getCurrentPlayer().getX();
+			playerY = Player.getCurrentPlayer().getY();
+		}
+		System.out.println("Moved: " + Player.getPlayerMovedX() + "x" + Player.getPlayerMovedX()/50);
+		setX((float) (getX() + x + playerX));
+		setY((float) (getY() + y + playerY));
 	}
 
 	// Obviously, update the unit every frame.
@@ -127,7 +141,7 @@ public class Unit extends Node implements MouseListener {
 	}
 	
 	public void move() {
-		if(this != null) {
+		if(this != null && !stunned) {
 			if(this.movingRight) { 
 				Canvas.getGameCanvas().moveUnit(this, this.moveSpeed, 0);
 				if(!this.falling()) this.animate(this.walkingRight);
@@ -179,18 +193,20 @@ public class Unit extends Node implements MouseListener {
 	
 	// Player pressed up key/jump
 	public void jump() {
-		if(!falling()) { 
-			setFallSpeed(jumpSpeed);
-			hitGround = false;
-			if(facingLeft) animate(jumpLeft);
-			else animate(jumpRight);
-		}
-		if(wallTouching() && wallJumps != numWallJumps) {
-			setFallSpeed(jumpSpeed - jumpSpeed*(wallJumps/numWallJumps));
-			hitGround = false;
-			if(facingLeft) animate(jumpLeft);
-			else animate(jumpRight);
-			wallJumps++;
+		if(!stunned) {
+			if(!falling()) { 
+				setFallSpeed(jumpSpeed);
+				hitGround = false;
+				if(facingLeft) animate(jumpLeft);
+				else animate(jumpRight);
+			}
+			if(wallTouching() && wallJumps != numWallJumps) {
+				setFallSpeed(jumpSpeed - jumpSpeed*(wallJumps/numWallJumps));
+				hitGround = false;
+				if(facingLeft) animate(jumpLeft);
+				else animate(jumpRight);
+				wallJumps++;
+			}
 		}
 	}
 	
@@ -248,6 +264,14 @@ public class Unit extends Node implements MouseListener {
 	
 	public float getY() {
 		return movedY;
+	}
+	
+	public void stun(boolean b) {
+		movingRight = false;
+		movingLeft = false;
+		if(facingLeft) currAnimation = idleLeft;
+		if(!facingLeft) currAnimation = idleRight;
+		stunned = b;
 	}
 	
 	public void setX(float newX) {

@@ -48,9 +48,7 @@ public class Nichols extends Unit {
 		zIndex = 0;
 		nichols = this;
 		
-		// AI Static variables
-		darknessKillPlayer = 30000 - AILevel*2500;
-		howQuicklyDoWeGiveBackTime = 1/Math.max(1,AILevel);
+		setAI(AILevel);
 		
 		setHidden(true);
 		loadAnimations();
@@ -91,6 +89,15 @@ public class Nichols extends Unit {
 		animate(jumpRight);
 	}
 	
+	// Set AI
+	public static void setAI(int i) {
+		AILevel = i;
+		
+		// AI Static variables
+		darknessKillPlayer = 30000 - AILevel*2500;
+		howQuicklyDoWeGiveBackTime = 1/Math.max(1,AILevel);
+	}
+	
 	// Obviously, update the unit every frame.
 	public void updateUnit() {
 		this.nicholsAI();
@@ -125,9 +132,10 @@ public class Nichols extends Unit {
 	
 	// WIP FOREST DEATH SCENE
 	public void createPitDeathScene() {
-		// Create a character for testing.
+		// Create the player again
 		Player player = new Player();
-		player.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
+		
+		// Create the scene.
 		NicholsPit f = new NicholsPit();
 		Lantern l = new Lantern();
 		Lantern.setFuelDropping(false);
@@ -145,8 +153,8 @@ public class Nichols extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		Chapman.groan.start();
-		Chapman.slash.loop(3); // WIP IS TABRAM'S DEATH SCREEN
+		Smith.groan.start();
+		Smith.slash.loop(3); // WIP IS TABRAM'S DEATH SCREEN
 		Background.setBackground(Color.RED);
 	}
 	

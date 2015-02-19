@@ -1,22 +1,22 @@
 package items;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import units.Player;
 import units.Unit;
 import drawables.Canvas;
 import drawables.Node;
-import drawables.sprites.SpriteSheet;
 
 // One chunk of terrain.
 public class Item extends Node {
 	
 	// All items
 	public static ArrayList<Item> items = new ArrayList<Item>();
+	
+	// Static variables
+	public static int pickUpRange = 30;
 	
 	// Cosmetics
 	private BufferedImage image;
@@ -27,6 +27,37 @@ public class Item extends Node {
 		image = i;
 		this.shapeHidden = true;
 		items.add(this);
+	}
+	
+	// Update items
+	public static void updateItems() {
+		for(int i = 0; i < items.size(); i++) {
+			items.get(i).updateItem();
+		}
+	}
+	
+	// Update item
+	public void updateItem() {
+		if(Player.getCurrentPlayer() != null && this.close(pickUpRange, Player.getCurrentPlayer())) {
+			this.pickUp();
+		}
+	}
+	
+	// Pickup placeholder
+	public void pickUp() {
+		
+	}
+	
+	// Delete the item
+	public void deleteItem() {
+		this.deleteNode();
+		for (int i = 0; i < items.size(); i++) {
+			Item u = items.get(i);
+			if(u==this) {
+				items.remove(i);
+				break;
+			}
+		}
 	}
 	
 	// Override the paintNode function for Item.
