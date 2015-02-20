@@ -63,7 +63,6 @@ public class Forest extends ArrayList<TerrainChunk> {
 		// Some pre-calcs.
 		int howManyAcross = Math.abs(x2 - x1);
 		int howManyTall = Math.abs(y2-y1); 
-		int chanceForTunnel = 30;
 		
 		// Keep a record of where things are.
 		TerrainChunk[][] currentTerrain = new TerrainChunk[howManyAcross][howManyTall];
@@ -86,13 +85,13 @@ public class Forest extends ArrayList<TerrainChunk> {
 		}
 			
 		// Make tennels
-		int howLong = 400;
+		int howLong = 100;
+		int chanceForTunnel = 13;
 		boolean[][] tunneledFrom = new boolean[howManyAcross][howManyTall];
 		for(int i=0; i < howManyAcross; i++) for(int j=0; j < howManyTall; j++) tunneledFrom[i][j] = false;
 		for(int x = 0; x < howManyAcross; x++) {
 			// Do we tunnel?
 			if(r.nextInt(chanceForTunnel) == 1) {
-				TerrainChunk oldChunk = currentTerrain[x][0];
 				currentTerrain[x][0].deleteChunk();
 				currentTerrain[x][0] = emptyChunk;
 				int j = 0;
@@ -100,11 +99,6 @@ public class Forest extends ArrayList<TerrainChunk> {
 				int length = 0;
 				while(length < howLong) {
 					int direction = r.nextInt(4); // 0 - left 1 - right 2 - down left 3 - down right
-					
-					if( r.nextInt(2) == 1) {
-						LanternFuel lf = new LanternFuel();
-						lf.instantlyMove((float)oldChunk.trans.getTranslateX(),(float)oldChunk.trans.getTranslateY()-35);
-					}
 					
 					// Left or right go as far as you want.
 					int howManyInDirection = Math.max(5,Math.min(r.nextInt(howLong),10));
@@ -122,6 +116,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 					// Put down the blocks
 					for(int m = 0; m < howManyInDirection; m++) {
 						if(j+1 < howManyTall && i-1 >=0 && i + 1 < howManyAcross) {
+							TerrainChunk oldChunk = currentTerrain[i][j];
 							if(direction==0) {
 								i--;
 								currentTerrain[i][j].deleteChunk();
@@ -152,6 +147,8 @@ public class Forest extends ArrayList<TerrainChunk> {
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 							}
+							LanternFuel lf = new LanternFuel();
+							lf.instantlyMove((float)oldChunk.trans.getTranslateX(),(float)oldChunk.trans.getTranslateY()-35);
 							length++;
 						}
 						else { length = howLong; break; }

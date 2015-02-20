@@ -33,7 +33,7 @@ public class Nichols extends Unit {
 	public static int darknessKillPlayer = 30000 - AILevel*2500;
 	public static double lastCheck = 0;
 	public static double totalTime = 0;
-	public static float howQuicklyDoWeGiveBackTime = 1f; // 1x as fast
+	public static float howQuicklyDoWeGiveBackTime = 1.5f; // 1.5x as fast
 	public static double lastEvent = 0;
 	public static double randomEventTimer = 10000;
 	
