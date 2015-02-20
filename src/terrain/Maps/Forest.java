@@ -63,7 +63,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 		// Some pre-calcs.
 		int howManyAcross = Math.abs(x2 - x1);
 		int howManyTall = Math.abs(y2-y1); 
-		int chanceForTunnel = 20;
+		int chanceForTunnel = 30;
 		
 		// Keep a record of where things are.
 		TerrainChunk[][] currentTerrain = new TerrainChunk[howManyAcross][howManyTall];
@@ -73,8 +73,10 @@ public class Forest extends ArrayList<TerrainChunk> {
 			for(int j = 0; j < howManyTall; j++) {
 					if(j==0)  { 
 						chunk = new TerrainChunk(grassy, (i+(x1)), (j + y1));
-						LanternFuel lf = new LanternFuel();
-						lf.instantlyMove((float)chunk.trans.getTranslateX(),(float)chunk.trans.getTranslateY()-100);
+						if(i%20 == 0 && r.nextInt(10) == 1) {
+							LanternFuel lf = new LanternFuel();
+							lf.instantlyMove((float)chunk.trans.getTranslateX(),(float)chunk.trans.getTranslateY()- 35);
+						}
 					}
 					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + y1));
 					else chunk = new TerrainChunk(dirt, (i+(x1)), (j + y1));
@@ -84,12 +86,13 @@ public class Forest extends ArrayList<TerrainChunk> {
 		}
 			
 		// Make tennels
-		int howLong = 500;
+		int howLong = 400;
 		boolean[][] tunneledFrom = new boolean[howManyAcross][howManyTall];
 		for(int i=0; i < howManyAcross; i++) for(int j=0; j < howManyTall; j++) tunneledFrom[i][j] = false;
 		for(int x = 0; x < howManyAcross; x++) {
 			// Do we tunnel?
 			if(r.nextInt(chanceForTunnel) == 1) {
+				TerrainChunk oldChunk = currentTerrain[x][0];
 				currentTerrain[x][0].deleteChunk();
 				currentTerrain[x][0] = emptyChunk;
 				int j = 0;
@@ -97,6 +100,11 @@ public class Forest extends ArrayList<TerrainChunk> {
 				int length = 0;
 				while(length < howLong) {
 					int direction = r.nextInt(4); // 0 - left 1 - right 2 - down left 3 - down right
+					
+					if( r.nextInt(2) == 1) {
+						LanternFuel lf = new LanternFuel();
+						lf.instantlyMove((float)oldChunk.trans.getTranslateX(),(float)oldChunk.trans.getTranslateY()-35);
+					}
 					
 					// Left or right go as far as you want.
 					int howManyInDirection = Math.max(5,Math.min(r.nextInt(howLong),10));

@@ -29,12 +29,10 @@ public class Player extends Unit  {
 		currentPlayer = this;
 		moveSpeed = 4;
 		this.zIndex = 1;
-		setX(Canvas.getDefaultWidth()/2);
-		setY(Canvas.getDefaultHeight()/2);
 		loadAnimations();
 		
 		// Center the player.
-		this.instantlyMove(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
+		this.instantlyMoveNotify(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 	}
 
 	// Load all of the player's animations

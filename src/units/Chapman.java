@@ -164,12 +164,8 @@ public class Chapman extends Unit {
 			if(p.facingLeft) leftOrRight = -1;
 			
 			// Move to off screen. Don't care about terrain at this point
-			c.instantlyMoveNotify((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
-			
-			// If we're in terrain, then move up until we're not.
-			while(TerrainChunk.inTerrain(c)) {
-				c.instantlyMoveNotify(0, -5);
-			}
+			c.spawnAt((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
+
 		}
 	}
 	

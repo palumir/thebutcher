@@ -72,7 +72,7 @@ public class Item extends Node {
 			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
 			
 			// Draw the sprite.
-			g2.drawImage(image,0,0,null);
+			g2.drawImage(image,-image.getWidth()/2,-image.getHeight()/2,null);
 	
 			// Restore the transform.
 			g2.setTransform(t);

@@ -124,9 +124,9 @@ public class Smith extends Unit {
 		chaseRange = 150+AILevel*4;
 		closeRange = 230;
 		killRange = 30+AILevel*2;
-		minSpawnCheck = 2;
-		defaultSpawnCheck = 2;
-		spawnChance = 2; // 1/spawnChance is the spawnChance, every 10 seconds or so.
+		minSpawnCheck = 2500;
+		defaultSpawnCheck = 30000 + AILevel*6000;
+		spawnChance = 10/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 	}
 	
@@ -169,20 +169,13 @@ public class Smith extends Unit {
 			int leftOrRight = 1;
 			if(p.facingLeft) leftOrRight = -1;
 			
-			// Move to off screen. Don't care about terrain at this point
-			c.instantlyMoveNotify((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2)),(float)(p.trans.getTranslateY()));
-			
-			// If we're in terrain, then move up until we're not.
-			while(TerrainChunk.inTerrain(c)) {
-				c.instantlyMoveNotify(0, -5);
-			}
+			// Spawn unit here. This will make sure he's not in terrain.
+			c.spawnAt((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2 + 100)),(float)(p.trans.getTranslateY()));
 		}
 	}
 	
 	public void AI() {
 		if(Player.getCurrentPlayer() != null) {
-			System.out.println("Chapman: " + (int)this.getX()/50 + "x" + (int)this.getY()/50);
-			System.out.println("Character: " + (int)Player.getCurrentPlayer().getX()/50 + "x" + (int)Player.getCurrentPlayer().getY()/50);
 			// STOP STATES
 			// If the player has gotten 150 away, stop chasing.
 			if(Smith == null || (chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this))) {

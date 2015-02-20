@@ -123,15 +123,8 @@ public class Unit extends Node implements MouseListener {
 	// Move with consideration to terrain
 	public void instantlyMoveNotify(float x, float y) {
 		instantlyMove(x,y);
-		double playerX = 0;
-		double playerY = 0;
-		if(firstMove) {
-			playerX = Player.getCurrentPlayer().getX();
-			playerY = Player.getCurrentPlayer().getY();
-		}
-		System.out.println("Moved: " + Player.getPlayerMovedX() + "x" + Player.getPlayerMovedX()/50);
-		setX((float) (getX() + x + playerX));
-		setY((float) (getY() + y + playerY));
+		setX((float) (getX() + x));
+		setY((float) (getY() + y));
 	}
 
 	// Obviously, update the unit every frame.
@@ -228,6 +221,19 @@ public class Unit extends Node implements MouseListener {
 	// Animate unit
 	public void animate(SpriteAnimation s) {
 		currAnimation = s;
+	}
+	
+	// Spawn non-player unit at this spawnX, spawnY
+	public void spawnAt(float spawnX, float spawnY) {
+		// Move to off screen. Don't care about terrain at this point
+		this.setX(Player.getPlayerMovedX());
+		this.setY(Player.getPlayerMovedY());
+		this.instantlyMoveNotify(spawnX,spawnY);
+			
+		// If we're in terrain, then move up until we're not.
+		while(TerrainChunk.inTerrain(this)) {
+			this.instantlyMoveNotify(0, -5);
+		}
 	}
 	
 	// Delete the unit.
