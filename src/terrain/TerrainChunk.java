@@ -32,11 +32,10 @@ public class TerrainChunk extends Node {
 	
 	// Just one chunk of the terrain.
 	public TerrainChunk(BufferedImage sp, float x, float y) {
-		super(sp.getWidth(), sp.getHeight());
+		super(sp.getWidth(), sp.getHeight(),(int)(x)*sp.getWidth(), (int)(y)*sp.getHeight());
 		setSprite(sp);
 		this.shapeHidden = true;
 		terrain.put((int)x + "x" + (int)y,this);
-		this.instantlyMove((int)(x)*getSprite().getWidth(), (int)(y)*getSprite().getHeight());
 	}
 	
 	// Override the paintNode function for Unit.
@@ -65,7 +64,7 @@ public class TerrainChunk extends Node {
 		// Check 10 blocks around the unit for "touching". General rule.
 		for(int i = -5; i < 5; i++) {
 			for(int j = -5; j < 5; j++) {
-				String whatPos =(int) ((n.getX()/defaultBlockSize) + i) + "x" + (int) (n.getY()/defaultBlockSize + j);
+				String whatPos =(int) ((n.getMapX()/defaultBlockSize) + i) + "x" + (int) (n.getMapY()/defaultBlockSize + j);
 				if(getTerrain().get(whatPos) == null) {
 				}
 				else {
@@ -82,7 +81,7 @@ public class TerrainChunk extends Node {
 		// Check 10 blocks around the unit for "inside". General rule.
 		for(int i = -5; i < 5; i++) {
 			for(int j = -5; j < 5; j++) {
-				String whatPos =(int) ((u.getX()/defaultBlockSize) + i) + "x" + (int) (u.getY()/defaultBlockSize + j);
+				String whatPos =(int) ((u.getMapX()/defaultBlockSize) + i) + "x" + (int) (u.getMapY()/defaultBlockSize + j);
 				TerrainChunk t = getTerrain().get(whatPos);
 				float uRadius = (float) Math.max(u.getWidth(), u.getHeight());
 				if(t!=null) { 

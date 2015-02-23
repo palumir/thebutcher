@@ -20,8 +20,12 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	// Positioning
 	public AffineTransform trans = new AffineTransform();
-	protected boolean movesWithPlayer = false;
+	protected boolean movesWithFocus = false;
 	protected int zIndex = 0;
+	
+	// Where are we on the map?
+	private float mapX;
+	private float mapY;
 	
 	// Are we hidden
 	protected boolean hidden = false;
@@ -37,11 +41,14 @@ public class Node implements MouseMotionListener, MouseListener {
 	private String id;
 
 	// Create a node. But where?
-	public Node(int w, int h) {
+	public Node(int w, int h, float x, float y) {
+		setMapX(x);
+		setMapY(y);
 		width = w;
 		setHeight(h);
 		this.id = "id";
 		Canvas.getGameCanvas().addNode(this);
+		instantlyMove(x,y);
 	}
 	
 	// Add a child node.
@@ -230,12 +237,12 @@ public class Node implements MouseMotionListener, MouseListener {
 		transform(AffineTransform.getTranslateInstance(x, y));
 	}
 
-	public boolean isMovesWithPlayer() {
-		return movesWithPlayer;
+	public boolean isMovesWithFocus() {
+		return movesWithFocus;
 	}
 
-	public void setMovesWithPlayer(boolean movesWithPlayer) {
-		this.movesWithPlayer = movesWithPlayer;
+	public void setMovesWithFocus(boolean movesWithPlayer) {
+		this.movesWithFocus = movesWithPlayer;
 	}
 
 	public int getzIndex() {
@@ -260,6 +267,22 @@ public class Node implements MouseMotionListener, MouseListener {
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+
+	public float getMapX() {
+		return mapX;
+	}
+
+	public void setMapX(float mapX) {
+		this.mapX = mapX;
+	}
+
+	public float getMapY() {
+		return mapY;
+	}
+
+	public void setMapY(float mapY) {
+		this.mapY = mapY;
 	}
 
 }

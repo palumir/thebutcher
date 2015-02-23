@@ -2,11 +2,15 @@ package units;
 
 import items.Lantern;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
+import audio.SoundClip;
 import saving.SaveState;
+import drawables.Background;
 import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
@@ -16,23 +20,26 @@ import drawables.sprites.SpriteSheet;
 // Global player data.
 public class Player extends Unit  {
 	
-	private static Player currentPlayer;	
+	// Sounds for dying 
+	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
+	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
 	
-	// Where is the player in the map?
-	private static float playerMovedX = 0;
-	private static float playerMovedY = 0;
+	// Static stuff
+	private static ArrayList<Player> players = new ArrayList<Player>();
+	private static int currPlayer = 0;
+	
+	// Dead?
+	private static boolean dead = false;
+	private static boolean deadAnimationPlayed = false;
 	
 	// Player constructor
-	public Player() {
+	public Player(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/player/jack.png",
-				64, 20, 64, 64, 20, 13)); // Collision width/height.
-		currentPlayer = this;
+				64, 20, 64, 64, 20, 13), x, y); // Collision width/height.
+		players.add(this);
 		moveSpeed = 4;
 		this.zIndex = 1;
 		loadAnimations();
-		
-		// Center the player.
-		this.instantlyMoveNotify(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2);
 	}
 
 	// Load all of the player's animations
@@ -70,114 +77,35 @@ public class Player extends Unit  {
 		animate(jumpRight);
 	}
 	
-	// Override the paintNode function for Player.
-	public void paintNode(Graphics2D g2) {
-		// Remember the transform being used when called
-		AffineTransform t = g2.getTransform();
-		
-		// Maintain aspect ratio.
-		AffineTransform currentTransform = this.getFullTransform();
-		g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-		g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-		
-		// Draw the sprite.
-		g2.drawImage(currAnimation.getCurrentSprite(),-spriteSheet.getSpriteWidth()/2,-spriteSheet.getSpriteHeight()/2,null);
-
-		// Restore the transform.
-		g2.setTransform(t);
-	}
-
-	// Fall at all times, if possible.
-	public void gravity() {
-		
-		if(Player.getCurrentPlayer() != null ) {
-			// Accelerate
-			if(Player.getCurrentPlayer().getFallSpeed() > Unit.fallSpeedCap)  { 
-				Player.getCurrentPlayer().setFallSpeed(Player.getCurrentPlayer().getFallSpeed() - 0.2f);
-			}
-			
-			// Are we falling?
-			if(Player.getCurrentPlayer().falling()) {
-				Player.getCurrentPlayer().hitGround = false;
-			}
-			
-			// Move everything up!
-			Canvas.getGameCanvas().moveAllBut(Player.getCurrentPlayer(), 0, Player.getCurrentPlayer().getFallSpeed());
-			//setPlayerMovedY(getPlayerMovedY() + Player.getCurrentPlayer().getFallSpeed()*this.moveSpeed);
-		}
-	
-	}
-	
 	// Kill the player. This obviously loses the game.
 	public void die() {
-		SaveState.purgeAll(); // Destroy everything on the screen.
-	}
-	
-	// Always be moving, if the player presses a key.
-	public void move() {
-		if(this != null && !stunned) {
-			if(this.movingRight) { 
-				Canvas.getGameCanvas().moveAllBut(this, (-1)*this.moveSpeed, 0);
-				setPlayerMovedX(getPlayerMovedX() + this.moveSpeed);
-				if(!this.falling()) this.animate(this.walkingRight);
-				else this.animate(this.jumpRight);
-				this.facingLeft = false;
-			}
-			else if(this.movingLeft) { 
-				Canvas.getGameCanvas().moveAllBut(this, this.moveSpeed, 0);
-				setPlayerMovedX(getPlayerMovedX() - this.moveSpeed);
-				if(!this.falling()) this.animate(this.walkingLeft);
-				else this.animate(this.jumpLeft);
-				this.facingLeft = true;
-			}
-			else {
-				if(this.idle() && this.facingLeft) {
-					this.animate(this.idleLeft);
-				}
-				else if(!this.facingLeft && this.idle()) {
-					this.animate(this.idleRight);
-				}
-			}
+		dead = true;
+		if(this == Unit.focusedUnit && dead && !deadAnimationPlayed) {
+			playDeathAnimation();
 		}
 	}
 	
-	// Player responding to keypresses
-	public static void keyPressed(KeyEvent k) {
-		// Deal with key presses for the player
-		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) Player.getCurrentPlayer().moveLeft(true);
-		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) Player.getCurrentPlayer().moveRight(true);
-		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W) Player.getCurrentPlayer().jump();
-		if(k.getKeyCode() == KeyEvent.VK_SPACE) Lantern.toggle();
+	// Play death animation
+	public void playDeathAnimation() {	
+		//SaveState.purgeAll(); // Destroy everything on the screen.
+		groan.start();
+		slash.loop(3);
+		Background.setBackground(Color.RED);
 	}
 	
-	// Player responding to key releases
-	public static void keyReleased(KeyEvent k) {
-		// Deal with key release for the player
-		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) Player.getCurrentPlayer().moveLeft(false);
-		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) Player.getCurrentPlayer().moveRight(false);
+	// Get the next player (tab through for now)
+	public static void nextPlayer() {
+		currPlayer++;
+		if(currPlayer>=players.size()) {
+			currPlayer = 0;
+		}
+		players.get(currPlayer).focus();
 	}
 	
 	public static Player getCurrentPlayer() {
-		return currentPlayer;
-	}
-
-	public static void setCurrentPlayer(Player s) {
-		currentPlayer = s;
-	}
-
-	public static float getPlayerMovedY() {
-		return playerMovedY;
-	}
-
-	public static void setPlayerMovedY(float playerMovedY) {
-		Player.playerMovedY = playerMovedY;
-	}
-
-	public static float getPlayerMovedX() {
-		return playerMovedX;
-	}
-
-	public static void setPlayerMovedX(float playerMovedX) {
-		Player.playerMovedX = playerMovedX;
+		if(players.contains(Unit.focusedUnit)) {
+			return (Player)focusedUnit;
+		}
+		return null;
 	}
 }

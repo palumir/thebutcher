@@ -49,7 +49,9 @@ public class Main {
 		Forest f = new Forest();
 		
 		// Create the player. Move him to the middle of the screen.
-		Player player = new Player();
+		Player player1 = new Player(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2);
+		Player player2 = new Player(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2);
+		player1.focus();
 		
 		// Create our lantern
 		Lantern lantern = new Lantern();

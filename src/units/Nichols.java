@@ -44,7 +44,7 @@ public class Nichols extends Unit {
 	// Player constructor
 	public Nichols() {
 		super(20,64,new SpriteSheet("src/images/characters/smith.png",
-				64, 20, 64, 64, 20, 13)); // Collision width/height.
+				64, 20, 64, 64, 20, 13),0 ,0); // Collision width/height.
 		zIndex = 0;
 		nichols = this;
 		
@@ -133,7 +133,8 @@ public class Nichols extends Unit {
 	// WIP FOREST DEATH SCENE
 	public void createPitDeathScene() {
 		// Create the player again
-		Player player = new Player();
+		Player player = new Player(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2);
+		player.focus();
 		
 		// Create the scene.
 		NicholsPit f = new NicholsPit();
@@ -153,9 +154,6 @@ public class Nichols extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		Smith.groan.start();
-		Smith.slash.loop(3); // WIP IS TABRAM'S DEATH SCREEN
-		Background.setBackground(Color.RED);
 	}
 	
 	public void nicholsAI() {

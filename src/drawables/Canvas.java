@@ -5,8 +5,6 @@ import items.Item;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -15,16 +13,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-import main.Main;
 import terrain.TerrainChunk;
-import units.Player;
 import units.Unit;
 
 // The actual canvas the game is drawn on.
@@ -40,8 +35,8 @@ public class Canvas extends JComponent {
 	private static long gameTime = 0; // The clock for the current canvas. In
 										// milliseconds.
 	// Screen information
-	private static int defaultWidth = 600;
-	private static int defaultHeight = 600;
+	private static int defaultWidth = 700;
+	private static int defaultHeight = 700;
 
 	// Initialize the game canvas.
 	public static void initCanvas() {
@@ -58,7 +53,7 @@ public class Canvas extends JComponent {
 	};
 	
 	// Move a unit
-	public void moveUnit(Unit move, float x, float y) {
+	public Point2D.Float moveUnit(Unit move, float x, float y) {
 		
 		// Are we landing on something?
 		if(TerrainChunk.touchingTerrain(move, "Down", -x, -y)) if(y>0) { 
@@ -73,50 +68,45 @@ public class Canvas extends JComponent {
 		if(TerrainChunk.touchingTerrain(move, "Right", -x, -y)) if(x>0) { 
 			x = 0;
 		}
-		if(move instanceof Unit && !(move instanceof Player)) {
-			((Unit)move).setX((float) ((Unit) move).getX() + x);
-			((Unit)move).setY((float) ((Unit) move).getY() + y);
-		}
 		move.instantlyMove(x, y);
+		return new Point2D.Float(x,y);
 	}
 	
 	// Move all nodes except for...
-	public void moveAllBut(Unit notMove, float x, float y) {
+	public Point2D.Float moveAllBut(Unit notMove, float x, float y) {
 		
-		// Are we hitting the roof?
-		if(TerrainChunk.touchingTerrain(notMove, "Up", x, y)) if(y>0) { 
-			y = 0;
-			((Unit)notMove).setFallSpeed(0);
-		}
+		if(notMove !=null) {
+			// Are we hitting the roof?
+			if(TerrainChunk.touchingTerrain(notMove, "Up", x, y)) if(y>0) { 
+				y = 0;
+				((Unit)notMove).setFallSpeed(0);
+			}
+			
+			// Are we landing on something?
+			if(TerrainChunk.touchingTerrain(notMove, "Down", x, y)) if(y<0) { 
+				y = 0;
+				((Unit)notMove).setFallSpeed(Unit.getDefaultFallSpeed());
+			}
 		
-		// Are we landing on something?
-		if(TerrainChunk.touchingTerrain(notMove, "Down", x, y)) if(y<0) { 
-			y = 0;
-			((Unit)notMove).setFallSpeed(Unit.getDefaultFallSpeed());
-		}
-	
-		// Are we moving Left?
-		if(TerrainChunk.touchingTerrain(notMove, "Left", x, y)) if(x>0) { 
-			x = 0;
-		}
-		
-		// Are we moving Right?
-		if(TerrainChunk.touchingTerrain(notMove, "Right", x, y)) if(x<0) { 
-			x = 0;
+			// Are we moving Left?
+			if(TerrainChunk.touchingTerrain(notMove, "Left", x, y)) if(x>0) { 
+				x = 0;
+			}
+			
+			// Are we moving Right?
+			if(TerrainChunk.touchingTerrain(notMove, "Right", x, y)) if(x<0) { 
+				x = 0;
+			}
 		}
 		
 		for(int i = 0; i < getNodes().size(); i++) {
 			Node n = getNodes().get(i);
-			if (n != notMove && !n.isMovesWithPlayer()) {
+			if (n != notMove && !n.isMovesWithFocus()) {
 				n.instantlyMove(x, y);
 			}
 		}
-		
-		if(notMove instanceof Player) {
-			// Tell the terrain system "where" our unit is
-			((Player) notMove).setY(((Player) notMove).getY() - y);
-			((Player) notMove).setX(((Player) notMove).getX() - x);
-		}
+
+		return new Point2D.Float(x,y);
 	}
 
 	// Constructor. Pretty basic.
@@ -128,6 +118,7 @@ public class Canvas extends JComponent {
 		timer.setInitialDelay(190);
 		timer.start();
 		this.setFocusable(true);
+		this.setFocusTraversalKeysEnabled(false);
 		requestFocus(); 
 		
 		this.addComponentListener(new ComponentAdapter() {
@@ -139,12 +130,12 @@ public class Canvas extends JComponent {
 		this.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent k) {
-				Player.keyPressed(k);
+				Unit.keyPressed(k);
 			}
 
 			@Override
 			public void keyReleased(KeyEvent k) {
-				Player.keyReleased(k);
+				Unit.keyReleased(k);
 			}
 
 			@Override

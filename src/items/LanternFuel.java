@@ -13,8 +13,8 @@ public class LanternFuel extends Item {
 			40, 40, 60, 60, 1, 1);
 	private static BufferedImage lanternImage = lantern.getSprites()[0];
 	
-	public LanternFuel() {
-			super(lanternImage, 40,60); // Collision width/height.
+	public LanternFuel(float x, float y) {
+			super(lanternImage, 40,60, x, y); // Collision width/height.
 			zIndex = 0;
 	}
 	

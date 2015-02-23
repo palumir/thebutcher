@@ -58,9 +58,9 @@ public class Chapman extends Unit {
 	protected static double meanderTime = 0;
 	
 	// Player constructor
-	public Chapman() {
+	public Chapman(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/characters/Chapman.png",
-				59, 59, 84, 86, 4, 4)); // Collision width/height.
+				59, 59, 84, 86, 4, 4), x, y); // Collision width/height.
 		chapman = this;
 		zIndex = 0;
 		passed = false;
@@ -118,9 +118,9 @@ public class Chapman extends Unit {
 		chaseRange = Math.max(Canvas.getDefaultWidth()/2+100,Canvas.getDefaultHeight()/2+100);
 		closeRange = 230;
 		killRange = 60;
-		minSpawnCheck = 2500;
-		defaultSpawnCheck = 30000 + AILevel*6000;
-		spawnChance = 10/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
+		minSpawnCheck = 1700;
+		defaultSpawnCheck = 29000 - AILevel*2000;
+		spawnChance = 11/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 	}
 	
@@ -155,7 +155,6 @@ public class Chapman extends Unit {
 	
 	// Spawn chapman
 	public static void spawn() {
-		Chapman c = new Chapman();
 		Player p = Player.getCurrentPlayer();
 		if(p!=null) {
 			
@@ -163,9 +162,10 @@ public class Chapman extends Unit {
 			int leftOrRight = 1;
 			if(p.facingLeft) leftOrRight = -1;
 			
+			Chapman c = new Chapman(0,0);
+			
 			// Move to off screen. Don't care about terrain at this point
-			c.spawnAt((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2+100)),(float)(p.trans.getTranslateY()));
-
+			c.spawnAt(p, (float)(leftOrRight*(Canvas.getDefaultWidth()/2+100)),0);
 		}
 	}
 	
@@ -201,7 +201,6 @@ public class Chapman extends Unit {
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
 			if(chasingPlayer) {
-				Player.getCurrentPlayer().stun(true);
 				follow(Player.getCurrentPlayer());
 			}
 			else {
@@ -228,9 +227,6 @@ public class Chapman extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		groan.start();
-		slash.loop(3);
-		Background.setBackground(Color.RED);
 	}
 	
 	public void meander() {
@@ -264,14 +260,15 @@ public class Chapman extends Unit {
 	}
 	
 	public void follow(Unit u) {
-		Player.getCurrentPlayer().stun(true);
 		if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
 			this.movingRight = true;
 			this.movingLeft = false;
+			if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
 		}
 		if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
 			this.movingRight = false;
 			this.movingLeft = true;
+			if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
 		}
 	}
 }

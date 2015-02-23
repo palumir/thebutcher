@@ -8,9 +8,9 @@ import units.Unit;
 
 
 public class Animation extends Unit {
-	public Animation(int width, int height, SpriteSheet ss, int duration) {
+	public Animation(int width, int height, SpriteSheet ss, int duration, float x, float y) {
 		// Default unit
-		super(width, height, ss);
+		super(width, height, ss, x, y);
 		spriteSheet = ss;
 		int[] iA = new int[spriteSheet.getColsInSheet()];
 		for(int i = 0; i < iA.length; i++) {

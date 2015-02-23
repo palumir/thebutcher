@@ -73,8 +73,7 @@ public class Forest extends ArrayList<TerrainChunk> {
 					if(j==0)  { 
 						chunk = new TerrainChunk(grassy, (i+(x1)), (j + y1));
 						if(i%20 == 0 && r.nextInt(10) == 1) {
-							LanternFuel lf = new LanternFuel();
-							lf.instantlyMove((float)chunk.trans.getTranslateX(),(float)chunk.trans.getTranslateY()- 35);
+							LanternFuel lf = new LanternFuel((float)chunk.trans.getTranslateX(),(float)chunk.trans.getTranslateY()- 35);
 						}
 					}
 					else if(j==howManyTall-1) chunk = new TerrainChunk(dirtRoof, (i+(x1)), (j + y1));
@@ -116,9 +115,12 @@ public class Forest extends ArrayList<TerrainChunk> {
 					// Put down the blocks
 					for(int m = 0; m < howManyInDirection; m++) {
 						if(j+1 < howManyTall && i-1 >=0 && i + 1 < howManyAcross) {
-							TerrainChunk oldChunk = currentTerrain[i][j];
+							float oldChunkX = 0;
+							float oldChunkY = 0;
 							if(direction==0) {
 								i--;
+								oldChunkX = (float) currentTerrain[i][j].trans.getTranslateX();
+								oldChunkY = (float) currentTerrain[i][j].trans.getTranslateY();
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 								currentTerrain[i][j+1].deleteChunk();
@@ -126,6 +128,8 @@ public class Forest extends ArrayList<TerrainChunk> {
 							}
 							if(direction==1) {
 								i++;
+								oldChunkX = (float) currentTerrain[i][j].trans.getTranslateX();
+								oldChunkY = (float) currentTerrain[i][j].trans.getTranslateY();
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 								currentTerrain[i][j+1].deleteChunk();
@@ -133,6 +137,8 @@ public class Forest extends ArrayList<TerrainChunk> {
 							}
 							if(direction==2) {
 								j++;
+								oldChunkX = (float) currentTerrain[i][j].trans.getTranslateX();
+								oldChunkY = (float) currentTerrain[i][j].trans.getTranslateY();
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 								i++;
@@ -141,14 +147,17 @@ public class Forest extends ArrayList<TerrainChunk> {
 							}
 							if(direction==3) {
 								j++;
+								oldChunkX = (float) currentTerrain[i][j].trans.getTranslateX();
+								oldChunkY = (float) currentTerrain[i][j].trans.getTranslateY();
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 								i--;
 								currentTerrain[i][j].deleteChunk();
 								currentTerrain[i][j] = emptyChunk;
 							}
-							LanternFuel lf = new LanternFuel();
-							lf.instantlyMove((float)oldChunk.trans.getTranslateX(),(float)oldChunk.trans.getTranslateY()-35);
+							if(length%20 == 0 && r.nextInt(10) == 1) {
+								LanternFuel lf = new LanternFuel((float)oldChunkX+25,(float)oldChunkY+25);
+							}
 							length++;
 						}
 						else { length = howLong; break; }

@@ -33,8 +33,8 @@ public class Lantern extends Item {
 	private static boolean toggle = true;
 
 	public Lantern() {
-		super(null, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-		this.movesWithPlayer = true;
+		super(null, Canvas.getDefaultWidth(), Canvas.getDefaultHeight(),0, 0);
+		this.movesWithFocus = true;
 		this.zIndex = 1;
 	}
 	
@@ -107,7 +107,7 @@ public class Lantern extends Item {
 				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
 			}
 			
-			// Restore the transform.
+			// Restore the transform. 
 			g2.setTransform(t);
 	}
 

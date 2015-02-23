@@ -22,8 +22,8 @@ public class Item extends Node {
 	private BufferedImage image;
 	
 	// Just one chunk of the terrain.
-	public Item(BufferedImage i, int width, int height) {
-		super(width, height);
+	public Item(BufferedImage i, int width, int height, float x, float y) {
+		super(width, height, x, y);
 		image = i;
 		this.shapeHidden = true;
 		items.add(this);

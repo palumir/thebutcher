@@ -49,17 +49,13 @@ public class Smith extends Unit {
 	private boolean chasingPlayer = false;
 	private boolean passed = false; // Has the player actually passed Smith?
 	
-	// Sounds for Smith
-	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
-	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
-	
 	// Meandering
 	protected static double meanderTime = 0;
 	
 	// Player constructor
-	public Smith() {
+	public Smith(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/characters/smith.png",
-				64, 20, 64, 64, 20, 13)); // Collision width/height.
+				64, 20, 64, 64, 20, 13), x, y); // Collision width/height.
 		Smith = this;
 		zIndex = 0;
 		passed = false;
@@ -124,8 +120,8 @@ public class Smith extends Unit {
 		chaseRange = 150+AILevel*4;
 		closeRange = 230;
 		killRange = 30+AILevel*2;
-		minSpawnCheck = 2500;
-		defaultSpawnCheck = 30000 + AILevel*6000;
+		minSpawnCheck = 2000;
+		defaultSpawnCheck = 30000 - AILevel*2000;
 		spawnChance = 10/AILevel + 1; // 1/spawnChance is the spawnChance, every 10 seconds or so.
 		spawnCheck = defaultSpawnCheck;
 	}
@@ -161,7 +157,6 @@ public class Smith extends Unit {
 	
 	// Spawn Smith
 	public static void spawn() {
-		Smith c = new Smith();
 		Player p = Player.getCurrentPlayer();
 		if(p!=null) {
 			
@@ -170,7 +165,8 @@ public class Smith extends Unit {
 			if(p.facingLeft) leftOrRight = -1;
 			
 			// Spawn unit here. This will make sure he's not in terrain.
-			c.spawnAt((float)(p.trans.getTranslateX() + leftOrRight*(Canvas.getDefaultWidth()/2 + 100)),(float)(p.trans.getTranslateY()));
+			Smith c = new Smith(0,0);
+			c.spawnAt(p, (float)(leftOrRight*(Canvas.getDefaultWidth()/2+100)),0);
 		}
 	}
 	
@@ -232,13 +228,10 @@ public class Smith extends Unit {
 	
 	public void killPlayer() {
 		Player.getCurrentPlayer().die();
-		groan.start();
-		slash.loop(3);
-		Background.setBackground(Color.RED);
 	}
 	
 	public void meander() {
-		/*if(Main.getGameTime() - meanderTime > meanderStop) {
+		if(Main.getGameTime() - meanderTime > meanderStop) {
 			meanderTime = Main.getGameTime();
 			if(!movingRight && !movingLeft) {
 				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
@@ -266,7 +259,7 @@ public class Smith extends Unit {
 				movingRight = false;
 				movingLeft = false;
 			}
-		}*/
+		}
 	}
 	
 	public void follow(Unit u) {

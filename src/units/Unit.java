@@ -1,13 +1,15 @@
 package units;
-import java.awt.Color;
+import items.Lantern;
+
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import audio.SoundClip;
 import terrain.TerrainChunk;
+import audio.SoundClip;
 import drawables.Canvas;
 import drawables.Node;
 import drawables.animations.Animation;
@@ -16,7 +18,11 @@ import drawables.sprites.SpriteSheet;
 
 public class Unit extends Node implements MouseListener {
 	
+	// The list of all units. Fairly important.
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
+	
+	// The current focused unit
+	protected static Unit focusedUnit = null;
 	
 	// Fall speed of the unit (this is for gravity, obviously)
 	private static float defaultFallSpeed = -3;
@@ -25,13 +31,6 @@ public class Unit extends Node implements MouseListener {
 	protected int wallJumps = 0;
 	protected int numWallJumps = 3;
 	protected float jumpSpeed = 5.6f;
-	
-	// Where are we relative to the map?
-	protected float movedX = 0;
-	protected float movedY = 0;
-	
-	// Firstmove - are we spawning
-	protected boolean firstMove = true;
 	
 	// Stunned?
 	protected boolean stunned = false;
@@ -65,9 +64,9 @@ public class Unit extends Node implements MouseListener {
 	// Unit particle effects
 	protected static SpriteSheet jumpEffect = new SpriteSheet("src/images/effects/land.png",64, 64, 64, 64, 1, 5);
 	
-	public Unit(int width, int height, SpriteSheet ss) {
+	public Unit(int width, int height, SpriteSheet ss, float x, float y) {
 		// Default unit
-		super(width, height);
+		super(width, height, x, y);
 		spriteSheet = ss;
 		this.shapeHidden = true;
 		units.add(this);
@@ -113,18 +112,27 @@ public class Unit extends Node implements MouseListener {
 		Smith.spawnOrDespawn();
 		Chapman.spawnOrDespawn();
 	}
+	
+	// Unit responding to keypresses
+	public static void keyPressed(KeyEvent k) {
+		// Deal with key presses for the player
+		if(k.getKeyCode() == KeyEvent.VK_TAB) Player.nextPlayer();
+		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) focusedUnit.moveLeft(true);
+		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) focusedUnit.moveRight(true);
+		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W) focusedUnit.jump();
+		if(k.getKeyCode() == KeyEvent.VK_SPACE) Lantern.toggle();
+	}
+	
+	// Unit responding to key releases
+	public static void keyReleased(KeyEvent k) {
+		// Deal with key release for the player
+		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) focusedUnit.moveLeft(false);
+		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) focusedUnit.moveRight(false);
+	}
 
 	// Create an effect somewhere due to a unit interaction.
 	public static void playEffect(int x, int y, SpriteSheet s, int duration) {
-		Animation a = new Animation(s.getSpriteWidth(),s.getSpriteHeight(), s, duration);
-		a.instantlyMove(x,y);
-	}
-	
-	// Move with consideration to terrain
-	public void instantlyMoveNotify(float x, float y) {
-		instantlyMove(x,y);
-		setX((float) (getX() + x));
-		setY((float) (getY() + y));
+		Animation a = new Animation(s.getSpriteWidth(),s.getSpriteHeight(), s, duration, x, y);
 	}
 
 	// Obviously, update the unit every frame.
@@ -133,16 +141,22 @@ public class Unit extends Node implements MouseListener {
 		this.move();
 	}
 	
+	// Set the unit to be focused.
+	public void focus() {
+		if(focusedUnit != null) Canvas.getGameCanvas().moveAllBut(null,(focusedUnit.getMapX() - this.getMapX()), (focusedUnit.getMapY() - this.getMapY()));
+		focusedUnit = this;
+	}
+	
 	public void move() {
 		if(this != null && !stunned) {
 			if(this.movingRight) { 
-				Canvas.getGameCanvas().moveUnit(this, this.moveSpeed, 0);
+			    move(this.moveSpeed, 0);
 				if(!this.falling()) this.animate(this.walkingRight);
 				else this.animate(this.jumpRight);
 				this.facingLeft = false;
 			}
 			else if(this.movingLeft) { 
-				Canvas.getGameCanvas().moveUnit(this, -this.moveSpeed, 0);
+				move(-this.moveSpeed, 0);
 				if(!this.falling()) this.animate(this.walkingLeft);
 				else this.animate(this.jumpLeft);
 				this.facingLeft = true;
@@ -203,7 +217,7 @@ public class Unit extends Node implements MouseListener {
 		}
 	}
 	
-	// Do the unit gravity. Ignore players, of course. 
+	// Do the unit gravity. 
 	public void gravity() {
 			
 			// Accelerate
@@ -215,7 +229,21 @@ public class Unit extends Node implements MouseListener {
 			}
 			
 			// Move everything up!
-			Canvas.getGameCanvas().moveUnit(this, 0, -this.getFallSpeed());
+			move(0, -this.getFallSpeed());
+	}
+	
+	// Move the unit. Move everything if it's the focus.
+	public void move(float x, float y) {
+		if(this==focusedUnit) {
+			Point2D.Float p = Canvas.getGameCanvas().moveAllBut(this, -x, -y);
+			setMapX((float) (getMapX() - p.getX()));
+			setMapY((float) (getMapY() - p.getY()));
+		}
+		else {
+			Point2D.Float p = Canvas.getGameCanvas().moveUnit(this, x, y);
+			setMapX((float) (getMapX() + p.getX()));
+			setMapY((float) (getMapY() + p.getY()));
+		}
 	}
 	
 	// Animate unit
@@ -224,15 +252,16 @@ public class Unit extends Node implements MouseListener {
 	}
 	
 	// Spawn non-player unit at this spawnX, spawnY
-	public void spawnAt(float spawnX, float spawnY) {
+	public void spawnAt(Unit relativeTo, float spawnX, float spawnY) {
 		// Move to off screen. Don't care about terrain at this point
-		this.setX(Player.getPlayerMovedX());
-		this.setY(Player.getPlayerMovedY());
-		this.instantlyMoveNotify(spawnX,spawnY);
+		setMapX((float) (relativeTo.getMapX() + spawnX));
+		setMapY((float) (relativeTo.getMapY() + spawnY));
+		this.instantlyMove((float)relativeTo.trans.getTranslateX() + spawnX,(float)relativeTo.trans.getTranslateY() + spawnY);
 			
 		// If we're in terrain, then move up until we're not.
 		while(TerrainChunk.inTerrain(this)) {
-			this.instantlyMoveNotify(0, -5);
+			setMapY((float) (getMapY() - 5));
+			this.instantlyMove(0, -5);
 		}
 	}
 	
@@ -264,27 +293,11 @@ public class Unit extends Node implements MouseListener {
 		Unit.defaultFallSpeed = defaultFallSpeed;
 	}
 	
-	public float getX() {
-		return movedX;
-	}
-	
-	public float getY() {
-		return movedY;
-	}
-	
 	public void stun(boolean b) {
 		movingRight = false;
 		movingLeft = false;
 		if(facingLeft) currAnimation = idleLeft;
 		if(!facingLeft) currAnimation = idleRight;
 		stunned = b;
-	}
-	
-	public void setX(float newX) {
-		movedX = newX;
-	}
-	
-	public void setY(float newY) {
-		movedY = newY;
 	}
 }
