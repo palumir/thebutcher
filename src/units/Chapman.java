@@ -51,8 +51,6 @@ public class Chapman extends Unit {
 	
 	// Sounds for Chapman
 	protected static SoundClip pulsing = new SoundClip("./../sounds/effects/pulse.wav", true);
-	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
-	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
 	
 	// Meandering
 	protected static double meanderTime = 0;
@@ -60,7 +58,7 @@ public class Chapman extends Unit {
 	// Player constructor
 	public Chapman(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/characters/Chapman.png",
-				59, 59, 84, 86, 4, 4), x, y); // Collision width/height.
+				59, 69, 84, 86, 4, 4), x, y); // Collision width/height.
 		chapman = this;
 		zIndex = 0;
 		passed = false;
@@ -112,8 +110,8 @@ public class Chapman extends Unit {
 		AILevel = i;
 		
 		// Configure difficulty
-		meanderSpeed = 0.7f;
-		chasingSpeed = 0.9f;
+		meanderSpeed = 1.5f + AILevel/2;
+		chasingSpeed = meanderSpeed;
 		meanderStop = 3000 - 100*AILevel;
 		chaseRange = Math.max(Canvas.getDefaultWidth()/2+100,Canvas.getDefaultHeight()/2+100);
 		closeRange = 230;
@@ -166,6 +164,12 @@ public class Chapman extends Unit {
 			
 			// Move to off screen. Don't care about terrain at this point
 			c.spawnAt(p, (float)(leftOrRight*(Canvas.getDefaultWidth()/2+100)),0);
+			if(leftOrRight==1) {
+				c.movingLeft = true;
+			}
+			if(leftOrRight==-1) {
+				c.movingRight =true;
+			}
 		}
 	}
 	
@@ -184,7 +188,7 @@ public class Chapman extends Unit {
 			// INITIATE STATES
 			// Kill player!
 			if(Player.getCurrentPlayer().close(killRange,this)) {
-				killPlayer();
+				this.attack(Player.getCurrentPlayer(),5);
 			}
 			// Chase player!
 			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
@@ -200,13 +204,7 @@ public class Chapman extends Unit {
 			
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
-			if(chasingPlayer) {
-				follow(Player.getCurrentPlayer());
-			}
-			else {
-				meander();
-			}
-			
+			meander();
 			
 			// Don't let him walk into walls.
 			if(movingRight && TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
@@ -225,50 +223,14 @@ public class Chapman extends Unit {
 		}
 	}
 	
-	public void killPlayer() {
-		Player.getCurrentPlayer().die();
-	}
-	
 	public void meander() {
-		if(Main.getGameTime() - meanderTime > meanderStop) {
-			meanderTime = Main.getGameTime();
-			if(!movingRight && !movingLeft) {
-				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
-					movingLeft = true;
-					movingRight = false;
-				}
-				else if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) {
-					movingLeft = false;
-					movingRight = true;
-				}
-				else {
-					if(Main.r.nextInt(2)==1) {
-						movingRight = true;
-						movingLeft = false;
-					}
-					else {
-						movingLeft = true;
-						movingRight = false;
-					}
-				}
-			}
-			else {
-				movingRight = false;
-				movingLeft = false;
-			}
+		if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) {
+			movingLeft = true;
+			movingRight = false;
 		}
-	}
-	
-	public void follow(Unit u) {
-		if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
-			this.movingRight = true;
-			this.movingLeft = false;
-			if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
-		}
-		if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
-			this.movingRight = false;
-			this.movingLeft = true;
-			if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
+		else if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) {
+			movingLeft = false;
+			movingRight = true;
 		}
 	}
 }

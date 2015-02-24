@@ -1,6 +1,7 @@
 package units;
 import items.Lantern;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
@@ -8,8 +9,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import main.Main;
 import terrain.TerrainChunk;
 import audio.SoundClip;
+import drawables.Background;
 import drawables.Canvas;
 import drawables.Node;
 import drawables.animations.Animation;
@@ -21,6 +24,10 @@ public class Unit extends Node implements MouseListener {
 	// The list of all units. Fairly important.
 	public static ArrayList<Unit> units = new ArrayList<Unit>();
 	
+	// Sounds for dying 
+	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
+	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
+	
 	// The current focused unit
 	protected static Unit focusedUnit = null;
 	
@@ -31,6 +38,18 @@ public class Unit extends Node implements MouseListener {
 	protected int wallJumps = 0;
 	protected int numWallJumps = 3;
 	protected float jumpSpeed = 5.6f;
+	
+	// Unit stats
+	protected int HP = 5;
+	protected double attackSpeed = 1000;
+	protected double lastAttack = 0;
+	
+	// Who are we following?
+	protected Unit followedUnit = null;
+	
+	// Dead?
+	protected boolean dead = false;
+	private boolean deadAnimationPlayed = false;
 	
 	// Stunned?
 	protected boolean stunned = false;
@@ -45,6 +64,7 @@ public class Unit extends Node implements MouseListener {
 	protected SpriteAnimation walkingRight;
 	protected SpriteAnimation walkingLeft;
 	protected SpriteAnimation jumpRight;
+	protected SpriteAnimation deadAnimation;
 	
 	// Cosmetics
 	protected SpriteSheet spriteSheet;
@@ -113,13 +133,62 @@ public class Unit extends Node implements MouseListener {
 		Chapman.spawnOrDespawn();
 	}
 	
+	// Attack a unit
+	public void attack(Unit u, int damage) {
+		if(Main.getGameTime() - lastAttack > attackSpeed) {
+			lastAttack = Main.getGameTime();
+			slash.start();
+			u.hit(damage);
+		}
+	}
+	
+	// Kill the player. This obviously loses the game.
+	public void die() {
+		dead = true;
+		stunned = true;
+		if(this == Unit.focusedUnit && dead && !deadAnimationPlayed) {
+			playDeathAnimation();
+		}
+	}
+	
+	// Hit the player for damage
+	public void hit(int i) {
+		HP -= i;
+		if(HP<=0) {
+			die();
+		}
+	}
+	
+	// Play death animation
+	public void playDeathAnimation() {	
+		//SaveState.purgeAll(); // Destroy everything on the screen.
+		groan.start();
+		animate(deadAnimation);
+	}
+	
 	// Unit responding to keypresses
 	public static void keyPressed(KeyEvent k) {
 		// Deal with key presses for the player
-		if(k.getKeyCode() == KeyEvent.VK_TAB) Player.nextPlayer();
-		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) focusedUnit.moveLeft(true);
-		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) focusedUnit.moveRight(true);
-		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W) focusedUnit.jump();
+		if(k.getKeyCode() == KeyEvent.VK_TAB) { 
+			Player.nextPlayer();
+			focusedUnit.moveLeft(false);
+			focusedUnit.moveRight(false);
+		}
+		if(k.getKeyCode() == KeyEvent.VK_F) Player.getCurrentPlayer().followClosestAlly();
+		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) { 
+			focusedUnit.moveLeft(true);
+			focusedUnit.moveRight(false);
+			focusedUnit.followedUnit = null;
+		}
+		if(k.getKeyCode() == KeyEvent.VK_RIGHT || k.getKeyCode() == KeyEvent.VK_D) { 
+			focusedUnit.moveRight(true);
+			focusedUnit.moveLeft(false);
+			focusedUnit.followedUnit = null;
+		}
+		if(k.getKeyCode() == KeyEvent.VK_UP || k.getKeyCode() == KeyEvent.VK_W) { 
+			focusedUnit.jump();
+			focusedUnit.followedUnit = null;
+		}
 		if(k.getKeyCode() == KeyEvent.VK_SPACE) Lantern.toggle();
 	}
 	
@@ -133,6 +202,23 @@ public class Unit extends Node implements MouseListener {
 	// Create an effect somewhere due to a unit interaction.
 	public static void playEffect(int x, int y, SpriteSheet s, int duration) {
 		Animation a = new Animation(s.getSpriteWidth(),s.getSpriteHeight(), s, duration, x, y);
+	}
+	
+	// Follow a unit
+	public void follow(Unit u) {
+		float closeEnough = 20;
+		if(!this.close((int) closeEnough, u)) {
+			if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
+				this.movingRight = true;
+				this.movingLeft = false;
+				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
+			}
+			if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
+				this.movingRight = false;
+				this.movingLeft = true;
+				if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
+			}
+		}
 	}
 
 	// Obviously, update the unit every frame.
@@ -148,6 +234,9 @@ public class Unit extends Node implements MouseListener {
 	}
 	
 	public void move() {
+		if(followedUnit != null) {
+			follow(followedUnit);
+		}
 		if(this != null && !stunned) {
 			if(this.movingRight) { 
 			    move(this.moveSpeed, 0);

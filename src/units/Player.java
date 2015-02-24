@@ -1,17 +1,7 @@
 package units;
 
-import items.Lantern;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-import audio.SoundClip;
-import saving.SaveState;
-import drawables.Background;
-import drawables.Canvas;
 import drawables.sprites.SpriteAnimation;
 import drawables.sprites.SpriteSheet;
 
@@ -20,22 +10,14 @@ import drawables.sprites.SpriteSheet;
 // Global player data.
 public class Player extends Unit  {
 	
-	// Sounds for dying 
-	protected static SoundClip slash = new SoundClip("./../sounds/effects/slash.wav", true);
-	protected static SoundClip groan = new SoundClip("./../sounds/effects/groan.wav", true);
-	
 	// Static stuff
 	private static ArrayList<Player> players = new ArrayList<Player>();
 	private static int currPlayer = 0;
 	
-	// Dead?
-	private static boolean dead = false;
-	private static boolean deadAnimationPlayed = false;
-	
 	// Player constructor
 	public Player(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/player/jack.png",
-				64, 20, 64, 64, 20, 13), x, y); // Collision width/height.
+				64, 20, 64, 64, 21, 13), x, y); // Collision width/height.
 		players.add(this);
 		moveSpeed = 4;
 		this.zIndex = 1;
@@ -74,23 +56,30 @@ public class Player extends Unit  {
 		idleLeft = new SpriteAnimation(spriteSheet, new int[] {
 				9 * spriteSheet.getColsInSheet()}, 500);
 		idleLeft.loop(true);
+		deadAnimation = new SpriteAnimation(spriteSheet, new int[] {
+				20 * spriteSheet.getColsInSheet(),
+				20 * spriteSheet.getColsInSheet()+1,
+				20 * spriteSheet.getColsInSheet()+2,
+				20 * spriteSheet.getColsInSheet()+3,
+				20 * spriteSheet.getColsInSheet()+4}, 500);
+		deadAnimation.loop(false);
 		animate(jumpRight);
 	}
 	
-	// Kill the player. This obviously loses the game.
-	public void die() {
-		dead = true;
-		if(this == Unit.focusedUnit && dead && !deadAnimationPlayed) {
-			playDeathAnimation();
+	// Follow closest friend.
+	public void followClosestAlly() {
+		followedUnit = null;
+		float smallestDiff = 1000;
+		float dontFollowIfThisFarAway = 300;
+		for(int i = 0; i < players.size(); i++) {
+			float diffX = this.getMapX() - players.get(i).getMapX();
+			float diffY = this.getMapY() - players.get(i).getMapY();
+			float distance = (float) Math.sqrt(diffX*diffX + diffY*diffY);
+			if(this != players.get(i) && smallestDiff > distance && distance < dontFollowIfThisFarAway) {
+				followedUnit = players.get(i);
+				smallestDiff = distance;
+			}
 		}
-	}
-	
-	// Play death animation
-	public void playDeathAnimation() {	
-		//SaveState.purgeAll(); // Destroy everything on the screen.
-		groan.start();
-		slash.loop(3);
-		Background.setBackground(Color.RED);
 	}
 	
 	// Get the next player (tab through for now)

@@ -57,9 +57,9 @@ public class Main {
 		Lantern lantern = new Lantern();
 		
 		// Configure enemy AI
-		Smith.setAI(10);
-		Nichols.setAI(10);
-		Chapman.setAI(10);
+		Smith.setAI(3);
+		Nichols.setAI(3);
+		Chapman.setAI(3);
 		
 		// Always spawn nichols.
 		Nichols nichols = new Nichols();

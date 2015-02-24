@@ -59,6 +59,7 @@ public class Smith extends Unit {
 		Smith = this;
 		zIndex = 0;
 		passed = false;
+		attackSpeed = 500;
 		
 		setAI(AILevel);
 		moveSpeed = meanderSpeed;
@@ -185,7 +186,7 @@ public class Smith extends Unit {
 			// INITIATE STATES
 			// Kill player!
 			if(Player.getCurrentPlayer().close(killRange,this)) {
-				killPlayer();
+				this.attack(Player.getCurrentPlayer(),1);
 			}
 			// Chase player!
 			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
@@ -201,7 +202,7 @@ public class Smith extends Unit {
 			
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
-			if(chasingPlayer) {
+			if(chasingPlayer && !Player.getCurrentPlayer().dead) {
 				follow(Player.getCurrentPlayer());
 			}
 			else {
@@ -224,10 +225,6 @@ public class Smith extends Unit {
 				passed = true;
 			}
 		}
-	}
-	
-	public void killPlayer() {
-		Player.getCurrentPlayer().die();
 	}
 	
 	public void meander() {
@@ -259,19 +256,6 @@ public class Smith extends Unit {
 				movingRight = false;
 				movingLeft = false;
 			}
-		}
-	}
-	
-	public void follow(Unit u) {
-		if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
-			this.movingRight = true;
-			this.movingLeft = false;
-			if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
-		}
-		if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
-			this.movingRight = false;
-			this.movingLeft = true;
-			if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
 		}
 	}
 }
