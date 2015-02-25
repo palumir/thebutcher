@@ -63,9 +63,7 @@ public class Main {
 		
 		// Always spawn nichols.
 		Nichols nichols = new Nichols();
-		
-		//TESTING
-		//Chapman c = new Chapman();
+
 	}
 	
 	public static long getGameTime() {

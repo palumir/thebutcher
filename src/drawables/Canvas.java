@@ -56,6 +56,12 @@ public class Canvas extends JComponent {
 	public Point2D.Float moveUnit(Unit move, float x, float y) {
 		
 		// Are we landing on something?
+		// Are we hitting the roof?
+		if(TerrainChunk.touchingTerrain(move, "Up", -x, -y)) if(y<0) { 
+			y = 0;
+			((Unit)move).setFallSpeed(0);
+		}
+		
 		if(TerrainChunk.touchingTerrain(move, "Down", -x, -y)) if(y>0) { 
 			y = 0;
 			((Unit)move).setFallSpeed(Unit.getDefaultFallSpeed());

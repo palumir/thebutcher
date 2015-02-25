@@ -170,9 +170,9 @@ public class Unit extends Node implements MouseListener {
 	public static void keyPressed(KeyEvent k) {
 		// Deal with key presses for the player
 		if(k.getKeyCode() == KeyEvent.VK_TAB) { 
-			Player.nextPlayer();
 			focusedUnit.moveLeft(false);
 			focusedUnit.moveRight(false);
+			Player.nextPlayer();
 		}
 		if(k.getKeyCode() == KeyEvent.VK_F) Player.getCurrentPlayer().followClosestAlly();
 		if(k.getKeyCode() == KeyEvent.VK_LEFT || k.getKeyCode() == KeyEvent.VK_A) { 
@@ -206,18 +206,25 @@ public class Unit extends Node implements MouseListener {
 	
 	// Follow a unit
 	public void follow(Unit u) {
-		float closeEnough = 20;
+		float closeEnough = 80;
 		if(!this.close((int) closeEnough, u)) {
 			if(this.trans.getTranslateX() + this.moveSpeed <= u.trans.getTranslateX()) {
 				this.movingRight = true;
 				this.movingLeft = false;
-				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0)) this.jump();
+				if(TerrainChunk.touchingTerrain(this, "Right", -this.moveSpeed, 0) && followedUnit.getMapY() < this.getMapY()) this.jump();
 			}
 			if(this.trans.getTranslateX() - this.moveSpeed >= u.trans.getTranslateX()) {
 				this.movingRight = false;
 				this.movingLeft = true;
-				if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0)) this.jump();
+				if(TerrainChunk.touchingTerrain(this, "Left", this.moveSpeed, 0) && followedUnit.getMapY() < this.getMapY()) this.jump();
 			}
+			if(followedUnit.getMapY()+15 < this.getMapY()) {
+				jump();
+			}
+		}
+		else {
+			this.movingLeft = false;
+			this.movingRight = false;
 		}
 	}
 
@@ -260,8 +267,7 @@ public class Unit extends Node implements MouseListener {
 			}
 		}
 	}
-	
-	
+
 	// Are you falling?
 	public boolean falling() {
 		return !TerrainChunk.touchingTerrain(this,"Down",0,Unit.fallSpeedCap);

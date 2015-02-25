@@ -1,5 +1,7 @@
 package units;
 
+import items.Item;
+
 import java.util.ArrayList;
 
 import drawables.sprites.SpriteAnimation;
@@ -14,6 +16,9 @@ public class Player extends Unit  {
 	private static ArrayList<Player> players = new ArrayList<Player>();
 	private static int currPlayer = 0;
 	
+	// Items
+	private ArrayList<Item> items;
+	
 	// Player constructor
 	public Player(float x, float y) {
 		super(20,64,new SpriteSheet("src/images/player/jack.png",
@@ -21,6 +26,7 @@ public class Player extends Unit  {
 		players.add(this);
 		moveSpeed = 4;
 		this.zIndex = 1;
+		items = new ArrayList<Item>();
 		loadAnimations();
 	}
 
@@ -77,6 +83,12 @@ public class Player extends Unit  {
 			float distance = (float) Math.sqrt(diffX*diffX + diffY*diffY);
 			if(this != players.get(i) && smallestDiff > distance && distance < dontFollowIfThisFarAway) {
 				followedUnit = players.get(i);
+				if(diffX < 0) {
+					this.facingLeft = false;
+				}
+				else {
+					this.facingLeft = true;
+				}
 				smallestDiff = distance;
 			}
 		}

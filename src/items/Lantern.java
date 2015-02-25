@@ -11,7 +11,7 @@ import audio.SoundClip;
 import drawables.Canvas;
 import drawables.Node;
 
-
+// This draws ALL lanterns
 public class Lantern extends Item {
 	
 	// Sounds
@@ -19,7 +19,7 @@ public class Lantern extends Item {
 	
 	// Levels
 	private static int fuel = 100; // 0-100%
-	private static int fuelLastsFor = 90000; // milliseconds
+	private static int fuelLastsFor = 180000; // milliseconds
 	private static boolean fuelDropping = true;
 	private static double tickTime = 0;
 	
@@ -122,10 +122,10 @@ public class Lantern extends Item {
 
 	public static void setFuel(int fuel) {
 		Lantern.fuel = fuel;
-		stroke1 = new BasicStroke(500 + getFuel()*3f);
-		stroke2 = new BasicStroke(600 + getFuel()*3f);
-		stroke3 = new BasicStroke(700 + getFuel()*3f);
-		stroke4 = new BasicStroke(850 + getFuel()*3f);
+		stroke1 = new BasicStroke(600 + getFuel()*3f);
+		stroke2 = new BasicStroke(700 + getFuel()*3f);
+		stroke3 = new BasicStroke(800 + getFuel()*3f);
+		stroke4 = new BasicStroke(950 + getFuel()*3f);
 	}
 
 	public static boolean isFuelDropping() {

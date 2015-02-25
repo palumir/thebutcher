@@ -110,7 +110,7 @@ public class Chapman extends Unit {
 		AILevel = i;
 		
 		// Configure difficulty
-		meanderSpeed = 1.5f + AILevel/2;
+		meanderSpeed = 1.5f + AILevel;
 		chasingSpeed = meanderSpeed;
 		meanderStop = 3000 - 100*AILevel;
 		chaseRange = Math.max(Canvas.getDefaultWidth()/2+100,Canvas.getDefaultHeight()/2+100);

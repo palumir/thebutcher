@@ -202,10 +202,11 @@ public class Smith extends Unit {
 			
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
-			if(chasingPlayer && !Player.getCurrentPlayer().dead) {
-				follow(Player.getCurrentPlayer());
+			if(chasingPlayer && !Player.getCurrentPlayer().dead && this.followedUnit == null) {
+				this.followedUnit = Player.getCurrentPlayer();
 			}
 			else {
+				this.followedUnit = null;
 				meander();
 			}
 			
