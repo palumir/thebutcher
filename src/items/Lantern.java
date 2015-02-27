@@ -12,33 +12,30 @@ import drawables.Canvas;
 import drawables.Node;
 
 // This draws ALL lanterns
-public class Lantern extends Item {
+public class Lantern extends LightSource {
 	
 	// Sounds
 	protected static SoundClip switchSound = new SoundClip("./../sounds/effects/switch.wav", true);
 	
 	// Levels
-	private static int fuel = 100; // 0-100%
-	private static int fuelLastsFor = 180000; // milliseconds
-	private static boolean fuelDropping = true;
-	private static double tickTime = 0;
+	private int fuel = 100; // 0-100%
+	private int maxRadius;
+	private int fuelLastsFor = 180000; // milliseconds
+	private boolean fuelDropping = true;
+	private double tickTime = 0;
+	
+	static boolean toggle = true;
 	
 	// Strokes for the light
 	private static BasicStroke strokeSmall = new BasicStroke(1);
-	static BasicStroke stroke1 = new BasicStroke(500 + getFuel()*3f);
-	static BasicStroke stroke2 = new BasicStroke(600 + getFuel()*3f);
-	static BasicStroke stroke3 = new BasicStroke(700 + getFuel()*3f);
-	static BasicStroke stroke4 = new BasicStroke(850 + getFuel()*3f);
-	
-	private static boolean toggle = true;
 
-	public Lantern() {
-		super(null, Canvas.getDefaultWidth(), Canvas.getDefaultHeight(),0, 0);
-		this.movesWithFocus = true;
+	public Lantern(float x, float y, int r) {
+		super(x, y, r);
+		maxRadius = r;
 		this.zIndex = 1;
 	}
 	
-	public static void toggle() {
+	public void toggle() {
 		if(getFuel()<=0) { // Do we have no fuel left? UH OH.
 		}
 		else {
@@ -48,7 +45,7 @@ public class Lantern extends Item {
 		}
 	}
 	
-	public static void toggleSilent() {
+	public void toggleSilent() {
 		if(getFuel()<=0) { // Do we have no fuel left? UH OH.
 		}
 		else {
@@ -63,49 +60,18 @@ public class Lantern extends Item {
 				if(getFuel() > 0) setFuel(getFuel() - 1);
 				tickTime = Main.getGameTime();
 				
+				radius = (fuel/100)*maxRadius;
+				
 				// If we have no fuel left, turn off.
 				if(getFuel()<=0) {
 					toggle = false;
 				}
 			}
 		}
-		//System.out.println(fuel); // WIP SHOW SOME INTERFACE FOR FUEL
 	}
 	
 	// Paint the node and it's kids.
 	public void paintNode(Graphics2D g2) {
-			// Remember the transform being used when called
-			AffineTransform t = g2.getTransform();
-			// Maintain aspect ratio.
-			AffineTransform currentTransform = this.getFullTransform();
-			g2.translate(currentTransform.getTranslateX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getTranslateY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			g2.scale(currentTransform.getScaleX()*((double)Canvas.getGameCanvas().getWidth()/(double)Canvas.getDefaultWidth()),currentTransform.getScaleY()*((double)Canvas.getGameCanvas().getHeight()/(double)Canvas.getDefaultHeight()));
-			float alpha = 0.50f;
-			
-			// Draw the lantern
-			Color color = new Color(0, 0, 0, alpha); //Black 
-			g2.setPaint(color);
-			
-			if(isToggle()) {
-				if(fuel<=42) g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight()); 
-				else g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.setStroke(stroke2);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.setStroke(stroke3);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.setStroke(stroke4);
-				g2.drawOval(0,0,Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-			}
-			else {
-				g2.setStroke(strokeSmall);
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-				g2.fillRect(0, 0, Canvas.getDefaultWidth(), Canvas.getDefaultHeight());
-			}
-			
-			// Restore the transform. 
-			g2.setTransform(t);
 	}
 
 	public static boolean isToggle() {
@@ -116,24 +82,20 @@ public class Lantern extends Item {
 		Lantern.toggle = toggle;
 	}
 
-	public static int getFuel() {
+	public int getFuel() {
 		return fuel;
 	}
 
-	public static void setFuel(int fuel) {
-		Lantern.fuel = fuel;
-		stroke1 = new BasicStroke(600 + getFuel()*3f);
-		stroke2 = new BasicStroke(700 + getFuel()*3f);
-		stroke3 = new BasicStroke(800 + getFuel()*3f);
-		stroke4 = new BasicStroke(950 + getFuel()*3f);
+	public void setFuel(int f) {
+		fuel = fuel;
 	}
 
-	public static boolean isFuelDropping() {
+	public boolean isFuelDropping() {
 		return fuelDropping;
 	}
 
-	public static void setFuelDropping(boolean fuelDropping) {
-		Lantern.fuelDropping = fuelDropping;
+	public void setFuelDropping(boolean f) {
+		fuelDropping = f;
 	}
 	
 }

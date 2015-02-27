@@ -30,6 +30,9 @@ public class Node implements MouseMotionListener, MouseListener {
 	// Are we hidden
 	protected boolean hidden = false;
 	
+	// Are we attached to any other node?
+	protected Node attachedNode = null;
+	
 	// Cosmetics
 	private int width;
 	private int height;
@@ -173,6 +176,10 @@ public class Node implements MouseMotionListener, MouseListener {
 			}
 		}
 	}
+	
+	public void attach(Node n) {
+		attachedNode = n;
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -235,14 +242,6 @@ public class Node implements MouseMotionListener, MouseListener {
 	// Node movement basics
 	public void instantlyMove(float x, float y) {
 		transform(AffineTransform.getTranslateInstance(x, y));
-	}
-
-	public boolean isMovesWithFocus() {
-		return movesWithFocus;
-	}
-
-	public void setMovesWithFocus(boolean movesWithPlayer) {
-		this.movesWithFocus = movesWithPlayer;
 	}
 
 	public int getzIndex() {

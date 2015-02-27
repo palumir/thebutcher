@@ -138,7 +138,7 @@ public class Nichols extends Unit {
 		
 		// Create the scene.
 		NicholsPit f = new NicholsPit();
-		Lantern l = new Lantern();
+		Lantern l = new Lantern(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2,300);
 		Lantern.setFuelDropping(false);
 		Lantern.setFuel(5);
 		Lantern.toggleSilent();

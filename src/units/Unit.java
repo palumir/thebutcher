@@ -189,7 +189,7 @@ public class Unit extends Node implements MouseListener {
 			focusedUnit.jump();
 			focusedUnit.followedUnit = null;
 		}
-		if(k.getKeyCode() == KeyEvent.VK_SPACE) Lantern.toggle();
+		if(k.getKeyCode() == KeyEvent.VK_SPACE) ((Lantern) focusedUnit.attachedNode).toggle();
 	}
 	
 	// Unit responding to key releases

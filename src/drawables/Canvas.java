@@ -1,6 +1,7 @@
 package drawables;
 
 import items.Item;
+import items.LightSource;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -13,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -75,6 +77,9 @@ public class Canvas extends JComponent {
 			x = 0;
 		}
 		move.instantlyMove(x, y);
+		if(move.attachedNode != null) {
+			move.attachedNode.instantlyMove(x, y);
+		}
 		return new Point2D.Float(x,y);
 	}
 	
@@ -107,7 +112,7 @@ public class Canvas extends JComponent {
 		
 		for(int i = 0; i < getNodes().size(); i++) {
 			Node n = getNodes().get(i);
-			if (n != notMove && !n.isMovesWithFocus()) {
+			if (notMove==null || (n != notMove && n!=notMove.attachedNode)) {
 				n.instantlyMove(x, y);
 			}
 		}
@@ -256,6 +261,7 @@ public class Canvas extends JComponent {
 			}
 			if(paintedNodes>=getNodes().size()) break;
 		}
+		LightSource.drawLighting((Graphics2D)g);
 	}
 
 	// Paint the background. Just black for now.
