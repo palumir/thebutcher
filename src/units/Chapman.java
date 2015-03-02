@@ -191,7 +191,7 @@ public class Chapman extends Unit {
 				this.attack(Player.getCurrentPlayer(),5);
 			}
 			// Chase player!
-			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
+			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Player.getCurrentPlayer().getLantern().isToggle()) {
 				chasingPlayer = true;
 				pulsing.restart();
 				pulsing.loop(Clip.LOOP_CONTINUOUSLY);

@@ -24,8 +24,6 @@ public class Lantern extends LightSource {
 	private boolean fuelDropping = true;
 	private double tickTime = 0;
 	
-	static boolean toggle = true;
-	
 	// Strokes for the light
 	private static BasicStroke strokeSmall = new BasicStroke(1);
 
@@ -74,12 +72,12 @@ public class Lantern extends LightSource {
 	public void paintNode(Graphics2D g2) {
 	}
 
-	public static boolean isToggle() {
+	public boolean isToggle() {
 		return toggle;
 	}
 
-	public static void setToggle(boolean toggle) {
-		Lantern.toggle = toggle;
+	public void setToggle(boolean t) {
+		toggle = t;
 	}
 
 	public int getFuel() {

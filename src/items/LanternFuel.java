@@ -2,6 +2,7 @@ package items;
 
 import java.awt.image.BufferedImage;
 
+import units.Unit;
 import drawables.sprites.SpriteSheet;
 
 public class LanternFuel extends Item {
@@ -19,12 +20,12 @@ public class LanternFuel extends Item {
 	}
 	
 	// What happens when we pickup lantern fuel.
-	public void pickUp() {
+	public void pickUp(Unit u) {
 		
 		// Set the new fuel. Don't let it go above 100.
-		int newFuel = Lantern.getFuel() + amountRefill;
+		int newFuel = u.getLantern().getFuel() + amountRefill;
 		if(newFuel > 100) newFuel = 100;
-		Lantern.setFuel(newFuel);
+		u.getLantern().setFuel(newFuel);
 		
 		// Delete the item, of course.
 		this.deleteItem();

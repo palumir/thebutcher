@@ -75,7 +75,7 @@ public class Player extends Unit  {
 	// Follow closest friend.
 	public void followClosestAlly() {
 		followedUnit = null;
-		float smallestDiff = 1000;
+		float smallestDiff = 10000;
 		float dontFollowIfThisFarAway = 300;
 		for(int i = 0; i < players.size(); i++) {
 			float diffX = this.getMapX() - players.get(i).getMapX();
@@ -92,6 +92,22 @@ public class Player extends Unit  {
 				smallestDiff = distance;
 			}
 		}
+	}
+	
+	// Get closest player that is alive
+	public static Player getClosestPlayer(Unit u) {
+		Player closestPlayer = null;
+		float smallestDiff = 1000;
+		for(int i = 0; i < players.size(); i++) {
+			float diffX = u.getMapX() - players.get(i).getMapX();
+			float diffY = u.getMapY() - players.get(i).getMapY();
+			float distance = (float) Math.sqrt(diffX*diffX + diffY*diffY);
+			if(u != players.get(i) && smallestDiff > distance && !players.get(i).dead) {
+				closestPlayer = players.get(i);
+				smallestDiff = distance;
+			}
+		}
+		return closestPlayer;
 	}
 	
 	// Get the next player (tab through for now)

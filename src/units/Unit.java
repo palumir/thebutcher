@@ -47,6 +47,9 @@ public class Unit extends Node implements MouseListener {
 	// Who are we following?
 	protected Unit followedUnit = null;
 	
+	// Store the lantern
+	private Lantern lantern = null;
+	
 	// Dead?
 	protected boolean dead = false;
 	private boolean deadAnimationPlayed = false;
@@ -131,6 +134,12 @@ public class Unit extends Node implements MouseListener {
 		Nichols.randomEvents();
 		Smith.spawnOrDespawn();
 		Chapman.spawnOrDespawn();
+	}
+	
+	// Set the lantern
+	public void setLantern(Lantern l) {
+		this.attach(l);
+		lantern = l;
 	}
 	
 	// Attack a unit
@@ -394,5 +403,9 @@ public class Unit extends Node implements MouseListener {
 		if(facingLeft) currAnimation = idleLeft;
 		if(!facingLeft) currAnimation = idleRight;
 		stunned = b;
+	}
+
+	public Lantern getLantern() {
+		return lantern;
 	}
 }

@@ -139,9 +139,10 @@ public class Nichols extends Unit {
 		// Create the scene.
 		NicholsPit f = new NicholsPit();
 		Lantern l = new Lantern(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2,300);
-		Lantern.setFuelDropping(false);
-		Lantern.setFuel(5);
-		Lantern.toggleSilent();
+		l.setFuelDropping(false);
+		l.setFuel(5);
+		l.toggleSilent();
+		player.setLantern(l);
 		Background.setC(Color.BLACK);
 	}
 	
@@ -164,13 +165,13 @@ public class Nichols extends Unit {
 		
 		else {
 			// If the lantern is on, don't time.
-			if(Lantern.isToggle() && violin.playing) {
+			if(Player.getCurrentPlayer().getLantern().isToggle() && violin.playing) {
 				violin.stop();
 				lastCheck = 0;
 			}
 			
 			// If the lantern is on, give them their time back.
-			else if(Lantern.isToggle()) {
+			else if(Player.getCurrentPlayer().getLantern().isToggle()) {
 				// Play spooky violin louder and louder
 				// -15 => +30
 				double percent = totalTime/darknessKillPlayer;
@@ -187,7 +188,7 @@ public class Nichols extends Unit {
 			}
 			
 			// If the lantern is off, tick the timer.
-			else if(!Lantern.isToggle()) {
+			else if(!Player.getCurrentPlayer().getLantern().isToggle()) {
 				// Play spooky violin louder and louder
 				// -15 => +30
 				double percent = totalTime/darknessKillPlayer;
@@ -217,8 +218,8 @@ public class Nichols extends Unit {
 		
 		// Create nichols so we can run the scene.
 		Nichols n = new Nichols();
+		n.attack(Player.getCurrentPlayer(), 5);
 		// WIP DO SOMETHING BEFORE WE TRANSITION TO THE DEATH SCENE
 		n.createDeathScene();
-		stab.start();
 	}
 }

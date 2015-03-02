@@ -172,10 +172,10 @@ public class Smith extends Unit {
 	}
 	
 	public void AI() {
-		if(Player.getCurrentPlayer() != null) {
+		if(Player.getClosestPlayer(this) != null) {
 			// STOP STATES
 			// If the player has gotten 150 away, stop chasing.
-			if(Smith == null || (chasingPlayer && !Player.getCurrentPlayer().close(chaseRange,this))) {
+			if(Smith == null || (chasingPlayer && !Player.getClosestPlayer(this).close(chaseRange,this))) {
 				chasingPlayer = false;
 				chasing.stop();
 				movingRight = false;
@@ -185,25 +185,25 @@ public class Smith extends Unit {
 			
 			// INITIATE STATES
 			// Kill player!
-			if(Player.getCurrentPlayer().close(killRange,this)) {
-				this.attack(Player.getCurrentPlayer(),1);
+			if(Player.getClosestPlayer(this).close(killRange,this)) {
+				this.attack(Player.getClosestPlayer(this),1);
 			}
 			// Chase player!
-			else if(!chasingPlayer && Player.getCurrentPlayer().close(chaseRange,this) && Lantern.isToggle()) {
+			else if(!chasingPlayer && Player.getClosestPlayer(this).close(chaseRange,this) && Player.getCurrentPlayer().getLantern().isToggle()) {
 				chasingPlayer = true;
 				chasing.restart();
 				chasing.loop(Clip.LOOP_CONTINUOUSLY);
 				moveSpeed = chasingSpeed;
 			}
 			// Play noise if we're close to player!
-			else if(!closeToPlayer && Player.getCurrentPlayer().close(closeRange,this)) {
+			else if(!closeToPlayer && Player.getClosestPlayer(this).close(closeRange,this)) {
 				closeToPlayer = true;
 			}
 			
 			// STATES
 			// Start chasing the player if he's close and has his lantern on.
-			if(chasingPlayer && !Player.getCurrentPlayer().dead && this.followedUnit == null) {
-				this.followedUnit = Player.getCurrentPlayer();
+			if(chasingPlayer && !Player.getClosestPlayer(this).dead && this.followedUnit == null) {
+				this.followedUnit = Player.getClosestPlayer(this);
 			}
 			else {
 				this.followedUnit = null;
@@ -222,7 +222,7 @@ public class Smith extends Unit {
 			}
 			
 			// Let the player know if Smith has passed.
-			if(Math.abs(Player.getCurrentPlayer().trans.getTranslateX() - this.trans.getTranslateX()) < 5) {
+			if(Math.abs(Player.getClosestPlayer(this).trans.getTranslateX() - this.trans.getTranslateX()) < 5) {
 				passed = true;
 			}
 		}

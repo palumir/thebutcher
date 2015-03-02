@@ -39,12 +39,12 @@ public class Item extends Node {
 	// Update item
 	public void updateItem() {
 		if(Player.getCurrentPlayer() != null && this.close(pickUpRange, Player.getCurrentPlayer())) {
-			this.pickUp();
+			this.pickUp(Player.getCurrentPlayer());
 		}
 	}
 	
 	// Pickup placeholder
-	public void pickUp() {
+	public void pickUp(Unit u) {
 		
 	}
 	

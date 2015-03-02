@@ -1,7 +1,9 @@
-/units/
-/main/
-/drawables/
 /audio/
+/drawables/
+/images/
 /items/
+/main/
+/saving/
 /sounds/
 /terrain/
+/units/

@@ -51,12 +51,12 @@ public class Main {
 		// Create the player. Move him to the middle of the screen.
 		Player player1 = new Player(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2);
 		Lantern lantern1 = new Lantern(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2,200);
-		player1.attach(lantern1);
+		player1.setLantern(lantern1);
 		player1.focus();
 	
 		Player player2 = new Player(Canvas.getDefaultWidth()/2, Canvas.getDefaultHeight()/2);
 		Lantern lantern2 = new Lantern(Canvas.getDefaultWidth()/2,Canvas.getDefaultHeight()/2,200);
-		player2.attach(lantern2);
+		player2.setLantern(lantern2);
 		
 		// Configure enemy AI
 		Smith.setAI(3);
